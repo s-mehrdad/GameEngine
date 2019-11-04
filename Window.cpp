@@ -3,9 +3,10 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,03.11.2019</changed>
 // ********************************************************************************
 
+#include "pch.h"
 #include "Window.h"
 #include "Shared.h"
 
@@ -44,7 +45,7 @@ Window::Window ( TheCore* coreObject ) :
     wClass.cbClsExtra = 0; // extra class runtime information
     wClass.cbSize = sizeof ( WNDCLASSEX ); // the size of the structure itself (usable when passed as pointer)
     wClass.cbWndExtra = 0; // extra window runtime information
-    wClass.hbrBackground = ( HBRUSH) GetStockObject ( DKGRAY_BRUSH ); // a handle to a background brush for window
+    wClass.hbrBackground = (HBRUSH) GetStockObject ( DKGRAY_BRUSH ); // a handle to a background brush for window
     wClass.hCursor = LoadCursor ( 0, IDC_ARROW ); // the cursor for the window
     // ('LoadIcon' and 'LoadCursor' functions retrieve handles to standard common icons)
     wClass.hIcon = LoadIcon ( 0, IDI_APPLICATION ); // title bar icon
@@ -120,7 +121,7 @@ Window::Window ( TheCore* coreObject ) :
     initialized = true;
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -346,8 +347,8 @@ LRESULT CALLBACK Window::msgProc (
         // setting the possible minimum size of the window (the message is sent when a window size is about to changed)
       case WM_GETMINMAXINFO:
         // a pointer to the 'MINMAXINFO' structure is provided by the message parameter 'lPrm'
-        (( MINMAXINFO*) lPrm)->ptMinTrackSize.x = PointerProvider::getConfiguration ()->getDefaults ().Width;
-        (( MINMAXINFO*) lPrm)->ptMinTrackSize.y = PointerProvider::getConfiguration ()->getDefaults ().Height;
+        ((MINMAXINFO*) lPrm)->ptMinTrackSize.x = PointerProvider::getConfiguration ()->getDefaults ().Width;
+        ((MINMAXINFO*) lPrm)->ptMinTrackSize.y = PointerProvider::getConfiguration ()->getDefaults ().Height;
         break;
 
     }
@@ -357,7 +358,7 @@ LRESULT CALLBACK Window::msgProc (
     return DefWindowProc ( handle, msg, wPrm, lPrm );
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );

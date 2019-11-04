@@ -3,9 +3,10 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,03.11.2019</changed>
 // ********************************************************************************
 
+#include "pch.h"
 #include "Timer.h"
 #include "Shared.h"
 
@@ -29,7 +30,7 @@ Timer::Timer ( void ) :
     // usable in time-interval measurements.
     // note that the function returns zero if an error is occurred.
     // Todo implement C++ standard chrono
-    if (QueryPerformanceFrequency ( ( LARGE_INTEGER*) & frequency ))
+    if (QueryPerformanceFrequency ( (LARGE_INTEGER*) &frequency ))
     {
       // once calculated seconds per count (reciprocal of the number of counts per seconds)
       // TimeValueInSeconds = ActualTimeValue / Frequency
@@ -46,7 +47,7 @@ Timer::Timer ( void ) :
                                                 L"The high-precision timer instantiation failed!" );
     }
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -90,7 +91,7 @@ void Timer::event ( const char* type )
   try
   {
 
-    if (QueryPerformanceCounter ( ( LARGE_INTEGER*) & current ))
+    if (QueryPerformanceCounter ( (LARGE_INTEGER*) &current ))
     {
       // if start is requested as event (invoked at game reactivation)
       if ((type == "start") && (paused))
@@ -130,7 +131,7 @@ void Timer::event ( const char* type )
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -147,7 +148,7 @@ void Timer::tick ( void )
     if (paused)
       timeDelta = 0; // the elapsed time in a stopped state (for calculations in an idle time)
     else
-      if (QueryPerformanceCounter ( ( LARGE_INTEGER*) & timeCurrentFrame ))
+      if (QueryPerformanceCounter ( (LARGE_INTEGER*) &timeCurrentFrame ))
       {
         timeDelta = (timeCurrentFrame - timePreviousFrame) * secondsPerCount; // the elapsed time of one frame
         timePreviousFrame = timeCurrentFrame; // preparation for the next tick
@@ -163,7 +164,7 @@ void Timer::tick ( void )
       }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );

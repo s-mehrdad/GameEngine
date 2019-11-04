@@ -3,9 +3,10 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,03.11.2019</changed>
 // ********************************************************************************
 
+#include "pch.h"
 #include "Utilities.h" // string + s,f streams + exception + threads + list + Windows standards
 #include "Shared.h"
 #include "Game.h"
@@ -143,7 +144,7 @@ int WINAPI WinMain ( _In_ HINSTANCE hInstance, // generated instance handle by W
       return EXIT_SUCCESS;
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
 
     if (ex.what () == "appSone")

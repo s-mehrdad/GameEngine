@@ -3,11 +3,14 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,05.11.2019</changed>
 // ********************************************************************************
 
-//#include "GameEngine.h"
 #include "pch.h"
+//#include "GameEngine.h"
+#include "Utilities.h" // string + s,f streams + exception + threads + list + Windows standards
+#include "Shared.h"
+#include "Game.h"
 
 
 using namespace winrt::Windows::ApplicationModel;
@@ -20,10 +23,21 @@ using namespace winrt::Windows::System;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Graphics::Display;
 
+//using namespace winrt;
+//using namespace winrt::Windows::UI::Xaml;
+//using namespace winrt::Windows::UI::Xaml::Controls;
+//using namespace winrt::Windows::UI::Xaml::Navigation;
+
+
+bool running { false };
+std::wstring gameState { L"uninitialized" };
+
 
 class View : public winrt::implements<View, IFrameworkViewSource, IFrameworkView>
 {
 private:
+  static bool failure; // true if exiting with failure
+
   winrt::agile_ref<CoreWindow> m_appWindow; // reference to application window
   bool m_running;
   bool m_visible;
@@ -31,7 +45,8 @@ private:
   // DPI
   // Width / Height
   // Orientation
-  //std::unique_ptr <CoreDX>;
+  //std::unique_ptr <Game> game;
+  Game* game;
 protected:
   void m_onActivated ( CoreApplicationView const& /*applicationView*/,
                        IActivatedEventArgs const& /*args*/ ); // on application window activation
@@ -57,7 +72,7 @@ public:
   // for being able to implement the object which implements IFrameworkView interface,
   // it should made ready by the IFrameworkViewSource factory interface
   // the order in which these methods are called (after defined by a CoreApplication singleton instance):
-  // CreateView, Initialize, Load, Run
+  // CreateView, Initialize, SetWindow, Load, Run
 
   // IFrameworkViewSource methods:
   IFrameworkView CreateView ( void ); // creation method overload
@@ -68,6 +83,8 @@ public:
   void Run ( void ); // execution method overload (called after load method)
   void SetWindow ( CoreWindow const& ); // window set method overload (after initialization)
   void Uninitialize ( void ); // un-initialization method overload
+
+  static bool exitedWith ( void ); // application exit state provider
 };
 
 
@@ -77,15 +94,134 @@ int WINAPI wWinMain ( _In_ HINSTANCE /*hInstance*/,
                       _In_ int /*nCmdShow*/ )
 {
 
-  if (!DirectX::XMVerifyCPUSupport ())
+  try
   {
-    // error handling
-  }
 
-  auto view = winrt::make<View> ();
-  CoreApplication::Run ( view );
-  //CoreApplication::Run ( View () );
-  return EXIT_SUCCESS;
+    if (!DirectX::XMVerifyCPUSupport ())
+    {
+      gameState = L"CPU";
+      throw;
+    }
+
+
+    std::shared_ptr<theException> anException { new (std::nothrow) theException () };
+    PointerProvider::exceptionProvider ( anException );
+
+    std::shared_ptr<Logger<toFile>> fileLoggerEngine ( new (std::nothrow) Logger<toFile> () );
+    PointerProvider::fileLoggerProvider ( fileLoggerEngine );
+
+    std::shared_ptr<Configurations> settings ( new (std::nothrow) Configurations () );
+    PointerProvider::configurationProvider ( settings );
+
+    if ((!anException) && (!settings))
+    {
+      // failure, shut down the game properly
+      if (anException)
+      {
+        PointerProvider::exceptionProvider ( nullptr );
+        anException.reset ();
+      }
+      if (settings)
+      {
+        PointerProvider::configurationProvider ( nullptr );
+        settings.reset ();
+      }
+
+      gameState = L"utilities";
+      throw;
+    }
+
+    if (fileLoggerEngine)
+    {
+      PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
+                                                L"Exception, file logger and configuration providers are successfully initialized." );
+    } else
+    {
+      // failure, shut down the game properly
+      if (anException)
+      {
+        PointerProvider::exceptionProvider ( nullptr );
+        anException.reset ();
+      }
+      if (settings)
+      {
+        PointerProvider::configurationProvider ( nullptr );
+        settings.reset ();
+      }
+
+      gameState = L"appDebug";
+      throw;
+    }
+
+
+    auto view = winrt::make<View> ();
+    CoreApplication::Run ( view );
+    //CoreApplication::Run ( View () );
+
+
+    ///
+    if (anException)
+    {
+      PointerProvider::exceptionProvider ( nullptr );
+      anException.reset ();
+    }
+
+    if (settings)
+    {
+      PointerProvider::configurationProvider ( nullptr );
+      settings.reset ();
+    }
+
+    if (fileLoggerEngine)
+    {
+      PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
+                                                L"The logging engine is set to shut down..." );
+
+      // failure or success, the logs are somehow to be saved, so give its thread some time
+      std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
+
+      PointerProvider::fileLoggerProvider ( nullptr );
+      fileLoggerEngine.reset ();
+    }
+
+    gameState = L"uninitialized";
+
+
+    if (View::exitedWith ())
+      return EXIT_FAILURE;
+    else
+      return EXIT_SUCCESS;
+
+  }
+  catch (const std::exception & ex)
+  {
+
+    if (gameState == L"CPU")
+    {
+      //MessageBoxA ( NULL, "Your CPU isn't supported.", "Error", MB_OK | MB_ICONERROR );
+    } else
+      if (gameState == L"utilities")
+      {
+        //MessageBoxA ( NULL, "The Game could not be started...", "Error", MB_OK | MB_ICONERROR );
+      } else
+        if (gameState == L"appDebug")
+        {
+          //MessageBoxA ( NULL, "The debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
+        } else
+        {
+          //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
+          if (PointerProvider::getFileLogger ())
+          {
+            PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+                                                      Converter::strConverter ( ex.what () ) );
+
+            // failure or success, the logs are somehow to be saved, so give its thread some time
+            std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
+          }
+        }
+        return EXIT_FAILURE;
+
+  }
 
 }
 
@@ -101,12 +237,6 @@ View::View ( void ) :
 //{
 //
 //};
-
-
-IFrameworkView View::CreateView ( void )
-{
-  return *this;
-};
 
 
 void View::m_onActivated ( CoreApplicationView const& /*applicationView*/, IActivatedEventArgs const& /*args*/ )
@@ -145,10 +275,32 @@ void View::m_onResuming ( IInspectable const& /*sender*/, IInspectable const& /*
 };
 
 
+IFrameworkView View::CreateView ( void )
+{
+  return *this;
+};
+
+
 void View::Initialize ( CoreApplicationView const& applicationView )
 {
 
   m_running = true;
+
+
+  // Todo: more reasearch how to use Xaml controls when implementing the UWP core
+  //Frame root { nullptr };
+  //root = m_appWindow.get ().try_as<Frame> ();
+  //CoreApplicationView newView = CoreApplication::CreateNewView ();
+  //auto content = winrt::Windows::UI::Xaml::Window::Current ().Content ();
+  //if (!content)
+  //{
+  //} else
+  //{
+  //  root = content.try_as<Frame> ();
+  //}
+  //root = Frame ();
+  //winrt::Windows::UI::Xaml::Window::Current ().Content ( root );
+
 
   // response to application window activation
   applicationView.Activated ( { this, &View::m_onActivated } );
@@ -158,9 +310,6 @@ void View::Initialize ( CoreApplicationView const& applicationView )
 
   // response to application window resuming from suspension
   CoreApplication::Resuming ( { this, &View::m_onResuming } );
-
-  // Todo: 
-  //CoreDX = std::make_unique<CoreDX> ();
 
 };
 
@@ -174,32 +323,68 @@ void View::Load ( winrt::hstring const& /*entryPoint*/ )
 void View::Run ( void )
 {
 
-  while (m_running)
+  // Todo: 
+  //CoreDX = std::make_unique<CoreDX> ();
+
+
+  // game instantiation
+  auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi ( m_appWindow.get () ));
+  game = new (std::nothrow) Game ( windowPtr ); ///
+
+  if (!game->isReady ())
   {
-    if (m_visible)
+    game->shutdown (); // failure, shut the application down properly.
+
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+                                              L"The game initialization failed!" );
+
+    //MessageBoxA ( NULL, "The Game functionality failed to start...", "Critical-Error", MB_OK | MB_ICONERROR );
+
+    failure = true;
+  } else
+  {
+    gameState = L"initialized";
+
+    PointerProvider::getFileLogger ()->push ( logType::warning, std::this_thread::get_id (), L"mainThread",
+                                              L"Entering the game loop..." );
+
+    if (!game->run ())
     {
-
-      // Todo: tick the timer and initiate, update and present the scene
-
-      CoreWindow::GetForCurrentThread ().Dispatcher ().ProcessEvents (
-        CoreProcessEventsOption::ProcessAllIfPresent );
-
-    } else
-    {
-
-      // Todo: additional suitable processes for hibernation state
-
-      CoreWindow::GetForCurrentThread ().Dispatcher ().ProcessEvents (
-        CoreProcessEventsOption::ProcessOneIfPresent );
-      // if no task go to hibernation
-      std::this_thread::sleep_for ( std::chrono::milliseconds ( 100 ) );
-
-      // Microsoft's resource (suspension)
-      //CoreWindow::GetForCurrentThread ().Dispatcher ().ProcessEvents (
-      //  CoreProcessEventsOption::ProcessOneAndAllPending );
-
+      failure = true;
+      PointerProvider::getFileLogger ()->push ( logType::warning, std::this_thread::get_id (), L"mainThread",
+                                                L"One or more errors occurred while running the game!" );
     }
+
+    game->shutdown (); // failure or success, shut the application down properly.
   }
+
+
+  //while (m_running)
+  //{
+  //  if (m_visible)
+  //  {
+
+  //    // Todo: tick the timer and initiate, update and present the scene
+
+  //    CoreWindow::GetForCurrentThread ().Dispatcher ().ProcessEvents (
+  //      CoreProcessEventsOption::ProcessAllIfPresent );
+
+  //  } else
+  //  {
+
+  //    // Todo: additional suitable processes for hibernation state
+
+  //    CoreWindow::GetForCurrentThread ().Dispatcher ().ProcessEvents (
+  //      CoreProcessEventsOption::ProcessOneIfPresent );
+  //    // if no task go to hibernation
+  //    std::this_thread::sleep_for ( std::chrono::milliseconds ( 100 ) );
+
+  //    // Microsoft's resource (suspension)
+  //    //CoreWindow::GetForCurrentThread ().Dispatcher ().ProcessEvents (
+  //    //  CoreProcessEventsOption::ProcessOneAndAllPending );
+
+  //  }
+  //}
 
 };
 
@@ -228,4 +413,11 @@ void View::Uninitialize ( void )
 {
   // Todo: free the taken resources
   // shutdown precess
+};
+
+
+bool View::failure = false;
+bool View::exitedWith ( void )
+{
+  return failure;
 };

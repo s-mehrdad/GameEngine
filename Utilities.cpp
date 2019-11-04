@@ -3,9 +3,10 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,05.11.2019</changed>
 // ********************************************************************************
 
+#include "pch.h"
 #include "Utilities.h"
 #include "Shared.h"
 
@@ -54,13 +55,13 @@ toFile::toFile ( void ) : ready ( false )
       ready = true;
     else
     {
-      MessageBoxA ( NULL, "The log file could not be opened for writing.", "Error", MB_OK | MB_ICONERROR );
+      //MessageBoxA ( NULL, "The log file could not be opened for writing.", "Error", MB_OK | MB_ICONERROR );
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
-    MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
+    //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
   }
 };
 
@@ -95,7 +96,7 @@ bool toFile::write ( const std::wstring& line )
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -123,10 +124,10 @@ Logger<tType>::Logger ( void ) : theLogRawStr ( L"" ), filePolicy (), writeGuard
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
 
-    MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
+    //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
 
   }
 };
@@ -223,7 +224,7 @@ void Logger<tType>::push ( const logType& t,
     buffer.push_back ( line.str () );
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -284,7 +285,7 @@ void loggerEngine ( Logger<tType>* engine )
     } while (engine->operating.test_and_set () || engine->buffer.size ());
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"logThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -322,41 +323,42 @@ Configurations::Configurations ( void )
     currents.fullscreen = false;
 
     PWSTR docPath { NULL };
-    HRESULT hR = SHGetKnownFolderPath ( FOLDERID_Documents, NULL, NULL, &docPath );
+    //HRESULT hR = winrt::Windows::Storage::IKnownFoldersStatics::DocumentsLibrary() ( FOLDERID_Documents, NULL, NULL, &docPath );
     std::wstring path { L"" };
-    if (FAILED ( hR ))
-    {
-      MessageBoxA ( NULL, "The path to document directory is unknown! Please contact your OS support.",
-                    "Critical-Error", MB_OK | MB_ICONERROR );
+    //if (FAILED ( hR ))
+    //{
+    //  MessageBoxA ( NULL, "The path to document directory is unknown! Please contact your OS support.",
+    //                "Critical-Error", MB_OK | MB_ICONERROR );
 
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Retrieving the path to document directory failed!" );
+    //  PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+    //                                            L"Retrieving the path to document directory failed!" );
 
-      pathToMyDocuments = L"";
-      path = L"C:\\TheGame";
-      hR = SHCreateDirectory ( NULL, path.c_str () );
-      if (FAILED ( hR ))
-      {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"The creation of directory failed!" );
-        path = L"C:\\settings.lua";
-      } else
-        path += L"\\settings.lua";
-    } else
-    {
-      pathToMyDocuments = docPath;
-      path = pathToMyDocuments + L"\\settings.lua";
-    }
+    //  pathToMyDocuments = L"";
+    //  path = L"C:\\TheGame";
+    //  hR = SHCreateDirectory ( NULL, path.c_str () );
+    //  if (FAILED ( hR ))
+    //  {
+    //    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+    //                                              L"The creation of directory failed!" );
+    //    path = L"C:\\settings.lua";
+    //  } else
+    //    path += L"\\settings.lua";
+    //} else
+    //{
+    //  pathToMyDocuments = docPath;
+    //  path = pathToMyDocuments + L"\\settings.lua";
+    //}
 
 
     //!? temporary statement: development time path
-    path = { L"C:\\Users\\Mehrdad\\Source\\Repos\\LearningDirectX\\settings.lua" };
+    path = { L"C:\\Users\\Mehrdad\\source\\repos\\GameEngine\\settings.lua" };
 
 
     pathToSettings = path;
     // Lua accepts a string type as path
     std::string pathStr { "" };
-    pathStr = Converter::strConverter ( pathToSettings );
+    //pathStr = Converter::strConverter ( pathToSettings )
+    pathStr = { "./settings.lua" }; ///
 
     for (char i = 0; i < 2; i++)
     {
@@ -372,7 +374,7 @@ Configurations::Configurations ( void )
         unsigned int temp = configs ["configurations"]["display"]["fullscreen"].get_or ( temp );
         currents.fullscreen = temp;
       }
-      catch (const std::exception& ex)
+      catch (const std::exception & ex)
       {
         PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                                   Converter::strConverter ( ex.what () ) );
@@ -403,7 +405,7 @@ Configurations::Configurations ( void )
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -452,7 +454,7 @@ void Configurations::apply ( void )
                                               L"fullscreen: " + std::to_wstring ( currents.fullscreen ) );
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -486,7 +488,7 @@ const bool Configurations::apply ( const ConfigsContainer& object )
       return false;
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -500,11 +502,14 @@ std::wstring Converter::strConverter ( const std::string& str )
   try
   {
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> entity;
-    return entity.from_bytes ( str );
+    std::wstringstream wStream;
+    wStream << str.c_str ();
+    std::wstring wStr { L"" };
+    wStream >> wStr;
+    return wStr;
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -518,11 +523,14 @@ std::string Converter::strConverter ( const std::wstring& wstr )
   try
   {
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> entity;
-    return entity.to_bytes ( wstr );
+    std::stringstream stream;
+    stream << wstr.c_str ();
+    std::string str { "" };
+    stream >> str;
+    return str;
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );

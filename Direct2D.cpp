@@ -3,9 +3,10 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,05.11.2019</changed>
 // ********************************************************************************
 
+#include "pch.h"
 #include "Direct2D.h"
 #include "Shared.h"
 
@@ -50,7 +51,7 @@ Direct2D::Direct2D ( TheCore* coreObj ) :
 
     // acquiring the underlying DXGI factory used to create the Dirext3D device (resources needs)
     IDXGIDevice1* dxgiDevice;
-    hR = core->d3d->device->QueryInterface ( __uuidof(IDXGIDevice1), ( void**) & dxgiDevice );
+    hR = core->d3d->device->QueryInterface ( __uuidof(IDXGIDevice1), (void**) &dxgiDevice );
     if (FAILED ( hR ))
     {
       PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
@@ -81,7 +82,7 @@ Direct2D::Direct2D ( TheCore* coreObj ) :
                                                 L"Allocation of Direct2D resources failed." );
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -146,7 +147,7 @@ void Direct2D::allocateResources ( void )
     initializeTextFormats ();
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -218,7 +219,7 @@ void Direct2D::initializeTextFormats ( void )
     allocated = true;
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -237,7 +238,7 @@ void Direct2D::debugInfos ( void )
   try
   {
 
-    if (core->debug && (!core->appWindow->isResized ()) && textLayoutsDebug)
+    if (core->debug /*&& (!core->appWindow->isResized ())*/ && textLayoutsDebug)
     {
       // drawing operations must be issued between a BeginDraw and EndDraw calls
       deviceCon->BeginDraw ();
@@ -256,7 +257,7 @@ void Direct2D::debugInfos ( void )
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );

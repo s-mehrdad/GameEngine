@@ -3,17 +3,17 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,05.11.2019</changed>
 // ********************************************************************************
 
+#include "pch.h"
 #include "Core.h"
 #include "Shared.h"
 
 
-TheCore::TheCore ( HINSTANCE& hInstance, Game* gameObj ) :
-  appInstance ( hInstance ), timer ( nullptr ), fps ( 0 ), mspf ( 0 ),
-  appWindow ( nullptr ), appHandle ( NULL ),
-  d3d ( nullptr ), d2d ( nullptr ), game ( gameObj ),
+TheCore::TheCore ( ::IUnknown* window, Game* gameObj ) :
+  timer ( nullptr ), fps ( 0 ), mspf ( 0 ),
+  appWindow ( window ), d3d ( nullptr ), d2d ( nullptr ), game ( gameObj ),
   debug ( false ), initialized ( false ), paused ( false ), resized ( false )
 {
   try
@@ -28,15 +28,15 @@ TheCore::TheCore ( HINSTANCE& hInstance, Game* gameObj ) :
       return;
     }
 
-    // application window instantiation
-    appWindow = new (std::nothrow) Window ( this );
-    if (!appWindow->isInitialized ())
-    {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Window initialization failed!" );
-      return;
-    }
-    appHandle = appWindow->getHandle (); // handle to the instantiated window
+    //// application window instantiation
+    //appWindow = new (std::nothrow) Window ( this );
+    //if (!appWindow->isInitialized ())
+    //{
+    //  PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+    //                                            L"Window initialization failed!" );
+    //  return;
+    //}
+    //appHandle = appWindow->getHandle (); // handle to the instantiated window
 
     // Direct3D 10 instantiation
     d3d = new (std::nothrow) Direct3D ( this );
@@ -63,7 +63,7 @@ TheCore::TheCore ( HINSTANCE& hInstance, Game* gameObj ) :
     debug = true; // Todo must be switched from within the application
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -77,15 +77,9 @@ const bool& TheCore::isInitialized ( void )
 };
 
 
-const HINSTANCE& TheCore::getInstance ( void )
+const ::IUnknown* TheCore::getWindow ( void )
 {
-  return appInstance;
-};
-
-
-const HWND& TheCore::getHandle ( void )
-{
-  return appHandle;
+  return appWindow;
 };
 
 
@@ -158,28 +152,28 @@ void TheCore::frameStatistics ( void )
           << "^_^ - FPS: " << fps << L" - mSPF: " << mspf << std::endl;
 
         // before rendering a text to a bitmap: the creation of the text layout
-        hR = d2d->writeFac->CreateTextLayout ( outFPS.str ().c_str (), ( UINT32) outFPS.str ().size (),
-                                               d2d->textFormatFPS.Get (), ( float) appWindow->clientWidth,
-                                               ( float) appWindow->clientHeight, &d2d->textLayoutFPS );
-        if (FAILED ( hR ))
-        {
-          PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                    L"The Creation of text layout for FPS information failed!" );
-          return;
-        }
+        //hR = d2d->writeFac->CreateTextLayout ( outFPS.str ().c_str (), (UINT32) outFPS.str ().size (),
+        //                                       d2d->textFormatFPS.Get (), (float) appWindow->clientWidth,
+        //                                       (float) appWindow->clientHeight, &d2d->textLayoutFPS );
+        //if (FAILED ( hR ))
+        //{
+        //  PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+        //                                            L"The Creation of text layout for FPS information failed!" );
+        //  return;
+        //}
 
         std::wstring out { L"Last event: " };
         out += PointerProvider::getFileLogger ()->getLogRawStr ();
-        hR = d2d->writeFac->CreateTextLayout ( out.c_str (), ( UINT32) ( UINT32) out.size (),
-                                               d2d->textFormatLogs.Get (), ( float) appWindow->clientWidth,
-                                               ( float) appWindow->clientHeight, &d2d->textLayoutLogs );
-        if (FAILED ( hR ))
-        {
-          PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                    L"The Creation of text layout for Logs failed!" );
-          return;
-        }
-        d2d->textLayoutsDebug = true;
+        //hR = d2d->writeFac->CreateTextLayout ( out.c_str (), (UINT32) (UINT32) out.size (),
+        //                                       d2d->textFormatLogs.Get (), (float) appWindow->clientWidth,
+        //                                       (float) appWindow->clientHeight, &d2d->textLayoutLogs );
+        //if (FAILED ( hR ))
+        //{
+        //  PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
+        //                                            L"The Creation of text layout for Logs failed!" );
+        //  return;
+        //}
+        //d2d->textLayoutsDebug = true;
 
       }
 
@@ -189,7 +183,7 @@ void TheCore::frameStatistics ( void )
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -223,7 +217,7 @@ void TheCore::setResolution ( const bool& prm )
     resizeResources ( true );
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -263,9 +257,9 @@ void TheCore::resizeResources ( const bool& displayMode )
       // free Direct3D resources
       if (d3d->dSview && d3d->rTview && !rC)
       {
-        d3d->device->ClearState ();
+        d3d->devCon->ClearState ();
         rC = d3d->rasterizerState.Reset ();
-        d3d->device->OMSetRenderTargets ( 0, nullptr, nullptr );
+        d3d->devCon->OMSetRenderTargets ( 0, nullptr, nullptr );
         rC = d3d->dSview.Reset ();
         rC = d3d->dSstate.Reset ();
         rC = d3d->dSbuffer.Reset ();
@@ -293,7 +287,7 @@ void TheCore::resizeResources ( const bool& displayMode )
           d2d->allocateResources ();
         }
         //game->allocateResources ();
-        appWindow->isResized () = false;
+        //appWindow->isResized () = false;
         resized = true;
 
       } else
@@ -304,7 +298,7 @@ void TheCore::resizeResources ( const bool& displayMode )
     }
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );
@@ -346,9 +340,9 @@ void TheCore::shutdown ( void )
     if (d3d)
     {
       d3d->initialized = false;
-      d3d->device->ClearState ();
+      d3d->devCon->ClearState ();
       rC = d3d->rasterizerState.Reset ();
-      d3d->device->OMSetRenderTargets ( 0, nullptr, nullptr );
+      d3d->devCon->OMSetRenderTargets ( 0, nullptr, nullptr );
       rC = d3d->dSview.Reset ();
       rC = d3d->dSstate.Reset ();
       rC = d3d->dSbuffer.Reset ();
@@ -368,28 +362,26 @@ void TheCore::shutdown ( void )
     }
 
     // application main window destruction
-    if (appWindow)
-    {
-      appWindow->initialized = false;
-      appWindow->handle = NULL;
-      appWindow->appInstance = NULL;
-      appWindow->core = nullptr;
-      delete appWindow;
-      PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
-                                                L"Application main window class is successfully destructed." );
-    }
+    //if (appWindow)
+    //{
+    //  appWindow->initialized = false;
+    //  appWindow->handle = NULL;
+    //  appWindow->appInstance = NULL;
+    //  appWindow->core = nullptr;
+    //  delete appWindow;
+    //  PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
+    //                                            L"Application main window class is successfully destructed." );
+    //}
 
     // timer application destruction
     if (timer)
       delete timer;
 
-    appInstance = NULL;
-
     PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
                                               L"The Application Core is successfully shut down." );
 
   }
-  catch (const std::exception& ex)
+  catch (const std::exception & ex)
   {
     PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
                                               Converter::strConverter ( ex.what () ) );

@@ -3,14 +3,11 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,02.11.2019</changed>
+/// <changed>ʆϒʅ,03.11.2019</changed>
 // ********************************************************************************
 
 #ifndef SHARED_H
 #define SHARED_H
-
-
-//#define _NOT_DEBUGGING // shipping time definition
 
 
 #include "Utilities.h"
