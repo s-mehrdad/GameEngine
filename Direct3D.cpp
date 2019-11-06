@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,05.11.2019</changed>
+/// <changed>ʆϒʅ,06.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -31,8 +31,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     hR = CreateDXGIFactory1 ( __uuidof(IDXGIFactory1), (void**) &dxgiFactory );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of DXGI factory failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of DXGI factory failed!" );
       return;
     }
 
@@ -41,8 +41,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     hR = dxgiFactory->EnumAdapters1 ( 0, &dxgiAdapter );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of DXGI adapter failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of DXGI adapter failed!" );
       return;
     }
 
@@ -51,8 +51,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     hR = dxgiAdapter->EnumOutputs ( 0, &dxgiOutput );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Acquiring the output device failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Acquiring the output device failed!" );
       return;
     }
 
@@ -61,8 +61,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     hR = dxgiOutput->GetDisplayModeList ( colourFormat, DXGI_ENUM_MODES_INTERLACED, &displayModesCount, nullptr );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Acquiring the number of supported display modes failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Acquiring the number of supported display modes failed!" );
       return;
     }
 
@@ -70,15 +70,15 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     displayModes = new (std::nothrow) DXGI_MODE_DESC [displayModesCount];
     if (!displayModes)
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Dynamic memory allocation for supported display modes failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Dynamic memory allocation for supported display modes failed!" );
       return;
     }
     hR = dxgiOutput->GetDisplayModeList ( colourFormat, DXGI_ENUM_MODES_INTERLACED, &displayModesCount, displayModes );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Acquiring all the supported display modes failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Acquiring all the supported display modes failed!" );
       return;
     }
 
@@ -97,14 +97,14 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
           displayMode = displayModes [0];
           displayModeIndex = 0;
 
-          PointerProvider::getFileLogger ()->push ( logType::warning, std::this_thread::get_id (), L"mainThread",
-                                                    L"The chosen resolution is not supported!" );
+          PointerProvider::getFileLogger ()->push ( logType::warning, std::this_thread::get_id (), "mainThread",
+                                                    "The chosen resolution is not supported!" );
 
           // rewrite a not valid configurations with defaults: the file is probably modified from outside of the application
           if (!PointerProvider::getConfiguration ()->apply ( PointerProvider::getConfiguration ()->getDefaults () ))
           {
-            PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                      L"Rewriting the Configuration file with default settings failed." );
+            PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                      "Rewriting the Configuration file with default settings failed." );
           }
         }
     }
@@ -116,8 +116,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     hR = dxgiAdapter->GetDesc1 ( &dxgiAdapterDesc );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Acquiring the description of video card failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Acquiring the description of video card failed!" );
       return;
     }
     videoCardMemory = (unsigned int) (dxgiAdapterDesc.DedicatedVideoMemory / 1024 / 1024);
@@ -141,8 +141,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
                              deviceFlags, &featureLevels, 1, D3D11_SDK_VERSION, &device, &featureLevel, &devCon );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"The creation of Direct3D device failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "The creation of Direct3D device failed!" );
       return;
     }
 
@@ -153,8 +153,8 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
 
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"The creation of Direct3D device debug layer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "The creation of Direct3D device debug layer failed!" );
       return;
     }
 #endif // !_NOT_DEBUGGING
@@ -194,29 +194,29 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
     hR = dxgiFactory->CreateSwapChainForCoreWindow ( device.Get (), core->appWindow, &swapChainDesc, nullptr, &swapChain );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of swap chain failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of swap chain failed!" );
       return;
     }
     rC = dxgiFactory->Release ();
     dxgiFactory = nullptr;
 
     initialized = true;
-    PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
-                                              L"Direct3D is successfully initialized." );
+    PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), "mainThread",
+                                              "Direct3D is successfully initialized." );
 
     displayModeSetter ();
     allocateResources ();
 
     if (!allocated)
-      PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), L"mainThread",
-                                                L"Allocation of Direct3D resources failed." );
+      PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), "mainThread",
+                                                "Allocation of Direct3D resources failed." );
 
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -252,8 +252,8 @@ void Direct3D::displayModeSetter ( void )
       hR = swapChain->SetFullscreenState ( true, nullptr );
       if (FAILED ( hR ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Switching to fullscreen mode failed." );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Switching to fullscreen mode failed." );
         fullscreen = false;
         return;
       }
@@ -263,8 +263,8 @@ void Direct3D::displayModeSetter ( void )
       hR = swapChain->SetFullscreenState ( false, nullptr );
       if (FAILED ( hR ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Switching to windowed mode failed." );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Switching to windowed mode failed." );
         fullscreen = true;
         return;
       }
@@ -274,15 +274,15 @@ void Direct3D::displayModeSetter ( void )
     hR = swapChain->ResizeTarget ( &displayMode );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Setting a supported resolution failed." );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Setting a supported resolution failed." );
     }
 
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -303,8 +303,8 @@ void Direct3D::allocateResources ( void )
     hR = swapChain->ResizeBuffers ( 0, 0, 0, DXGI_FORMAT_UNKNOWN, 0 );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Resizing the swap chain failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Resizing the swap chain failed!" );
       return;
     }
 
@@ -316,8 +316,8 @@ void Direct3D::allocateResources ( void )
     hR = swapChain->GetBuffer ( 0, __uuidof(ID3D11Texture2D), (LPVOID*) &rtBuffer );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Acquiring the back buffer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Acquiring the back buffer failed!" );
       return;
     }
 
@@ -328,8 +328,8 @@ void Direct3D::allocateResources ( void )
     hR = device->CreateRenderTargetView ( rtBuffer, nullptr, &rTview );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of render target view failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of render target view failed!" );
       return;
     }
 
@@ -359,8 +359,8 @@ void Direct3D::allocateResources ( void )
     //hR = dsBuffer->QueryInterface ( __uuidof(IDXGISurface1), &dsSurface );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of depth-stencil buffer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of depth-stencil buffer failed!" );
       return;
     }
 
@@ -388,8 +388,8 @@ void Direct3D::allocateResources ( void )
     hR = device->CreateDepthStencilState ( &depthStencilDesc, &dSstate );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of depth-stencil state failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of depth-stencil state failed!" );
       return;
     }
     // set the active depth stencil state
@@ -407,8 +407,8 @@ void Direct3D::allocateResources ( void )
     hR = device->CreateDepthStencilView ( dSbuffer.Get (), &depthStencilViewDesc, &dSview );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation the depth-stencil view failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation the depth-stencil view failed!" );
       return;
     }
 
@@ -435,8 +435,8 @@ void Direct3D::allocateResources ( void )
     hR = device->CreateRasterizerState ( &rasterizerDesc, &rasterizerState );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation the rasterizer state failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation the rasterizer state failed!" );
       return;
     }
     // set the active rasterizer state
@@ -462,8 +462,8 @@ void Direct3D::allocateResources ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -485,8 +485,8 @@ void Direct3D::clearBuffers ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -511,8 +511,8 @@ void Direct3D::present ( void )
     if ((FAILED ( hR )) &&
       (hR != DXGI_ERROR_WAS_STILL_DRAWING)) // occurs, if the calling thread is blocked
     {
-      PointerProvider::getFileLogger ()->push ( logType::warning, std::this_thread::get_id (), L"mainThread",
-                                                L"The presentation of the scene failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::warning, std::this_thread::get_id (), "mainThread",
+                                                "The presentation of the scene failed!" );
     }
 
     // rebind: the process is needed after each call to present, since in flip and discard mode the view targets are released.
@@ -522,7 +522,7 @@ void Direct3D::present ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };

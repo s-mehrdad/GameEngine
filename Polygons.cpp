@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,05.11.2019</changed>
+/// <changed>ʆϒʅ,06.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -12,8 +12,8 @@
 
 
 template <class tType>
-Model<tType>::Model ( ID3D11Device* dev, ID3D11DeviceContext* devC, std::wstring entry, bool rewrite ) :
-  entryPoint ( entry ), dynamic ( rewrite ),
+Model<tType>::Model ( ID3D11Device* dev, ID3D11DeviceContext* devC, std::string entry, bool rewrite ) :
+  entryPoint ( " Entry Point: " + entry ), dynamic ( rewrite ),
   device ( dev ), devCon ( devC ),
   vertexBuffer ( nullptr ), indexBuffer ( nullptr )
 {
@@ -55,8 +55,8 @@ bool Model<tType>::allocate ( tType* data, unsigned long* index, unsigned long& 
     // note E_OUTOFMEMORY: self-explanatory
     if (FAILED ( device->CreateBuffer ( &vertexBufferDesc, &subResourceDate, &vertexBuffer ) ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of vertex buffer failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of vertex buffer failed!" + entryPoint );
       return false;
     }
 
@@ -80,8 +80,8 @@ bool Model<tType>::allocate ( tType* data, unsigned long* index, unsigned long& 
 
     if (FAILED ( device->CreateBuffer ( &indexBufferDesc, &subResourceDate, &indexBuffer ) ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of vertex buffer failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of vertex buffer failed!" + entryPoint );
       return false;
     }
 
@@ -90,8 +90,8 @@ bool Model<tType>::allocate ( tType* data, unsigned long* index, unsigned long& 
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) + entryPoint );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () + entryPoint );
     return false;
   }
 };
@@ -131,8 +131,8 @@ void Model<tType>::release ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -142,15 +142,15 @@ void PolygonsClassLinker ( void ) // don't call this function: solution for link
 
   ID3D11Device* dev { nullptr };
   ID3D11DeviceContext* devCon { nullptr };
-  Model<Vertex> tempVertex ( dev, devCon, L"", false );
+  Model<Vertex> tempVertex ( dev, devCon, "", false );
   tempVertex.getIndexBuffer ();
   tempVertex.getVertexBuffer ();
   tempVertex.release ();
-  Model<VertexT> tempVertexT ( dev, devCon, L"", false );
+  Model<VertexT> tempVertexT ( dev, devCon, "", false );
   tempVertexT.getIndexBuffer ();
   tempVertexT.getVertexBuffer ();
   tempVertexT.release ();
-  Model<VertexL> tempVertexL ( dev, devCon, L"", false );
+  Model<VertexL> tempVertexL ( dev, devCon, "", false );
   tempVertexL.getIndexBuffer ();
   tempVertexL.getVertexBuffer ();
   tempVertexL.release ();
@@ -158,7 +158,7 @@ void PolygonsClassLinker ( void ) // don't call this function: solution for link
 
 
 Triangles::Triangles ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
-  Model ( dev, devC, L"\tThreeTriangles", false ),
+  Model ( dev, devC, "\tThreeTriangles", false ),
   verticesCount ( 0 ), allocated ( false )
 {
   try
@@ -199,14 +199,14 @@ Triangles::Triangles ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
 
 Line::Line ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
-  Model ( dev, devC, L"\tClockwiseLine", true ),
+  Model ( dev, devC, "\tClockwiseLine", true ),
   verticesCount ( 0 ), allocated ( false )
 {
   try
@@ -232,8 +232,8 @@ Line::Line ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -257,8 +257,8 @@ void Line::update ( void )
     hR = devCon->Map ( vertexBuffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &mappedRes );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Mapping the resource data failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Mapping the resource data failed!" );
     }
 
     // update the sub-resource:
@@ -316,14 +316,14 @@ void Line::update ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
 
 TexturedTriangles::TexturedTriangles ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
-  Model ( dev, devC, L"\tTexturedTriangles", false ),
+  Model ( dev, devC, "\tTexturedTriangles", false ),
   verticesCount ( 0 ), allocated ( false )
 {
   try
@@ -357,14 +357,14 @@ TexturedTriangles::TexturedTriangles ( ID3D11Device* dev, ID3D11DeviceContext* d
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
 
 LightedTriangle::LightedTriangle ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
-  Model ( dev, devC, L"\tLightedTriangles", false ),
+  Model ( dev, devC, "\tLightedTriangles", false ),
   verticesCount ( 0 ), allocated ( false )
 {
   try
@@ -398,14 +398,14 @@ LightedTriangle::LightedTriangle ( ID3D11Device* dev, ID3D11DeviceContext* devC 
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
 
 Cube::Cube ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
-  Model ( dev, devC, L"\tLightedTriangles", false ),
+  Model ( dev, devC, "\tLightedTriangles", false ),
   verticesCount ( 0 ), allocated ( false )
 {
   try
@@ -436,7 +436,7 @@ Cube::Cube ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };

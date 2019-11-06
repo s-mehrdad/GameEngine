@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,05.11.2019</changed>
+/// <changed>ʆϒʅ,06.11.2019</changed>
 // ********************************************************************************
 
 #ifndef POLYGONS_H
@@ -18,7 +18,7 @@ template <class tType>
 class Model
 {
 private:
-  std::wstring entryPoint;
+  std::string entryPoint;
   bool dynamic; // true: dynamic usage + write access for CPU
 protected:
   ID3D11Device* device; // pointer to DirectX device
@@ -37,7 +37,7 @@ protected:
 
   bool allocate ( tType*, unsigned long*, unsigned long& ); // object model resources allocation
 public:
-  Model ( ID3D11Device*, ID3D11DeviceContext*, std::wstring, bool );
+  Model ( ID3D11Device*, ID3D11DeviceContext*, std::string, bool );
   ID3D11Buffer** const getVertexBuffer ( void ); // vertex buffer
   ID3D11Buffer* const getIndexBuffer ( void ); // index buffer
   void release ( void ); // release the object model

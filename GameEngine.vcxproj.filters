@@ -23,6 +23,8 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Universe.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -41,6 +43,8 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Universe.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.scale-200.png">
@@ -67,7 +71,6 @@
     <None Include="README.md" />
     <None Include=".gitignore" />
     <None Include=".gitattributes" />
-    <None Include="settings.lua" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />

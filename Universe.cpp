@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,05.11.2019</changed>
+/// <changed>ʆϒʅ,06.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -58,8 +58,8 @@ Universe::Universe ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
     hR = device->CreateBuffer ( &matrixBufferDesc, nullptr, &matrixBuffer );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of matrix buffer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of matrix buffer failed!" );
       return;
     }
 
@@ -67,8 +67,8 @@ Universe::Universe ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
     camera = new (std::nothrow) Camera;
     if (!camera->isInitialized ())
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Camera initialization failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Camera initialization failed!" );
       return;
     }
 
@@ -86,8 +86,8 @@ Universe::Universe ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
     hR = device->CreateBuffer ( &matrixBufferDesc, nullptr, &lightBufferDiffuse );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of diffuse light buffer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of diffuse light buffer failed!" );
       return;
     }
 
@@ -95,8 +95,8 @@ Universe::Universe ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
     lightDiffuse = new (std::nothrow) DiffuseLight;
     if (!lightDiffuse->isInitialized ())
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Diffuse light initialization failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Diffuse light initialization failed!" );
       return;
     }
 
@@ -105,8 +105,8 @@ Universe::Universe ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -140,8 +140,8 @@ void Universe::renderResources ( void )
     hR = devCon->Map ( matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Mapping the matrix buffer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Mapping the matrix buffer failed!" );
       return;
     }
 
@@ -168,8 +168,8 @@ void Universe::renderResources ( void )
     hR = devCon->Map ( lightBufferDiffuse, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Mapping the diffuse light buffer failed!" );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Mapping the diffuse light buffer failed!" );
       return;
     }
 
@@ -192,8 +192,8 @@ void Universe::renderResources ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -227,8 +227,8 @@ void Universe::update ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -266,7 +266,7 @@ void Universe::release ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };

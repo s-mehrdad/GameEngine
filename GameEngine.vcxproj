@@ -242,9 +242,7 @@
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(VcpkgRoot)..\.\x64-windows\tools\lua\lua.dll" "$(OutDir)"
-xcopy /y /d "$(VcpkgRoot)..\.\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"
-xcopy /y /d "$(ProjectDir)settings.lua" "$(OutDir)"
-xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
+xcopy /y /d "$(VcpkgRoot)..\.\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -272,9 +270,7 @@ xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>xcopy /y /d "$(VcpkgRoot)..\.\x64-windows\tools\lua\lua.dll" "$(OutDir)"
-xcopy /y /d "$(VcpkgRoot)..\.\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"
-xcopy /y /d "$(ProjectDir)settings.lua" "$(OutDir)"
-xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
+xcopy /y /d "$(VcpkgRoot)..\.\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -325,11 +321,13 @@ xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="ModelFormats.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Polygons.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Shared.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Universe.h" />
@@ -343,6 +341,7 @@ xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="ModelFormats.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -357,6 +356,7 @@ xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
     <ClCompile Include="Polygons.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Shared.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Universe.cpp" />
@@ -370,7 +370,6 @@ xcopy /y /d "$(ProjectDir)settings.lua" "$(LayoutDir)"</Command>
     <None Include=".gitignore" />
     <None Include="GameEngine_TemporaryKey.pfx" />
     <None Include="README.md" />
-    <None Include="settings.lua" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.scale-200.png" />

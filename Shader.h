@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,05.11.2019</changed>
+/// <changed>ʆϒʅ,06.11.2019</changed>
 // ********************************************************************************
 
 #ifndef SHADER_H
@@ -37,9 +37,9 @@ protected:
   ID3D11InputLayout* inputLayout; // standard input layout
   ID3D11SamplerState* samplerState; // standard sampler state (textured shaders)
 
-  std::wstring entryPoint;
+  std::string entryPoint;
 public:
-  Shader ( ID3D11Device*, std::wstring );
+  Shader ( ID3D11Device*, std::string );
   void loadCompiled ( std::string&, Buffer* ); // read shader data (compiled .cso files)
   bool initializeCompiled ( std::string*,
                             D3D11_INPUT_ELEMENT_DESC*, unsigned short ); // rendering pipeline (GPU initialization)

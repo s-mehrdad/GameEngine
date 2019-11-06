@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,05.11.2019</changed>
+/// <changed>ʆϒʅ,06.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -11,8 +11,8 @@
 #include "Shared.h"
 
 
-Shader::Shader ( ID3D11Device* dev, std::wstring entry ) :
-  device ( dev ), entryPoint ( entry )
+Shader::Shader ( ID3D11Device* dev, std::string entry ) :
+  device ( dev ), entryPoint ( " Entry Point: " + entry )
 {
 
   // shaders, introduced in several different types,
@@ -89,21 +89,21 @@ void Shader::loadCompiled ( std::string& fileName, Buffer* csoBuffer )
         csoFile.read ( reinterpret_cast<char*>(csoBuffer->buffer), csoBuffer->size );
       } else
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Shader buffer allocation for compiled file failed!" + entryPoint );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Shader buffer allocation for compiled file failed!" + entryPoint );
       }
       csoFile.close ();
     } else
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Loading shader form compiled file failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Loading shader form compiled file failed!" + entryPoint );
     }
 
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) + entryPoint );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () + entryPoint );
   }
 };
 
@@ -132,8 +132,8 @@ bool Shader::initializeCompiled ( std::string* filePaths,
                                         vertexBuf.size, nullptr, &vertexShader );
       if (FAILED ( hR ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Creation of vertex shader failed!" + entryPoint );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of vertex shader failed!" + entryPoint );
         return false;
       }
 
@@ -143,8 +143,8 @@ bool Shader::initializeCompiled ( std::string* filePaths,
                                        pixelBuf.size, nullptr, &pixelShader );
       if (FAILED ( hR ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Creation of pixel shader failed!" + entryPoint );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of pixel shader failed!" + entryPoint );
         return false;
       }
 
@@ -155,8 +155,8 @@ bool Shader::initializeCompiled ( std::string* filePaths,
                                        vertexBuf.size, &inputLayout );
       if (FAILED ( hR ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Creation of input layout failed!" + entryPoint );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of input layout failed!" + entryPoint );
         return false;
       }
     }
@@ -169,8 +169,8 @@ bool Shader::initializeCompiled ( std::string* filePaths,
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) + entryPoint );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () + entryPoint );
     return false;
   }
 };
@@ -191,12 +191,12 @@ bool Shader::compile ( LPCWSTR* files )
                               D3DCOMPILE_EFFECT_CHILD_EFFECT, &vertexBuffer, &errorMsg );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Compilation of texture vertex shader file failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Compilation of texture vertex shader file failed!" + entryPoint );
       if (errorMsg)
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  Converter::strConverter ( (char*) errorMsg->GetBufferPointer () )
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+          (char*) errorMsg->GetBufferPointer ()
                                                   + entryPoint );
         errorStr = (char*) errorMsg->GetBufferPointer ();
         errorMsg->Release ();
@@ -210,12 +210,12 @@ bool Shader::compile ( LPCWSTR* files )
                               D3DCOMPILE_EFFECT_CHILD_EFFECT, &pixelBuffer, &errorMsg );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Compilation of texture pixel shader file failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Compilation of texture pixel shader file failed!" + entryPoint );
       if (errorMsg)
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  Converter::strConverter ( (char*) errorMsg->GetBufferPointer () )
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+          (char*) errorMsg->GetBufferPointer ()
                                                   + entryPoint );
         errorStr = (char*) errorMsg->GetBufferPointer ();
         errorMsg->Release ();
@@ -229,8 +229,8 @@ bool Shader::compile ( LPCWSTR* files )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) + entryPoint );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () + entryPoint );
     return false;
   }
 };
@@ -250,8 +250,8 @@ bool Shader::initialize ( D3D11_INPUT_ELEMENT_DESC* polygonLayout,
                                       vertexBuffer->GetBufferSize (), nullptr, &vertexShader );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of texture vertex shader failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of texture vertex shader failed!" + entryPoint );
       return false;
     }
 
@@ -259,8 +259,8 @@ bool Shader::initialize ( D3D11_INPUT_ELEMENT_DESC* polygonLayout,
                                      pixelBuffer->GetBufferSize (), nullptr, &pixelShader );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of texture pixel shader failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of texture pixel shader failed!" + entryPoint );
       return false;
     }
 
@@ -271,8 +271,8 @@ bool Shader::initialize ( D3D11_INPUT_ELEMENT_DESC* polygonLayout,
                                      vertexBuffer->GetBufferSize (), &inputLayout );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                L"Creation of texture input layout failed!" + entryPoint );
+      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                "Creation of texture input layout failed!" + entryPoint );
       return false;
     }
 
@@ -287,8 +287,8 @@ bool Shader::initialize ( D3D11_INPUT_ELEMENT_DESC* polygonLayout,
       hR = device->CreateSamplerState ( sampler, &samplerState );
       if (FAILED ( hR ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                                  L"Creation of texture sampler state failed!" + entryPoint );
+        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of texture sampler state failed!" + entryPoint );
         return false;
       }
     }
@@ -298,8 +298,8 @@ bool Shader::initialize ( D3D11_INPUT_ELEMENT_DESC* polygonLayout,
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) + entryPoint );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () + entryPoint );
     return false;
   }
 };
@@ -360,14 +360,14 @@ void Shader::release ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
 
 ShaderColour::ShaderColour ( ID3D11Device* dev ) :
-  Shader ( dev, L"ColourShader" ), initialized ( false )
+  Shader ( dev, "ColourShader" ), initialized ( false )
 {
   try
   {
@@ -406,8 +406,8 @@ ShaderColour::ShaderColour ( ID3D11Device* dev ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -419,7 +419,7 @@ const bool& ShaderColour::isInitialized ( void )
 
 
 ShaderTexture::ShaderTexture ( ID3D11Device* dev ) :
-  Shader ( dev, L"TextureShader" ), initialized ( false )
+  Shader ( dev, "TextureShader" ), initialized ( false )
 {
   try
   {
@@ -472,8 +472,8 @@ ShaderTexture::ShaderTexture ( ID3D11Device* dev ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 
@@ -485,7 +485,7 @@ const bool& ShaderTexture::isInitialized ( void )
 
 
 ShaderDiffuseLight::ShaderDiffuseLight ( ID3D11Device* dev ) :
-  Shader ( dev, L"DiffuseLightShader" ), initialized ( false )
+  Shader ( dev, "DiffuseLightShader" ), initialized ( false )
 {
   try
   {
@@ -539,8 +539,8 @@ ShaderDiffuseLight::ShaderDiffuseLight ( ID3D11Device* dev ) :
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), L"mainThread",
-                                              Converter::strConverter ( ex.what () ) );
+    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                              ex.what () );
   }
 };
 

@@ -26,6 +26,8 @@
 
 #include <list> // C++ standard list container
 
+#include <future> // C++ future header
+
 
 #include <wrl/client.h> // Windows and COM wrappers (calls to DirectX)
 
@@ -59,6 +61,7 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Graphics.Display.h>
 #include <winrt/Windows.System.h>
+#include <winrt/Windows.Storage.h>
 #include <winrt/Windows.UI.Core.h>
 #include <winrt/Windows.UI.Input.h>
 #include <winrt/Windows.UI.ViewManagement.h>
