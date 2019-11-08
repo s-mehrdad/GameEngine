@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,06.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -23,9 +23,9 @@ Texture<fileType>::Texture ( ID3D11Device* dev, ID3D11DeviceContext* devC, const
 
     if (!Load ( path ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                "Loading the texture failed! file: "
-                                                + std::string ( path ) );
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Loading the texture failed! file: "
+                                                  + std::string ( path ) );
       if (data)
         delete [] data;
       data = nullptr;
@@ -54,9 +54,9 @@ Texture<fileType>::Texture ( ID3D11Device* dev, ID3D11DeviceContext* devC, const
     hR = device->CreateTexture2D ( &textureDesc, nullptr, &texture );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                "Creation of texture 2D failed!"
-                                                + std::string ( path ) );
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of texture 2D failed!"
+                                                  + std::string ( path ) );
       return;
     }
 
@@ -84,9 +84,9 @@ Texture<fileType>::Texture ( ID3D11Device* dev, ID3D11DeviceContext* devC, const
     hR = device->CreateShaderResourceView ( texture, &shaderResdataDesc, &textureView );
     if (FAILED ( hR ))
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                "Creation of shader resource view failed!"
-                                                + std::string ( path ) );
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of shader resource view failed!"
+                                                  + std::string ( path ) );
       return;
     }
     textureView->GetDesc ( &shaderResdataDesc );
@@ -100,8 +100,8 @@ Texture<fileType>::Texture ( ID3D11Device* dev, ID3D11DeviceContext* devC, const
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
   }
 };
 
@@ -205,8 +205,8 @@ bool Texture<TargaHeader>::Load ( const char* path )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
     return false;
   }
 };
@@ -253,8 +253,8 @@ void Texture<fileType>::release ()
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
   }
 };
 

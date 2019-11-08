@@ -10,45 +10,39 @@
 #include "Light.h"
 
 
-DiffuseLight::DiffuseLight () : initialized ( false )
+DiffuseLight::DiffuseLight () : m_initialized ( false )
 {
-  diffuseColour = DirectX::XMFLOAT4 ( 0.0f, 0.0f, 0.0f, 1.0f );
-  diffuseDirection = DirectX::XMFLOAT3 ( 0.0f, 0.0f, 0.0f );
-  initialized = true;
+  m_diffuseColour = DirectX::XMFLOAT4 ( 0.0f, 0.0f, 0.0f, 1.0f );
+  m_diffuseDirection = DirectX::XMFLOAT3 ( 0.0f, 0.0f, 0.0f );
+  m_initialized = true;
 };
 
 
-const bool& DiffuseLight::isInitialized ( void )
+const bool& DiffuseLight::m_isInitialized ( void )
 {
-  return initialized;
+  return m_initialized;
 };
 
 
-void DiffuseLight::setColour ( float red, float green, float blue, float alpha )
+void DiffuseLight::m_setColour ( const float* colour )
 {
-  diffuseColour = DirectX::XMFLOAT4 { red, green, blue, alpha };
+  m_diffuseColour = DirectX::XMFLOAT4 { colour [0], colour [1], colour [2], colour [3] };
 };
 
 
-void DiffuseLight::setDirection ( float x, float y, float z )
+void DiffuseLight::m_setDirection ( const float* direction )
 {
-  diffuseDirection = DirectX::XMFLOAT3 { x, y, z };
+  m_diffuseDirection = DirectX::XMFLOAT3 { direction [0], direction [1], direction [2] };
 };
 
 
-DirectX::XMFLOAT4 DiffuseLight::getColour ( void )
+DirectX::XMFLOAT4 DiffuseLight::m_getColour ( void )
 {
-  return diffuseColour;
+  return m_diffuseColour;
 };
 
 
-DirectX::XMFLOAT3 DiffuseLight::getDirection ( void )
+DirectX::XMFLOAT3 DiffuseLight::m_getDirection ( void )
 {
-  return diffuseDirection;
+  return m_diffuseDirection;
 };
-
-
-//const bool& DiffuseLight::isInitialized ( void )
-//{
-//  return initialized;
-//};

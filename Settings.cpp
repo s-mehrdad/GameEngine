@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,06.11.2019</created>
-/// <changed>ʆϒʅ,07.11.2019</changed>
+/// <changed>ʆϒʅ,08.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -44,14 +44,14 @@ Configurations::Configurations ( void )
     // settings file existence validation
     if (!validation.good ())
     {
-      PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                "Retrieving the configuration file failed (Non-existent or invalid)!" );
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Retrieving the configuration file failed (Non-existent or invalid)!" );
 
       // rewrite the configuration file with defaults
       if (!apply ( defaults ))
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                  "Rewriting the Configuration file using default settings failed." );
+        PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                    "Rewriting the Configuration file using default settings failed." );
       }
     }
     validation.close ();
@@ -72,27 +72,27 @@ Configurations::Configurations ( void )
       }
       catch (const std::exception & ex)
       {
-        PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                  ex.what () );
+        PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                    ex.what () );
       }
 
       // validation
       if ((currents.Width != 0) && (!valid))
       {
         valid = true;
-        PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                  "The configuration file is successfully read:\n\tResolution: (" +
-                                                  std::to_string ( currents.Width ) + " x "
-                                                  + std::to_string ( currents.Height ) + " )\t\t" +
-                                                  "fullscreen: " + std::to_string ( currents.fullscreen ) );
+        PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
+                                                    "The configuration file is successfully read:\n\tResolution: (" +
+                                                    std::to_string ( currents.Width ) + " x "
+                                                    + std::to_string ( currents.Height ) + " )\t\t" +
+                                                    "fullscreen: " + std::to_string ( currents.fullscreen ) );
         break;
       } else
       {
         // rewrite the configuration file with defaults
         if (!apply ( defaults ))
         {
-          PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                    "Rewriting the Configuration file using default settings failed." );
+          PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                      "Rewriting the Configuration file using default settings failed." );
         }
       }
     }
@@ -100,8 +100,8 @@ Configurations::Configurations ( void )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
   }
 };
 
@@ -140,11 +140,11 @@ const bool Configurations::apply ( const ConfigsContainer& object )
       writeStream << settingsLine.str ();
       writeStream.close ();
 
-      PointerProvider::getFileLogger ()->push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "The configuration file is successfully written:\n\tResolution: (" +
-                                                std::to_string ( object.Width ) + " x "
-                                                + std::to_string ( object.Height ) + " )\t\t" +
-                                                "fullscreen: " + std::to_string ( object.fullscreen ) );
+      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
+                                                  "The configuration file is successfully written:\n\tResolution: (" +
+                                                  std::to_string ( object.Width ) + " x "
+                                                  + std::to_string ( object.Height ) + " )\t\t" +
+                                                  "fullscreen: " + std::to_string ( object.fullscreen ) );
       return true;
     } else
       return false;
@@ -152,8 +152,8 @@ const bool Configurations::apply ( const ConfigsContainer& object )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
     return false;
   }
 };

@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,07.11.2019</changed>
+/// <changed>ʆϒʅ,08.11.2019</changed>
 // ********************************************************************************
 
 #ifndef SHARED_H
@@ -33,10 +33,10 @@ struct Variables
 class PointerProvider
 {
 private:
-  static std::shared_ptr<Variables> variables; // shared pointer to application common variables container
-  static std::shared_ptr<TheException> exception; // shared pointer to exception class
-  static std::shared_ptr<Configurations> configuration; // shared pointer to configuration class
-  static std::shared_ptr<Logger<ToFile>> fileLogger; // shared pointer to file logger class
+  static std::shared_ptr<Variables> m_variables; // shared pointer to application common variables container
+  static std::shared_ptr<TheException> m_exception; // shared pointer to exception class
+  static std::shared_ptr<Configurations> m_configuration; // shared pointer to configuration class
+  static std::shared_ptr<Logger<ToFile>> m_fileLogger; // shared pointer to file logger class
 public:
 
   // smart shared pointers point to exceptions, provide extended lifetime and are passable across threads:

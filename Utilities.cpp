@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,07.11.2019</changed>
+/// <changed>ʆϒʅ,08.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -42,8 +42,8 @@ std::string Converter::strConverter ( const winrt::hstring& hStr )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
     return "";
   }
 };
@@ -64,8 +64,8 @@ std::string Converter::strConverter ( const std::wstring& strW )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
     return "";
   }
 };
@@ -87,8 +87,8 @@ std::wstring Converter::strConverter ( const std::string& str )
   }
   catch (const std::exception & ex)
   {
-    PointerProvider::getFileLogger ()->push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                              ex.what () );
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                ex.what () );
     return L"";
   }
 };
