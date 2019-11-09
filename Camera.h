@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #ifndef CAMERA_H
@@ -24,7 +24,7 @@ private:
   bool initialized; // true if initialization was successful
 public:
   Camera ( void );
-  ~Camera ( void );
+  //~Camera ( void );
   const bool& isInitialized ( void ); // get the initialized state
 
   void renderCamera ( void ); // view matrix generation/update based on the camera position

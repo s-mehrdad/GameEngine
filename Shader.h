@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #ifndef SHADER_H
@@ -40,13 +40,14 @@ protected:
   std::string m_entryPoint;
 public:
   Shader ( ID3D11Device*, std::string );
+  //~Shader ( void );
 
   void m_loadCompiled ( std::string&, Buffer* ); // read shader data (compiled .cso files)
   bool m_initializeCompiled ( std::string*, D3D11_INPUT_ELEMENT_DESC*,
-                              unsigned short ); // rendering pipeline (GPU initialization)
+                              unsigned int ); // rendering pipeline (GPU initialization)
 
   bool m_compile ( LPCWSTR* ); // compile HLSL using DirectX APIs
-  bool m_initialize ( D3D11_INPUT_ELEMENT_DESC*, unsigned short,
+  bool m_initialize ( D3D11_INPUT_ELEMENT_DESC*, unsigned int,
                       D3D11_SAMPLER_DESC* ); // rendering pipeline (GPU initialization)
 
   ID3D11VertexShader* const m_getVertexShader ( void );
@@ -61,13 +62,14 @@ class ShaderColour : public Shader
 {
 private:
   D3D11_INPUT_ELEMENT_DESC m_polygonLayoutDesc [2]; // input layout description
-  unsigned short m_elementsCount;
+  unsigned int m_elementsCount;
   std::string m_files [2];
   //unsigned short filesCount;
 
   bool m_initialized; // true if initialization was successful
 public:
   ShaderColour ( ID3D11Device* );
+  //~ShaderColour ( void );
   const bool& m_isInitialized ( void ); // get the initialized state
 };
 
@@ -76,7 +78,7 @@ class ShaderTexture : public Shader
 {
 private:
   D3D11_INPUT_ELEMENT_DESC m_polygonLayoutDesc [2];
-  unsigned short m_elementsCount;
+  unsigned int m_elementsCount;
   D3D11_SAMPLER_DESC m_samplerDesc; // tecture sampler state description
   LPCWSTR m_files [2];
   //unsigned short filesCount;
@@ -84,6 +86,7 @@ private:
   bool m_initialized; // true if initialization was successful
 public:
   ShaderTexture ( ID3D11Device* );
+  //~ShaderTexture ( void );
   const bool& m_isInitialized ( void ); // get the initialized state
 };
 
@@ -100,6 +103,7 @@ private:
   bool m_initialized; // true if initialization was successful
 public:
   ShaderDiffuseLight ( ID3D11Device* );
+  //~ShaderDiffuseLight ( void );
   const bool& m_isInitialized ( void ); // get the initialized state
 };
 

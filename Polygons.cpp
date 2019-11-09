@@ -23,6 +23,13 @@ Model<tType>::Model ( ID3D11Device* dev, ID3D11DeviceContext* devC, std::string 
 };
 
 
+//template <class tType>
+//Model<tType>::~Model ( void )
+//{
+//
+//};
+
+
 template <class tType>
 bool Model<tType>::m_allocate ( tType* data, unsigned long* index, unsigned long& count )
 {
@@ -209,6 +216,12 @@ Triangles::Triangles ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
 };
 
 
+//Triangles::~Triangles ( void )
+//{
+//
+//};
+
+
 const unsigned long& Triangles::m_getVerticesCount ( void )
 {
   return m_verticesCount;
@@ -246,6 +259,12 @@ Line::Line ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
                                                 ex.what () );
   }
 };
+
+
+//Line::~Line ( void )
+//{
+//
+//};
 
 
 void Line::m_update ( void )
@@ -305,10 +324,10 @@ void Line::m_update ( void )
       temp = data->position.x;
     }
 
-    data->position.x += modeX_1 * 0.0001f;
-    data->position.y += modeY_1 * 0.0001f;
-    (data + 1)->position.x += modeX_2 * 0.0001f;
-    (data + 1)->position.y += modeY_2 * 0.0001f;
+    data->position.x += modeX_1 * 0.002f;
+    data->position.y += modeY_1 * 0.002f;
+    (data + 1)->position.x += modeX_2 * 0.002f;
+    (data + 1)->position.y += modeY_2 * 0.002f;
 
     //-- randomize the colour vertices
     float rnd_1 { 0.0f };
@@ -381,6 +400,12 @@ TexturedTriangles::TexturedTriangles ( ID3D11Device* dev, ID3D11DeviceContext* d
 };
 
 
+//TexturedTriangles::~TexturedTriangles ( void )
+//{
+//
+//};
+
+
 const unsigned long& TexturedTriangles::m_getVerticesCount ( void )
 {
   return m_verticesCount;
@@ -428,6 +453,12 @@ LightedTriangle::LightedTriangle ( ID3D11Device* dev, ID3D11DeviceContext* devC 
 };
 
 
+//LightedTriangle::~LightedTriangle ( void )
+//{
+//
+//};
+
+
 const unsigned long& LightedTriangle::m_getVerticesCount ( void )
 {
   return m_verticesCount;
@@ -470,6 +501,12 @@ Cube::Cube ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
                                                 ex.what () );
   }
 };
+
+
+//Cube::~Cube ( void )
+//{
+//
+//};
 
 
 const unsigned long& Cube::m_getVerticesCount ( void )

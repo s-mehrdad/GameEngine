@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,03.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -16,6 +16,12 @@ DiffuseLight::DiffuseLight () : m_initialized ( false )
   m_diffuseDirection = DirectX::XMFLOAT3 ( 0.0f, 0.0f, 0.0f );
   m_initialized = true;
 };
+
+
+//DiffuseLight::~DiffuseLight ( void )
+//{
+//
+//};
 
 
 const bool& DiffuseLight::m_isInitialized ( void )

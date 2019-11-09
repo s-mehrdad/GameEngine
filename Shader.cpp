@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -36,6 +36,12 @@ Shader::Shader ( ID3D11Device* dev, std::string entry ) :
   m_samplerState = nullptr;
 
 };
+
+
+//Shader::~Shader ( void )
+//{
+//
+//};
 
 
 Shader::Buffer::Buffer ( void )
@@ -115,7 +121,7 @@ void Shader::m_loadCompiled ( std::string& fileName, Buffer* csoBuffer )
 
 
 bool Shader::m_initializeCompiled ( std::string* filePaths, D3D11_INPUT_ELEMENT_DESC* polygonLayout,
-                                    unsigned short elmCount )
+                                    unsigned int elmCount )
 {
   try
   {
@@ -246,7 +252,7 @@ bool Shader::m_compile ( LPCWSTR* files )
 
 
 bool Shader::m_initialize ( D3D11_INPUT_ELEMENT_DESC* polygonLayout,
-                            unsigned short elmCount,
+                            unsigned int elmCount,
                             D3D11_SAMPLER_DESC* sampler )
 {
   try
@@ -423,6 +429,12 @@ ShaderColour::ShaderColour ( ID3D11Device* dev ) :
 };
 
 
+//ShaderColour::~ShaderColour ( void )
+//{
+//
+//};
+
+
 const bool& ShaderColour::m_isInitialized ( void )
 {
   return m_initialized;
@@ -487,6 +499,12 @@ ShaderTexture::ShaderTexture ( ID3D11Device* dev ) :
                                                 ex.what () );
   }
 };
+
+
+//ShaderTexture::~ShaderTexture ( void )
+//{
+//
+//};
 
 
 const bool& ShaderTexture::m_isInitialized ( void )
@@ -554,6 +572,12 @@ ShaderDiffuseLight::ShaderDiffuseLight ( ID3D11Device* dev ) :
                                                 ex.what () );
   }
 };
+
+
+//ShaderDiffuseLight::~ShaderDiffuseLight ( void )
+//{
+//
+//};
 
 
 const bool& ShaderDiffuseLight::m_isInitialized ( void )

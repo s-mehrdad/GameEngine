@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -68,7 +68,7 @@ unsigned int VertexTexDiffuseL::read ( const char* path, VertexL** vertices )
 };
 
 
-void VertexTexDiffuseL::write ( VertexL* data, unsigned int& count )
+void VertexTexDiffuseL::write ( VertexL* /*data*/, unsigned int& /*count*/ )
 {
   try
   {

@@ -75,7 +75,7 @@ void Game::m_allocateResources ( void )
     // the game framework instantiation
     m_universe = new (std::nothrow) Universe ( m_core->m_getD3D ()->m_getDevice ().Get (), m_core->m_getD3D ()->m_getDevCon ().Get () );
 
-    if (!m_universe->isInitialized ())
+    if (!m_universe->m_isInitialized ())
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                   "Initialization of game universe failed!" );
@@ -134,15 +134,15 @@ const bool Game::m_run ( void )
     unsigned short counter { 1 };
 
     // setting the needed starting points
-    m_core->m_getTimer ()->event ( "reset" ); // reset (start)
+    m_core->m_getTimer ()->m_event ( "reset" ); // reset (start)
 
-    m_universe->getCamera ()->setPosition ( 0.0f, 0.0f, -2.0f ); // set the start view
+    m_universe->m_getCamera ()->setPosition ( 0.0f, 0.0f, -2.0f ); // set the start view
 
     const float colour [] { 0.2f, 0.6f, 0.6f, 1.0f };
-    m_universe->getDiffuseLight ()->m_setColour ( colour ); // diffuse light colour
+    m_universe->m_getDiffuseLight ()->m_setColour ( colour ); // diffuse light colour
 
     const float direction [] { 0.0f, 0.0f, 1.0f };
-    m_universe->getDiffuseLight ()->m_setDirection ( direction ); // light direction: point down the positive Z axis
+    m_universe->m_getDiffuseLight ()->m_setDirection ( direction ); // light direction: point down the positive Z axis
 
 
 
@@ -170,7 +170,7 @@ const bool Game::m_run ( void )
 
 
       // tick the timer to calculate a frame
-      m_core->m_getTimer ()->tick ();
+      m_core->m_getTimer ()->m_tick ();
       // -- fps calculation
       m_core->m_frameStatistics ();
 
@@ -238,8 +238,8 @@ void Game::m_render ( void )
 
     m_core->m_getD3D ()->m_clearBuffers ();
 
-    m_universe->renderResources ();
-    m_universe->getCamera ()->renderCamera ();
+    m_universe->m_renderResources ();
+    m_universe->m_getCamera ()->renderCamera ();
 
     if (m_core->m_getD2D () && m_core->m_isDebugging ())
       m_core->m_getD2D ()->m_debugInfos (); // -- fps on screen representation
@@ -280,7 +280,7 @@ void Game::m_render ( void )
 
 
     // setting the active texture
-    m_core->m_getD3D ()->m_getDevCon ()->PSSetShaderResources ( 0, 1, m_texture->getTexture () );
+    m_core->m_getD3D ()->m_getDevCon ()->PSSetShaderResources ( 0, 1, m_texture->m_getTexture () );
 
     m_core->m_getD3D ()->m_getDevCon ()->VSSetShader ( m_shaderTexture->m_getVertexShader (), nullptr, 0 );
     m_core->m_getD3D ()->m_getDevCon ()->PSSetShader ( m_shaderTexture->m_getPixelShader (), nullptr, 0 );
@@ -331,7 +331,7 @@ void Game::m_update ( void )
   {
 
     _2d_line->m_update ();
-    m_universe->update ();
+    m_universe->m_update ();
 
   }
   catch (const std::exception & ex)
@@ -403,7 +403,7 @@ void Game::m_release ( void )
     }
     if (m_texture)
     {
-      m_texture->release ();
+      m_texture->m_release ();
       delete m_texture;
       m_texture = nullptr;
     }
@@ -422,7 +422,7 @@ void Game::m_release ( void )
 
     if (m_universe)
     {
-      m_universe->release ();
+      m_universe->m_release ();
       delete m_universe;
       m_universe = nullptr;
     }

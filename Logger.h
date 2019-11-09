@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,06.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #ifndef LOGGER_H
@@ -25,6 +25,7 @@ struct LogEntity
   std::string m_message;
 
   LogEntity ( void );
+  //~LogEntity ( void );
   LogEntity operator=( LogEntity& );
 };
 
@@ -35,9 +36,11 @@ class ToFile
 private:
   std::ofstream m_fileStream;
   std::wstring m_path;
+
   bool m_ready;
 public:
   ToFile ( void );
+  //~ToFile ( void );
   const bool& m_isReady ( void );
 
   void m_close ( void );
@@ -68,6 +71,7 @@ private:
   static unsigned int m_counter;
 public:
   Logger ( void );
+  //~Logger ( void );
 
   void m_push ( const logType&, const std::thread::id&,
                 const std::string&, const std::string& );

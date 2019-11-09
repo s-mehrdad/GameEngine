@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -135,7 +135,7 @@ void Direct2D::m_allocateResources ( void )
 
     // --bitmap (the actual rendering surface) properties (Direct2D needs)
     D2D1_BITMAP_PROPERTIES1 bitMap;
-    bitMap.pixelFormat.format = m_core->m_getD3D ()->m_getFormat ( "back" ); // the same as Direct3D back buffer
+    bitMap.pixelFormat.format = m_core->m_getD3D ()->m_getBackBufferFormat (); // the same as Direct3D back buffer
     bitMap.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
     bitMap.dpiX = 0.0f; // dots per inch of the bitmap
     bitMap.dpiY = 0.0f;

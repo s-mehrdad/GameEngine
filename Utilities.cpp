@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -14,14 +14,18 @@
 using namespace winrt::Windows::Storage;
 
 
-TheException::TheException ( void ) : expected ( "null" ) {};
-void TheException::set ( const char* prm )
+TheException::TheException ( void ) :
+  m_expected ( "null" )
 {
-  expected = prm;
+
+};
+void TheException::m_set ( const char* prm )
+{
+  m_expected = prm;
 };
 const char* TheException::what ( void ) const throw()
 {
-  return expected;
+  return m_expected;
 };
 
 
@@ -30,13 +34,16 @@ std::string Converter::strConverter ( const winrt::hstring& hStr )
   try
   {
 
-    std::wstring strW { hStr.begin () };
-    std::string str { strW.begin (), strW.end () };
-    const char* charStr = str.c_str ();
-    char charAr [512];
+    std::wstring strW { hStr.begin () }; // initialize to std_wstring
+    std::string str { strW.begin (), strW.end () }; // initialize to std_string
+    const char* charStr { str.c_str () }; // initialize to constant char
+    char charAr [512]; // container array for characters
+
+    // fill the container
     //sprintf_s ( file, "%s\\dump.log", charStr );
     sprintf_s ( charAr, charStr );
-    std::string result { charAr };
+
+    std::string result { charAr }; // implicit conversion to desired output
     return result;
 
   }
@@ -57,7 +64,9 @@ std::string Converter::strConverter ( const std::wstring& strW )
     std::string str { strW.begin (), strW.end () };
     const char* charStr = str.c_str ();
     char charAr [512];
+
     sprintf_s ( charAr, charStr );
+
     std::string result { charAr };
     return result;
 
@@ -78,9 +87,13 @@ std::wstring Converter::strConverter ( const std::string& str )
 
     const char* charStr = str.c_str ();
     char charAr [512];
+
     sprintf_s ( charAr, charStr );
+
+    // implicit conversion to desired output:
     std::wstringstream test;
     test << charStr;
+
     std::wstring result { test.str () };
     return result;
 

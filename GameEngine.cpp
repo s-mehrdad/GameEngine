@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,10.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -41,6 +41,9 @@ private:
 protected:
   void m_onActivated ( CoreApplicationView const& /*applicationView*/,
                        IActivatedEventArgs const& /*args*/ ); // on application window activation
+
+  void m_onFocused ( CoreWindow const& /*sender*/,
+                     WindowActivatedEventArgs const& /*args*/ ); // on application window focused/unfocused
 
   void m_onVisibilityChanged ( CoreWindow const& /*sender*/,
                                VisibilityChangedEventArgs const& /*args*/ ); // on application window resize
@@ -225,6 +228,15 @@ void View::m_onActivated ( CoreApplicationView const& /*applicationView*/, IActi
 };
 
 
+void View::m_onFocused ( CoreWindow const& /*sender*/, WindowActivatedEventArgs const& /*args*/ )
+{
+  if (m_appWindow.get ().ActivationMode () == CoreWindowActivationMode::ActivatedInForeground)
+    m_game->m_isPaused () = false;
+  else
+    m_game->m_isPaused () = true;
+};
+
+
 void View::m_onVisibilityChanged ( CoreWindow const& /*sender*/, VisibilityChangedEventArgs const& args )
 {
   m_visible = args.Visible (); ///
@@ -401,6 +413,9 @@ void View::SetWindow ( CoreWindow const& window )
   catch (...) {}
 #endif // requires Windows 10 Creators Update (10.0.15063) or later
 
+  // response to window focus events
+  window.Activated ( { this, &View::m_onFocused } );
+
   // response to window close events
   window.VisibilityChanged ( { this, &View::m_onVisibilityChanged } );
 
@@ -419,8 +434,8 @@ void View::SetWindow ( CoreWindow const& window )
   m_Dpi = DisplayInformation::GetForCurrentView ().LogicalDpi ();
 
   // preferred and minimum client window size
-  auto size = Size ( float ( PointerProvider::getConfiguration ()->getSettings ().Width ),
-                     float ( PointerProvider::getConfiguration ()->getSettings ().Height ) );
+  auto size = Size ( float ( PointerProvider::getConfiguration ()->m_getSettings ().Width ),
+                     float ( PointerProvider::getConfiguration ()->m_getSettings ().Height ) );
   ApplicationView::PreferredLaunchViewSize ( size );
   auto view = ApplicationView::GetForCurrentView ();
   size.Width = 480.0f; size.Height = 320.0f;

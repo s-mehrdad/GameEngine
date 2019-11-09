@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -22,7 +22,7 @@ TheCore::TheCore ( ::IUnknown* window, const int& width, const int& height ) :
 
     // timer instantiation
     m_timer = new (std::nothrow) Timer;
-    if (!m_timer->isInitialized ())
+    if (!m_timer->m_isInitialized ())
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                   "Timer initialization failed!" );
@@ -132,7 +132,7 @@ void TheCore::m_frameStatistics ( void )
     static double elapsed; // the elapsed time since the last call
     frameCounter++;
 
-    if ((m_timer->getTotal () - elapsed) >= 1e0)
+    if ((m_timer->m_getTotalTime () - elapsed) >= 1e0)
     {
 
       // frame calculations:

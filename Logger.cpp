@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,06.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -24,6 +24,12 @@ LogEntity::LogEntity ( void )
   m_message = "";
 
 };
+
+
+//LogEntity::~LogEntity ( void )
+//{
+//
+//};
 
 
 LogEntity LogEntity::operator=( LogEntity& logObj )
@@ -69,6 +75,12 @@ ToFile::ToFile ( void ) :
     //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
   }
 };
+
+
+//ToFile::~ToFile ( void )
+//{
+//
+//};
 
 
 const bool& ToFile::m_isReady ( void )
@@ -135,6 +147,13 @@ Logger<tType>::Logger ( void ) : m_theLogRawStr ( "" ), m_filePolicy (), m_write
     //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
   }
 };
+
+
+//template<class tType>
+//Logger<tType>::~Logger ( void )
+//{
+//
+//};
 
 
 template<class tType>

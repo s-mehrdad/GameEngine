@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #ifndef DIRECT3D_H
@@ -80,7 +80,7 @@ public:
   const Microsoft::WRL::ComPtr<ID3D11Device> m_getDevice ( void ); // get the pointer to D3D device
   const Microsoft::WRL::ComPtr<ID3D11DeviceContext3> m_getDevCon ( void ); // get the pointer to D3D device context
   const Microsoft::WRL::ComPtr<IDXGISwapChain3> m_getSwapChain ( void ); // get the pointer to D3D swap chain
-  const DXGI_FORMAT& m_getFormat ( const std::string& ); // get current format of back/depth buffers
+  const DXGI_FORMAT& m_getBackBufferFormat (); // get current format of back/depth buffers
   const bool& m_isFullscreen ( void ); // get the display mode state
 };
 

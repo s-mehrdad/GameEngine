@@ -38,6 +38,7 @@ protected:
   bool m_allocate ( tType*, unsigned long*, unsigned long& ); // object model resources allocation
 public:
   Model ( ID3D11Device*, ID3D11DeviceContext*, std::string, bool );
+  //~Model ( void );
 
   ID3D11Buffer** const m_getVertexBuffer ( void ); // vertex buffer
   ID3D11Buffer* const m_getIndexBuffer ( void ); // index buffer
@@ -56,6 +57,7 @@ private:
   bool m_allocated; // true after successful resource allocation
 public:
   Triangles ( ID3D11Device*, ID3D11DeviceContext* );
+  //~Triangles ( void );
 
   const unsigned long& m_getVerticesCount ( void ); // get vertices count
 };
@@ -74,6 +76,7 @@ private:
   bool m_allocated; // true after successful resource allocation
 public:
   Line ( ID3D11Device*, ID3D11DeviceContext* );
+  //~Line ( void );
 
   void m_update ( void );
   const unsigned long& m_getVerticesCount ( void ); // get vertices count
@@ -90,6 +93,7 @@ private:
   bool m_allocated; // true after successful resource allocation
 public:
   TexturedTriangles ( ID3D11Device*, ID3D11DeviceContext* );
+  //~TexturedTriangles ( void );
 
   const unsigned long& m_getVerticesCount ( void ); // get vertices count
 };
@@ -105,6 +109,7 @@ private:
   bool m_allocated; // true after successful resource allocation
 public:
   LightedTriangle ( ID3D11Device*, ID3D11DeviceContext* );
+  //~LightedTriangle ( void );
 
   const unsigned long& m_getVerticesCount ( void ); // get vertices count
 };
@@ -120,6 +125,7 @@ private:
   bool m_allocated; // true after successful resource allocation
 public:
   Cube ( ID3D11Device*, ID3D11DeviceContext* );
+  //~Cube ( void );
 
   const unsigned long& m_getVerticesCount ( void ); // get vertices count
 };

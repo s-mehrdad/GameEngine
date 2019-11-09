@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -31,13 +31,13 @@ Variables::Variables ( void )
 //};
 
 
-std::shared_ptr<Variables> PointerProvider::m_variables = nullptr;
+std::shared_ptr<Variables> PointerProvider::variables = nullptr;
 
-std::shared_ptr<TheException> PointerProvider::m_exception = nullptr;
+std::shared_ptr<TheException> PointerProvider::exception = nullptr;
 
-std::shared_ptr<Configurations> PointerProvider::m_configuration = nullptr;
+std::shared_ptr<Configurations> PointerProvider::configuration = nullptr;
 
-std::shared_ptr<Logger<ToFile>> PointerProvider::m_fileLogger = nullptr;
+std::shared_ptr<Logger<ToFile>> PointerProvider::fileLogger = nullptr;
 
 
 //std::exception_ptr PointerProvider::exceptionPointer = nullptr;
@@ -45,47 +45,47 @@ std::shared_ptr<Logger<ToFile>> PointerProvider::m_fileLogger = nullptr;
 
 Variables* PointerProvider::getVariables ( void )
 {
-  return m_variables.get ();
+  return variables.get ();
 };
 
 
 TheException* PointerProvider::getException ( void )
 {
-  return m_exception.get ();
+  return exception.get ();
 };
 
 
 Configurations* PointerProvider::getConfiguration ( void )
 {
-  return m_configuration.get ();
+  return configuration.get ();
 };
 
 
 Logger<ToFile>* PointerProvider::getFileLogger ( void )
 {
-  return m_fileLogger.get ();
+  return fileLogger.get ();
 };
 
 
 void PointerProvider::providerVariables ( std::shared_ptr<Variables> object )
 {
-  m_variables = object;
+  variables = object;
 };
 
 
 void PointerProvider::providerException ( std::shared_ptr<TheException> object )
 {
-  m_exception = object;
+  exception = object;
 };
 
 
 void PointerProvider::providerConfiguration ( std::shared_ptr<Configurations> object )
 {
-  m_configuration = object;
+  configuration = object;
 };
 
 
 void PointerProvider::providerFileLogger ( std::shared_ptr<Logger<ToFile>> object )
 {
-  m_fileLogger = object;
+  fileLogger = object;
 };

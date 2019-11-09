@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,08.11.2019</changed>
+/// <changed>ʆϒʅ,09.11.2019</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -64,7 +64,7 @@ void Direct3D::m_creation ( void )
 
 
 
-    m_fullscreen = PointerProvider::getConfiguration ()->getSettings ().fullscreen;
+    m_fullscreen = PointerProvider::getConfiguration ()->m_getSettings ().fullscreen;
     //vSync = PointerProvider::getConfiguration ()->getSettings ().vsync;
 
 
@@ -562,7 +562,7 @@ void Direct3D::m_setDisplayMode ( void )
                                                       "The chosen resolution is not supported!" );
 
           // rewrite a not valid configurations with defaults: the file is probably modified from outside of the application
-          if (!PointerProvider::getConfiguration ()->apply ( PointerProvider::getConfiguration ()->getDefaults () ))
+          if (!PointerProvider::getConfiguration ()->m_apply ( PointerProvider::getConfiguration ()->m_getDefaults () ))
           {
             PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                         "Rewriting the Configuration file with default settings failed." );
@@ -680,12 +680,9 @@ const Microsoft::WRL::ComPtr<IDXGISwapChain3> Direct3D::m_getSwapChain ( void )
 };
 
 
-const DXGI_FORMAT& Direct3D::m_getFormat ( const std::string& prm )
+const DXGI_FORMAT& Direct3D::m_getBackBufferFormat ()
 {
-  if (prm == "back")
-    return m_backBufferFormat;
-  if (prm == "depth")
-    return m_depthBufferFormat;
+  return m_backBufferFormat;
 };
 
 
