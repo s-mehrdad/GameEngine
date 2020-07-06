@@ -38,24 +38,24 @@ private:
   //bool resized; // true if the resizing was successful
   bool m_initialized; // true if the initialization was successful
 public:
-  TheCore ( const int&, const int& ); // constructor and initializer
-  //~TheCore ( void ) { /**/ };
+  TheCore ( const int& width, const int& height ); // constructor and initializer
+  //~TheCore ( void );
 
+  void m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* panel ); // set swap chain panel
+  void m_setResolution ( const bool& prm, const int& width = 0, const int& height = 0 ); // resolution changer
+  void m_resizeResources ( const bool& displayMode ); // free and resize the resources
   void m_frameStatistics ( void ); // frame statistics calculations
-  void m_setResolution ( const bool&, const int& = 0, const int& = 0 ); // resolution changer
-  void m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* ); // set swap chain panel
-  void m_resizeResources ( const bool& ); // free and resize the resources
   void m_onSuspending ( void ); // suspension preparations
-  void m_validate ( void ); // validate the correct state of game resources
   void m_onDeviceLost ( void ); // clean and reallocate
+  void m_validate ( void ); // validate the correct state of game resources
 
-  const bool& TheCore::m_isInitialized ( void ) { return m_initialized; }; // get the initialized state
-  const bool& TheCore::m_isDebugging ( void ) { return m_debug; }; // get current state of debug flag
-  const winrt::Windows::UI::Xaml::Controls::SwapChainPanel* TheCore::m_getSwapChainPanel ( void ) { return m_swapChainPanel; }; // pointer to swap chain panel
-  Timer* TheCore::m_getTimer ( void ) { return m_timer; }; // get the pointer to application timer
-  Direct3D* TheCore::m_getD3D ( void ) { return m_D3D; }; // get the pointer to application Direct3D
-  Direct2D* TheCore::m_getD2D ( void ) { return m_D2D; }; // get the pointer to application Direct2D
-  const int& TheCore::m_getFPS ( void ) { return m_FPS; }; // get the FPS
+  const bool& m_isInitialized ( void ) { return m_initialized; }; // get the initialized state
+  const bool& m_isDebugging ( void ) { return m_debug; }; // get current state of debug flag
+  const winrt::Windows::UI::Xaml::Controls::SwapChainPanel* m_getSwapChainPanel ( void ) { return m_swapChainPanel; }; // pointer to swap chain panel
+  Timer* m_getTimer ( void ) { return m_timer; }; // get the pointer to application timer
+  Direct3D* m_getD3D ( void ) { return m_D3D; }; // get the pointer to application Direct3D
+  Direct2D* m_getD2D ( void ) { return m_D2D; }; // get the pointer to application Direct2D
+  const int& m_getFPS ( void ) { return m_FPS; }; // get the FPS
 };
 
 

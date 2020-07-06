@@ -93,7 +93,7 @@ Timer::Timer ( void ) :
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -105,12 +105,6 @@ Timer::Timer ( void ) :
 //{
 //
 //};
-
-
-const bool& Timer::m_isInitialized ( void )
-{
-  return m_initialized;
-};
 
 
 void Timer::m_tick ( void )
@@ -184,7 +178,7 @@ void Timer::m_tick ( void )
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -242,18 +236,12 @@ void Timer::m_event ( const std::string& type )
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
   }
 };
-
-
-//const bool& Timer::m_isPaused ( void )
-//{
-//  return m_paused;
-//};
 
 
 const double Timer::m_getTotalTime ( void )
@@ -267,10 +255,4 @@ const double Timer::m_getTotalTime ( void )
   temp = (m_currentFrameTime - m_startTime - m_totalTimeIdle) * m_secondsPerCount;
   return temp;
 
-};
-
-
-const double& Timer::m_getDeltaTime ( void )
-{
-  return m_deltaTime;
 };

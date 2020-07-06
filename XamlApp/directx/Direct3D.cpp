@@ -37,6 +37,12 @@ Direct3D::Direct3D ( TheCore* coreObj ) :
 };
 
 
+//Direct3D::~Direct3D ( void )
+//{
+//
+//};
+
+
 void Direct3D::m_createIndependentResources ( void )
 {
   try
@@ -176,7 +182,7 @@ void Direct3D::m_createWindowDependentResources ( void )
 };
 
 
-void Direct3D::m_allocation ()
+void Direct3D::m_allocation ( void )
 {
   try
   {

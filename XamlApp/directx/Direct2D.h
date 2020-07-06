@@ -37,7 +37,7 @@ private:
   winrt::com_ptr<IDWriteTextFormat> m_textFormatLogs;
   winrt::com_ptr<IDWriteTextLayout> m_textLayoutFPS; // text layouts
   winrt::com_ptr<IDWriteTextLayout> m_textLayoutLogs;
-  bool m_textLayoutsDebug;
+  bool m_textLayoutsDebug; // output prevention while updating
 
   bool m_allocated; // true if resources allocation was successful
   bool m_initialized; // true if initialization was successful
@@ -50,8 +50,8 @@ private:
   //void m_validate ( void ); // validate the correct state of Direct2D resources
   //void m_onDeviceLost ( void ); // clean and reallocate
 public:
-  Direct2D ( TheCore* ); // creation of the device
-  //Direct2D::~Direct2D ( void ) { /**/ };
+  Direct2D ( TheCore* coreObj );
+  //~Direct2D ( void );
 
   void m_debugInfos ( void ); // FPS infos plus logs to screen
 

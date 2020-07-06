@@ -11,8 +11,8 @@
 #include "Shared.h"
 
 
-Game::Game ( TheCore* core ) :
-  m_core ( core ), m_universe ( nullptr ),
+Game::Game ( TheCore* coreObj ) :
+  m_core ( coreObj ), m_universe ( nullptr ),
   m_allocated ( false ), m_paused ( false ), m_initialized ( false )
 {
   try
@@ -45,6 +45,12 @@ Game::Game ( TheCore* core ) :
                                                 ex.what () );
   }
 };
+
+
+//Game::~Game ( void )
+//{
+//
+//};
 
 
 void Game::m_allocateResources ( void )
@@ -405,4 +411,10 @@ void Game::m_onSuspending ( void )
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
   }
+};
+
+
+void Game::m_validate ( void )
+{
+  m_core->m_validate ();
 };

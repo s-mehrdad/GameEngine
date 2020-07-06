@@ -70,7 +70,7 @@ ToFile::ToFile ( void ) :
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
   }
@@ -81,12 +81,6 @@ ToFile::ToFile ( void ) :
 //{
 //
 //};
-
-
-const bool& ToFile::m_isReady ( void )
-{
-  return m_ready;
-}
 
 
 void ToFile::m_close ( void )
@@ -112,17 +106,13 @@ bool ToFile::m_write ( const std::string& line )
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
     return false;
   }
 };
-
-
-template<class tType>
-unsigned int Logger<tType>::m_counter { 0 };
 
 
 template<class tType>
@@ -142,7 +132,7 @@ Logger<tType>::Logger ( void ) : m_theLogRawStr ( "" ), m_filePolicy (), m_write
     m_state = 0;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
   }
@@ -258,25 +248,11 @@ void Logger<tType>::m_push ( const logType& t, const std::thread::id& tId,
     m_buffer.push_back ( lineFormatted.str () );
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
   }
-};
-
-
-template<class tType>
-const LogEntity& Logger<tType>::m_getLog ( void )
-{
-  return m_theLog;
-};
-
-
-template<class tType>
-const std::string& Logger<tType>::m_getLogRawStr ( void )
-{
-  return m_theLogRawStr;
 };
 
 
@@ -303,8 +279,7 @@ void loggerEngine ( Logger<tType>* engine )
 
     PointerProvider::getFileLogger ()->m_push (
       logType::info, std::this_thread::get_id (), "logThread",
-      "Logging engine is successfully started:\n\nFull-featured surveillance \
-      is the utter most goal in a digital world, and frankly put, it is well justified! ^,^\n" );
+      "Logging engine is successfully started:\n\nFull-featured surveillance is the utter most goal in a digital world, and frankly put, it is well justified! ^,^\n" );
 
     // Todo robust lock
     // initializing and not locking the mutex object (mark as not owing a lock)
@@ -335,7 +310,7 @@ void loggerEngine ( Logger<tType>* engine )
     } while (engine->m_operating.test_and_set () || engine->m_buffer.size ());
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "logThread",
                                                 ex.what () );
@@ -352,4 +327,4 @@ void LoggerClassLinker ( void ) // don't call this function: solution for linker
   tempObj.m_getLogRawStr ();
   tempObj.m_shutdown ();
 
-}
+};

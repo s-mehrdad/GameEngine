@@ -105,6 +105,7 @@ namespace winrt::GameEngine::implementation
 
   }
 
+
   //MainPage::~MainPage ()
   //{
   //  // tear down
@@ -115,7 +116,6 @@ namespace winrt::GameEngine::implementation
   {
     throw hresult_not_implemented ();
   }
-
   void MainPage::MyProperty ( int32_t /* value */ )
   {
     throw hresult_not_implemented ();
@@ -151,7 +151,6 @@ namespace winrt::GameEngine::implementation
     panelWidthDips = (static_cast<float> (panelWidthPixels) * 96.f / Dpi);
     panelHeightDips = (static_cast<float> (panelHeightPixels) * 96.f / Dpi);
   };
-
 
 
   void MainPage::m_onRendering ( Windows::Foundation::IInspectable const& sender,

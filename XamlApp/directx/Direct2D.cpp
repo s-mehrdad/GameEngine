@@ -89,6 +89,12 @@ Direct2D::Direct2D ( TheCore* coreObj ) :
 };
 
 
+//Direct2D::~Direct2D ( void )
+//{
+//
+//};
+
+
 //void Direct2D::m_creation ( void )
 //{
 //

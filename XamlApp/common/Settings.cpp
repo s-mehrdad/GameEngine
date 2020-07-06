@@ -70,7 +70,7 @@ Configurations::Configurations ( void ) :
         unsigned int temp = configs ["configurations"]["display"]["fullscreen"].get_or ( temp );
         m_currents.fullscreen = temp;
       }
-      catch (const std::exception & ex)
+      catch (const std::exception& ex)
       {
         PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                     ex.what () );
@@ -97,7 +97,7 @@ Configurations::Configurations ( void ) :
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -109,24 +109,6 @@ Configurations::Configurations ( void ) :
 //{
 //
 //};
-
-
-const bool& Configurations::isValid ( void )
-{
-  return m_valid;
-};
-
-
-const Configs& Configurations::m_getDefaults ( void )
-{
-  return m_defaults;
-};
-
-
-const Configs& Configurations::m_getSettings ( void )
-{
-  return m_currents;
-};
 
 
 const bool Configurations::m_apply ( const Configs& object )
@@ -157,7 +139,7 @@ const bool Configurations::m_apply ( const Configs& object )
       return false;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );

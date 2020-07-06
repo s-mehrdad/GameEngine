@@ -61,45 +61,34 @@ namespace winrt::GameEngine::implementation
     // window events
     //void m_onActivated ( Windows::UI::Core::CoreWindow const& sender,
     //                     Windows::UI::Core::WindowActivatedEventArgs const& args ); // on application window activation
-
     //void m_onFocused ( Windows::UI::Core::CoreWindow const& sender,
     //                   Windows::UI::Core::WindowActivatedEventArgs const& args ); // on application window focused/unfocused
-
     void m_onWindowResized ( Windows::Foundation::IInspectable const& sender,
                              Windows::UI::Core::WindowSizeChangedEventArgs const& args ); // on application window resize
-
     void m_onVisibilityChanged ( Windows::Foundation::IInspectable const& sender,
                                  Windows::UI::Core::VisibilityChangedEventArgs const& args ); // on application window visibility
-
     void m_onDpiChanged ( Windows::Graphics::Display::DisplayInformation const& sender,
                           Windows::Foundation::IInspectable const& args ); // on client display DPI changed
-
     void m_onOrientationChanged ( Windows::Graphics::Display::DisplayInformation const& sender,
                                   Windows::Foundation::IInspectable const& args ); // on client display orientation changed
-
     void m_onDisplayContentInvalidated ( Windows::Graphics::Display::DisplayInformation const& sender,
                                          Windows::Foundation::IInspectable const& args ); // on application window content invalidation
 
     // other events
     void m_onCompositionScaleChanged ( Windows::UI::Xaml::Controls::SwapChainPanel const& sender,
                                        Windows::Foundation::IInspectable const& args ); // on composition scale resize
-
     void m_onSwapChainPanelSizeChanged ( Windows::Foundation::IInspectable const& sender,
                                          Windows::UI::Xaml::SizeChangedEventArgs const& e ); // on swap chain panel resize
 
     // input events
     void m_onAcceleratorKeyActivated ( winrt::Windows::UI::Core::CoreDispatcher const& sender,
                                        winrt::Windows::UI::Core::AcceleratorKeyEventArgs const& e ); // on accelerator key pressed
-
     void m_onPointerPressed ( Windows::Foundation::IInspectable const& sender,
                               winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer pressed
-
     void m_onPointerMoved ( Windows::Foundation::IInspectable const& sender,
                             winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer moved
-
     void m_onPointerReleased ( Windows::Foundation::IInspectable const& sender,
                                winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer released
-
   public:
     MainPage ();
     //~MainPage ();
@@ -113,10 +102,8 @@ namespace winrt::GameEngine::implementation
     // control events
     //void ClickHandler ( Windows::Foundation::IInspectable const& sender,
     //                    Windows::UI::Xaml::RoutedEventArgs const& e );
-
     void AppBarButton_Click ( Windows::Foundation::IInspectable const& sender,
                               Windows::UI::Xaml::RoutedEventArgs const& e );
-
     void Button_Click ( winrt::Windows::Foundation::IInspectable const& sender,
                         winrt::Windows::UI::Xaml::RoutedEventArgs const& e );
   };
