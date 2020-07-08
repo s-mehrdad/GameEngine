@@ -22,7 +22,14 @@
   <StackPanel Margin="30,30,30,20">
     <Grid Height="60">
       <TextBlock
-        x:Name="textBlock"
+        x:Name="textBlock1"
+        Margin="10,10,0,10"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        FontSize="25"
+        Text="Pointer" />
+      <TextBlock
+        x:Name="textBlock2"
         Margin="0,10,0,10"
         HorizontalAlignment="Center"
         VerticalAlignment="Top"
@@ -41,14 +48,14 @@
       Width="800"
       Height="600"
       Margin="5,5,5,5" />
-    
+
   </StackPanel>
 
   <Page.BottomAppBar>
     <AppBar x:Name="bottomAppBar" Padding="10,0,10,0">
       <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
         <AppBarButton AutomationProperties.AutomationId="sampleAppBarButton" AutomationProperties.Name="Sample Button" />
-        <AppBarToggleButton Icon="Accept" Label="AppBarToggleButton"/>
+        <AppBarToggleButton Icon="Accept" Label="AppBarToggleButton" />
       </StackPanel>
     </AppBar>
   </Page.BottomAppBar>

@@ -49,8 +49,10 @@ namespace winrt::GameEngine::implementation
     std::unique_ptr <Game> m_game; // unique pointer to game wrapper
 
     // pointers to input (background worker thread)
-    Windows::Foundation::IAsyncAction* m_inputLoop; // worker thread
-    Windows::UI::Core::CoreIndependentInputSource* m_inputCore; // independent input
+    Windows::Foundation::IAsyncAction m_inputLoop; // worker thread
+    Windows::UI::Core::CoreIndependentInputSource m_inputCore; // independent input
+
+    winrt::hstring test;
 
     bool m_initialized; // true in case of successful initialization
 
@@ -59,10 +61,10 @@ namespace winrt::GameEngine::implementation
                          Windows::Foundation::IInspectable const& args ); // on application window activation
 
     // window events
-    //void m_onActivated ( Windows::UI::Core::CoreWindow const& sender,
-    //                     Windows::UI::Core::WindowActivatedEventArgs const& args ); // on application window activation
-    //void m_onFocused ( Windows::UI::Core::CoreWindow const& sender,
-    //                   Windows::UI::Core::WindowActivatedEventArgs const& args ); // on application window focused/unfocused
+    void m_onActivated ( Windows::UI::Core::CoreWindow const& sender,
+                         Windows::UI::Core::WindowActivatedEventArgs const& args ); // on application window activation
+    void m_onFocused ( Windows::UI::Core::CoreWindow const& sender,
+                       Windows::UI::Core::WindowActivatedEventArgs const& args ); // on application window focused/unfocused
     void m_onWindowResized ( Windows::Foundation::IInspectable const& sender,
                              Windows::UI::Core::WindowSizeChangedEventArgs const& args ); // on application window resize
     void m_onVisibilityChanged ( Windows::Foundation::IInspectable const& sender,
@@ -89,6 +91,9 @@ namespace winrt::GameEngine::implementation
                             winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer moved
     void m_onPointerReleased ( Windows::Foundation::IInspectable const& sender,
                                winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer released
+
+    void m_onPointerMoved2 ( Windows::Foundation::IInspectable const& sender,
+                            winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer moved
   public:
     MainPage ();
     //~MainPage ();
@@ -97,7 +102,8 @@ namespace winrt::GameEngine::implementation
     void MyProperty ( int32_t value );
 
     // save/load internal state on app resume (exposed as public)
-    //void internal state
+    void SaveInternalState ( winrt::Windows::Foundation::Collections::IPropertySet& state );
+    void LoadInternalState ( winrt::Windows::Foundation::Collections::IPropertySet& state );
 
     // control events
     //void ClickHandler ( Windows::Foundation::IInspectable const& sender,

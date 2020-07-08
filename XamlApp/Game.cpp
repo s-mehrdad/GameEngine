@@ -135,7 +135,7 @@ const bool Game::m_run ( void )
     do // continuous loop
     {
 
-      if ((counter % 30) == 0)
+      if ((counter % 10) == 0)
       {
 
         //counter = 0;
@@ -183,7 +183,7 @@ const bool Game::m_run ( void )
       }
 
       counter++;
-    } while ((PointerProvider::getVariables ()->running == true) && (counter < 60));
+    } while ((PointerProvider::getVariables ()->running == true));
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -394,16 +394,8 @@ void Game::m_onSuspending ( void )
       m_universe = nullptr;
     }
 
-
-    if (m_core)
-    {
-      m_core->m_onSuspending ();
-      delete m_core;
-      m_core = nullptr;
-    }
-
     PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "The Game is successfully suspended." );
+                                                "Game's resources are successfully released." );
 
   }
   catch (const std::exception& ex)

@@ -27,7 +27,8 @@ using namespace GameEngine::implementation;
 /// Initializes the singleton application object.  This is the first line of authored code
 /// executed, and as such is the logical equivalent of main() or WinMain().
 /// </summary>
-App::App ()
+App::App () :
+  m_mainPage ( nullptr )
 {
   try
   {
@@ -167,7 +168,6 @@ App::App ()
 /// <param name="e">Details about the suspend request.</param>
 void App::OnSuspending ( [[maybe_unused]] IInspectable const& sender, [[maybe_unused]] SuspendingEventArgs const& e )
 {
-  // Save application state and stop any background activity
   auto deferral = e.SuspendingOperation ().GetDeferral ();
   auto task = std::async (
     std::launch::async, [this, deferral]()
@@ -178,7 +178,8 @@ void App::OnSuspending ( [[maybe_unused]] IInspectable const& sender, [[maybe_un
 
       std::this_thread::sleep_for ( std::chrono::milliseconds { 1000 } );
 
-      //m_game->m_onSuspending (); // Todo load and save state
+      // Save application state and stop any background activity
+      m_mainPage->SaveInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
 
       PointerProvider::getVariables ()->currentState = "uninitialized";
 
@@ -212,6 +213,7 @@ void App::OnSuspending ( [[maybe_unused]] IInspectable const& sender, [[maybe_un
 void App::OnResuming ( [[maybe_unused]] IInspectable const& sender, [[maybe_unused]] IInspectable const& args )
 {
   // Resume application state and return to background activity
+  m_mainPage->LoadInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
 }
 
 
@@ -293,4 +295,13 @@ void App::OnLaunched ( LaunchActivatedEventArgs const& e )
       Window::Current ().Activate ();
     }
   }
+
+
+  if (m_mainPage == nullptr)
+  {
+    m_mainPage = dynamic_cast<GameEngine::implementation::MainPage*>(rootFrame.Content ().as<GameEngine::implementation::MainPage> ().get ());
+  }
+
+
+
 }

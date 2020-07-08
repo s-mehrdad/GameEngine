@@ -20,7 +20,7 @@ namespace winrt::GameEngine::implementation
   struct App : AppT<App>
   {
   private:
-    MainPage* m_mainPage;
+    winrt::GameEngine::implementation::MainPage* m_mainPage; // pointer to main page
 
     void OnSuspending ( IInspectable const& sender,
                         Windows::ApplicationModel::SuspendingEventArgs const& e ); // on suspension
