@@ -11,12 +11,11 @@
 #include "Shared.h"
 
 
-TheCore::TheCore ( const int& width, const int& height ) :
-  m_swapChainPanel ( nullptr ), m_panelSize ( .0f, .0f ),
+TheCore::TheCore ( MainPageTypes* mainPageTypes ) :
+  m_mainPageTypes ( mainPageTypes ),
   m_timer ( nullptr ), m_FPS ( 0 ), m_milliSPF ( 0 ),
-  m_outputWidth ( width ), m_outputHeight ( height ),
   m_D3D ( nullptr ), m_D2D ( nullptr ),
-  m_debug ( false ), m_initialized ( false )
+  m_debug ( false ), m_isResizing ( false ), m_initialized ( false )
 {
   try
   {
@@ -50,7 +49,7 @@ TheCore::TheCore ( const int& width, const int& height ) :
 
     m_initialized = true;
     PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "The framework is successfully initialized." );
+                                                "Application framework is successfully initialized." );
 
     m_debug = true; // Todo must be switched from within the application
 
@@ -69,18 +68,17 @@ TheCore::TheCore ( const int& width, const int& height ) :
 //};
 
 
-void TheCore::m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* panel )
+void TheCore::m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* swapChainPanel )
 {
   try
   {
 
     HRESULT hR;
 
+    m_swapChainPanel = swapChainPanel;
+
     winrt::Windows::Graphics::Display::DisplayInformation currrent =
       winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView ();
-
-    m_swapChainPanel = panel;
-    m_panelSize = panel->ActualSize ();
 
     winrt::com_ptr<ISwapChainPanelNative> panelNative;
     panelNative = m_swapChainPanel->as<ISwapChainPanelNative> ();
@@ -90,24 +88,6 @@ void TheCore::m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChai
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                   "Acquiring backing native interface of swap chain panel failed!" );
     }
-
-    //m_D3D->m_allocation ();
-    //if (!m_D3D->m_allocated)
-    //  PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-    //                                              "Allocation of Direct3D resources failed." );
-
-    m_D3D->m_present ();
-
-    //winrt::com_ptr<ISwapChainPanelNative> panelNative;
-    //hR = reinterpret_cast<IUnknown*>(m_swapChainPanel)->QueryInterface ( __uuidof(ISwapChainPanelNative), panelNative.put_void () );
-    //if (FAILED ( hR ))
-    //{
-    //  PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-    //                                              "Acquiring backing native interface of swap chain panel failed!" );
-    //} else
-    //{
-    //  hR = panelNative->SetSwapChain ( m_D3D->m_swapChain.get () );
-
 
   }
   catch (const std::exception& ex)
@@ -142,9 +122,7 @@ void TheCore::m_setResolution ( const bool& prm, const int& width, const int& he
     {
 
       // user enjoys windowed mode at arbitrary resolutions
-      m_outputWidth = width;
       m_D3D->m_displayMode.Width = width;
-      m_outputHeight = height;
       m_D3D->m_displayMode.Height = height;
 
       m_resizeResources ( false );
@@ -168,8 +146,10 @@ void TheCore::m_resizeResources ( const bool& displayMode )
     if (m_initialized)
     {
 
+      m_isResizing = true;
+
       unsigned long rC { 0 };
-      //HRESULT hR;
+      HRESULT hR;
 
       // free game resources
       //if ()
@@ -180,15 +160,36 @@ void TheCore::m_resizeResources ( const bool& displayMode )
       if (m_D2D && !rC)
       {
 
-        //rC = m_D2D->m_dcBitmap.Reset ();
-        //rC = m_D2D->m_deviceContext.Reset ();
-        //rC = m_D2D->m_dcBuffer.Reset ();
-        //if (rC)
-        //{
-        //  rC = 0; // HACK debug
-        //  PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
-        //                                            "Problem while releasing one or more resources!" );
-        //}
+        rC = m_D2D->m_textFormatLogs->Release ();
+        rC = m_D2D->m_textFormatFPS->Release ();
+        rC = m_D2D->m_textFormatPointer->Release ();
+        rC = m_D2D->m_brushBlack->Release ();
+        rC = m_D2D->m_brushWhite->Release ();
+        rC = m_D2D->m_brushYellow->Release ();
+        rC = m_D2D->m_brushRed->Release ();
+        m_D2D->m_deviceContext->SetTarget ( nullptr );
+        rC = m_D2D->m_dcBitmap->Release ();
+        rC = m_D2D->m_dcBuffer->Release ();
+
+        m_D2D->m_textLayoutFPS.detach ();
+        m_D2D->m_textLayoutLogs.detach ();
+        m_D2D->m_textLayoutPointer.detach ();
+        m_D2D->m_textFormatLogs.detach ();
+        m_D2D->m_textFormatFPS.detach ();
+        m_D2D->m_textFormatPointer.detach ();
+        m_D2D->m_brushBlack.detach ();
+        m_D2D->m_brushWhite.detach ();
+        m_D2D->m_brushYellow.detach ();
+        m_D2D->m_brushRed.detach ();
+        m_D2D->m_dcBitmap.detach ();
+        m_D2D->m_dcBuffer.detach ();
+        m_D2D->m_deviceContext.detach ();
+        if (rC)
+        {
+          rC = 0; // HACK debug
+          PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
+                                                      "Problem while releasing one or more resources!" );
+        }
 
       }
 
@@ -197,18 +198,26 @@ void TheCore::m_resizeResources ( const bool& displayMode )
       {
 
         m_D3D->m_deviceContext->ClearState ();
-        //rC = m_D3D->m_rasterizerState.Reset ();
+        rC = m_D3D->m_rasterizerState->Release ();
         m_D3D->m_deviceContext->OMSetRenderTargets ( 0, nullptr, nullptr );
-        //rC = m_D3D->m_depthSview.Reset ();
-        //rC = m_D3D->m_depthSstate.Reset ();
-        //rC = m_D3D->m_depthSbuffer.Reset ();
-        //rC = m_D3D->m_renderTview.Reset ();
-        //if (rC)
-        //{
-        //  rC = 0; // HACK debug
-        //  PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
-        //                                            "Problem while releasing one or more resources!" );
-        //}
+        rC = m_D3D->m_depthSview->Release ();
+        rC = m_D3D->m_depthSstate->Release ();
+        rC = m_D3D->m_depthSbuffer->Release ();
+        rC = m_D3D->m_renderTview->Release ();
+        ID3D11RenderTargetView* nullViews [] = { nullptr };
+        m_D3D->m_deviceContext->OMSetRenderTargets ( _countof ( nullViews ), nullViews, nullptr );
+        m_D3D->m_rasterizerState.detach ();
+        m_D3D->m_depthSbuffer.detach ();
+        m_D3D->m_depthSstate.detach ();
+        m_D3D->m_depthSview.detach ();
+        m_D3D->m_renderTview.detach ();
+        m_D3D->m_deviceContext->Flush ();
+        if (rC)
+        {
+          rC = 0; // HACK debug
+          PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
+                                                      "Problem while releasing one or more resources!" );
+        }
 
       }
 
@@ -229,6 +238,8 @@ void TheCore::m_resizeResources ( const bool& displayMode )
         }
 
         //game->allocateResources ();
+
+        m_isResizing = false;
 
       } else
       {
@@ -266,7 +277,7 @@ void TheCore::m_frameStatistics ( void )
       m_FPS = frameCounter; // the number of counted frames in one second
       m_milliSPF = 1e3 / m_FPS; // average taken time by a frame in milliseconds
 
-      if (m_debug && m_D2D)
+      if (m_debug && m_D2D && !m_isResizing)
       {
         m_D2D->m_textLayoutsDebug = false;
         //// results to window caption
@@ -278,7 +289,7 @@ void TheCore::m_frameStatistics ( void )
         // FPS information text layouts
         std::wostringstream outFPS;
         outFPS.precision ( 6 );
-        outFPS << "Resolution: " << m_D3D->m_displayMode.Width << " x " << m_D3D->m_displayMode.Height
+        outFPS << "Resolution: " << m_mainPageTypes->m_getDisplay ()->panelWidthPixels << " x " << m_mainPageTypes->m_getDisplay ()->panelHeightPixels
           << " - Display mode #" << m_D3D->m_displayModeIndex + 1 << " of " << m_D3D->m_displayModesCount << " @ "
           << m_D3D->m_displayMode.RefreshRate.Numerator / m_D3D->m_displayMode.RefreshRate.Denominator << " Hz" << std::endl
           << "Display Adapter: " << m_D3D->m_videoCardDescription
@@ -287,36 +298,21 @@ void TheCore::m_frameStatistics ( void )
 
         if (m_D2D->m_textLayoutFPS)
         {
+          m_D2D->m_textLayoutFPS->Release ();
           m_D2D->m_textLayoutFPS.detach ();
         }
 
         // before rendering a text to a bitmap: the creation of the text layout
         hR = m_D2D->m_writeFactory->CreateTextLayout ( outFPS.str ().c_str (), (UINT32) outFPS.str ().size (),
-                                                       m_D2D->m_textFormatFPS.get (), (float) m_outputWidth,
-                                                       (float) m_outputHeight, m_D2D->m_textLayoutFPS.put () );
+                                                       m_D2D->m_textFormatFPS.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips,
+                                                       m_mainPageTypes->m_getDisplay ()->panelHeightDips, m_D2D->m_textLayoutFPS.put () );
         if (FAILED ( hR ))
         {
           PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                      "The Creation of text layout for FPS information failed!" );
+                                                      "Creation of text layout for FPS information failed!" );
           return;
         }
 
-        if (m_D2D->m_textLayoutLogs)
-        {
-          m_D2D->m_textLayoutLogs.detach ();
-        }
-
-        std::wstring out { L"Last event: " };
-        out += Converter::strConverter ( PointerProvider::getFileLogger ()->m_getLogRawStr () );
-        hR = m_D2D->m_writeFactory->CreateTextLayout ( out.c_str (), (UINT32) (UINT32) out.size (),
-                                                       m_D2D->m_textFormatLogs.get (), (float) m_outputWidth,
-                                                       (float) m_outputHeight, m_D2D->m_textLayoutLogs.put () );
-        if (FAILED ( hR ))
-        {
-          PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                      "The Creation of text layout for Logs failed!" );
-          return;
-        }
         m_D2D->m_textLayoutsDebug = true;
 
       }
@@ -324,6 +320,46 @@ void TheCore::m_frameStatistics ( void )
       // reset
       frameCounter = 0;
       elapsed += 1.0;
+    }
+
+    if (m_D2D->m_textLayoutLogs)
+    {
+
+      m_D2D->m_textLayoutLogs->Release ();
+      m_D2D->m_textLayoutLogs.detach ();
+    }
+
+    std::wostringstream outLastlog;
+    outLastlog << L"Last event: ";
+    outLastlog << Converter::strConverter ( PointerProvider::getFileLogger ()->m_getLogRawStr () ) << std::endl;
+    hR = m_D2D->m_writeFactory->CreateTextLayout ( outLastlog.str ().c_str (), (UINT32) (UINT32) outLastlog.str ().size (),
+                                                   m_D2D->m_textFormatLogs.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips,
+                                                   m_mainPageTypes->m_getDisplay ()->panelHeightDips, m_D2D->m_textLayoutLogs.put () );
+    if (FAILED ( hR ))
+    {
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of text layout for Logs failed!" );
+      return;
+    }
+
+    if (m_D2D->m_textLayoutPointer)
+    {
+
+      m_D2D->m_textLayoutPointer->Release ();
+      m_D2D->m_textLayoutPointer.detach ();
+    }
+
+    std::wostringstream outPointer;
+    outPointer << m_mainPageTypes->m_getPointer ().c_str () << std::endl;
+    hR = m_D2D->m_writeFactory->CreateTextLayout ( outPointer.str ().c_str (), (UINT32) (UINT32) outPointer.str ().size (),
+                                                   m_D2D->m_textFormatPointer.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips,
+                                                   m_mainPageTypes->m_getDisplay ()->panelHeightDips, m_D2D->m_textLayoutPointer.put () );
+
+    if (FAILED ( hR ))
+    {
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "Creation of text layout for Logs failed!" );
+      return;
     }
 
   }
@@ -352,17 +388,12 @@ void TheCore::m_onSuspending ( void )
       m_D3D->m_onSuspending ();
     }
 
-    if (m_swapChainPanel)
-    {
-      m_swapChainPanel = nullptr;
-    }
-
     // timer application destruction
     if (m_timer)
       delete m_timer;
 
     PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "The Application Core is successfully suspended." );
+                                                "Application Framework is successfully suspended." );
 
   }
   catch (const std::exception& ex)

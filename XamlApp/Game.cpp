@@ -30,13 +30,13 @@ Game::Game ( TheCore* coreObj ) :
 
     m_initialized = true;
     PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "The game is successfully initialized." );
+                                                "The Game is successfully initialized." );
 
     m_allocateResources ();
 
     if (!m_allocated)
       PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                  "The game resources is successfully allocated." );
+                                                  "The Game's resources is successfully allocated." );
 
   }
   catch (const std::exception& ex)
@@ -135,10 +135,10 @@ const bool Game::m_run ( void )
     do // continuous loop
     {
 
-      if ((counter % 10) == 0)
+      if ((counter % 60) == 0)
       {
 
-        //counter = 0;
+        counter = 0;
 
         // additional in-between processes if any need to execute
         // like messages of a core window
@@ -148,11 +148,12 @@ const bool Game::m_run ( void )
 
       // tick the timer to calculate a frame
       m_core->m_getTimer ()->m_tick ();
-      // -- fps calculation
-      m_core->m_frameStatistics ();
 
       if (!m_paused)
       {
+
+        // -- fps calculation
+        m_core->m_frameStatistics ();
 
         // -----------------------------------------------------------------------------------------------------------
         // a game loop purpose:
@@ -172,6 +173,10 @@ const bool Game::m_run ( void )
         // Note the needed delta time
         m_update ();
 
+        if (counter == 59)
+          PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "gameThread",
+                                                      "Logger service test: (each log represent 60 delivered frames!) ^_^" );
+
       } else
       {
 
@@ -181,6 +186,7 @@ const bool Game::m_run ( void )
         std::this_thread::sleep_for ( std::chrono::milliseconds ( 100 ) );
 
       }
+
 
       counter++;
     } while ((PointerProvider::getVariables ()->running == true));

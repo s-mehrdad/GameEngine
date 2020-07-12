@@ -134,7 +134,7 @@ App::App () :
       } else
         if (PointerProvider::getVariables ()->currentState == "appDebug")
         {
-          //MessageBoxA ( NULL, "The debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
+          //MessageBoxA ( NULL, "Debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
         } else
         {
           //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
@@ -168,45 +168,48 @@ App::App () :
 /// <param name="e">Details about the suspend request.</param>
 void App::OnSuspending ( [[maybe_unused]] IInspectable const& sender, [[maybe_unused]] SuspendingEventArgs const& e )
 {
-  auto deferral = e.SuspendingOperation ().GetDeferral ();
-  auto task = std::async (
-    std::launch::async, [this, deferral]()
-    {
-      PointerProvider::getVariables ()->currentState = "suspending";
 
-      PointerProvider::getVariables ()->running = false;
+  m_mainPage->releaseResources ();
 
-      std::this_thread::sleep_for ( std::chrono::milliseconds { 1000 } );
+  //auto deferral = e.SuspendingOperation ().GetDeferral ();
+  //auto task = std::async (
+  //  std::launch::async, [this, deferral]()
+  //  {
+  //    PointerProvider::getVariables ()->currentState = "suspending";
 
-      // Save application state and stop any background activity
-      m_mainPage->SaveInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
+  //    PointerProvider::getVariables ()->running = false;
 
-      PointerProvider::getVariables ()->currentState = "uninitialized";
+  //    std::this_thread::sleep_for ( std::chrono::milliseconds { 1000 } );
 
-      if (PointerProvider::getException ())
-        PointerProvider::providerException ( nullptr );
+  //    // Save application state and stop any background activity
+  //    m_mainPage->SaveInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
 
-      if (PointerProvider::getConfiguration ())
-        PointerProvider::providerConfiguration ( nullptr );
+  //    PointerProvider::getVariables ()->currentState = "uninitialized";
 
-      if (PointerProvider::getFileLogger ())
-      {
-        PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                    "The logging engine is set to shut down..." );
+  //    if (PointerProvider::getException ())
+  //      PointerProvider::providerException ( nullptr );
 
-        // failure or success, the logs are somehow to be saved, so give its thread some time
-        std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
+  //    if (PointerProvider::getConfiguration ())
+  //      PointerProvider::providerConfiguration ( nullptr );
 
-        PointerProvider::getFileLogger ()->m_shutdown ();
-        PointerProvider::providerFileLogger ( nullptr );
-      }
+  //    if (PointerProvider::getFileLogger ())
+  //    {
+  //      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
+  //                                                  "Logger engine is set to shut down..." );
 
-      if (PointerProvider::getVariables ())
-        PointerProvider::providerVariables ( nullptr );
+  //      // failure or success, the logs are somehow to be saved, so give its thread some time
+  //      std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
 
-      deferral.Complete ();
-    }
-  );
+  //      PointerProvider::getFileLogger ()->m_shutdown ();
+  //      PointerProvider::providerFileLogger ( nullptr );
+  //    }
+
+  //    if (PointerProvider::getVariables ())
+  //      PointerProvider::providerVariables ( nullptr );
+
+  //    deferral.Complete ();
+  //  }
+  //);
 }
 
 
@@ -301,7 +304,5 @@ void App::OnLaunched ( LaunchActivatedEventArgs const& e )
   {
     m_mainPage = dynamic_cast<GameEngine::implementation::MainPage*>(rootFrame.Content ().as<GameEngine::implementation::MainPage> ().get ());
   }
-
-
 
 }

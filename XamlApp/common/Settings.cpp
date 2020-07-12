@@ -81,7 +81,7 @@ Configurations::Configurations ( void ) :
       {
         m_valid = true;
         PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                    "The configuration file is successfully read:\n\tResolution: (" +
+                                                    "Configuration file is successfully read:\n\tResolution: (" +
                                                     std::to_string ( m_currents.Width ) + " x "
                                                     + std::to_string ( m_currents.Height ) + " )\t\t" +
                                                     "fullscreen: " + std::to_string ( m_currents.fullscreen ) );
@@ -129,7 +129,7 @@ const bool Configurations::m_apply ( const Configs& object )
       writeStream.close ();
 
       PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                  "The configuration file is successfully written:\n\tResolution: (" +
+                                                  "Configuration file is successfully written:\n\tResolution: (" +
                                                   std::to_string ( object.Width ) + " x "
                                                   + std::to_string ( object.Height ) + " )\t\t" +
                                                   "fullscreen: " + std::to_string ( object.fullscreen ) );

@@ -32,11 +32,14 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushYellow; // brushes
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushWhite;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushBlack;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_brushRed;
 
   winrt::com_ptr<IDWriteTextFormat> m_textFormatFPS; // text formats
   winrt::com_ptr<IDWriteTextFormat> m_textFormatLogs;
+  winrt::com_ptr<IDWriteTextFormat> m_textFormatPointer;
   winrt::com_ptr<IDWriteTextLayout> m_textLayoutFPS; // text layouts
   winrt::com_ptr<IDWriteTextLayout> m_textLayoutLogs;
+  winrt::com_ptr<IDWriteTextLayout> m_textLayoutPointer;
   bool m_textLayoutsDebug; // output prevention while updating
 
   bool m_allocated; // true if resources allocation was successful
@@ -44,8 +47,6 @@ private:
 
   void m_allocateResources ( void ); // Direct2D resources resize/creation
   void m_initializeTextFormats ( void ); // different formats initialization
-  //void m_creation ( void ); // Direct2D device creation
-  //void m_allocation ( void ); // Direct2D resources resize/creation
   void m_onSuspending ( void ); // suspension preparation
   //void m_validate ( void ); // validate the correct state of Direct2D resources
   //void m_onDeviceLost ( void ); // clean and reallocate

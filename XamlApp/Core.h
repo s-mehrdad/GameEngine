@@ -13,6 +13,7 @@
 #include "directx/Timer.h"
 #include "directx/Direct3D.h"
 #include "directx/Direct2D.h"
+#include "MainPageTypes.h"
 
 
 // game engine framework wrapper
@@ -21,11 +22,8 @@ class TheCore
   friend class Direct3D;
   friend class Direct2D;
 private:
-  winrt::Windows::UI::Xaml::Controls::SwapChainPanel* m_swapChainPanel; // pointer to application main window
-  winrt::Windows::Foundation::Size m_panelSize;
-  int m_outputWidth; // current output width
-  int m_outputHeight; // current output height
-  // rotation
+  winrt::Windows::UI::Xaml::Controls::SwapChainPanel* m_swapChainPanel; // pointer to main window swap chain panel
+  MainPageTypes* m_mainPageTypes; // pointer to main page's entities
 
   Timer* m_timer; // pointer to DirectX high-precision timer application
   int m_FPS; // frames per second
@@ -35,13 +33,13 @@ private:
   Direct2D* m_D2D; // pointer to Direct2D application
 
   bool m_debug; // if true FPS to screen (true in debug mode)
-  //bool resized; // true if the resizing was successful
+  bool m_isResizing; // true if the resizing was successful
   bool m_initialized; // true if the initialization was successful
 public:
-  TheCore ( const int& width, const int& height ); // constructor and initializer
+  TheCore ( MainPageTypes* mainPageTypes ); // constructor and initializer
   //~TheCore ( void );
 
-  void m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* panel ); // set swap chain panel
+  void m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* swapChainPanel ); // set swap chain panel
   void m_setResolution ( const bool& prm, const int& width = 0, const int& height = 0 ); // resolution changer
   void m_resizeResources ( const bool& displayMode ); // free and resize the resources
   void m_frameStatistics ( void ); // frame statistics calculations
@@ -51,7 +49,6 @@ public:
 
   const bool& m_isInitialized ( void ) { return m_initialized; }; // get the initialized state
   const bool& m_isDebugging ( void ) { return m_debug; }; // get current state of debug flag
-  const winrt::Windows::UI::Xaml::Controls::SwapChainPanel* m_getSwapChainPanel ( void ) { return m_swapChainPanel; }; // pointer to swap chain panel
   Timer* m_getTimer ( void ) { return m_timer; }; // get the pointer to application timer
   Direct3D* m_getD3D ( void ) { return m_D3D; }; // get the pointer to application Direct3D
   Direct2D* m_getD2D ( void ) { return m_D2D; }; // get the pointer to application Direct2D
