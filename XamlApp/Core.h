@@ -16,6 +16,12 @@
 #include "MainPageTypes.h"
 
 
+interface IDeviceNotify
+{
+  virtual void OnDeviceEvents ( void ) = 0;
+};
+
+
 // game engine framework wrapper
 class TheCore
 {
@@ -32,23 +38,29 @@ private:
   Direct3D* m_D3D; // pointer to Direct3D application
   Direct2D* m_D2D; // pointer to Direct2D application
 
+  IDeviceNotify* m_deviceNotify;
+  bool m_deviceRestored;
+
   bool m_debug; // if true FPS to screen (true in debug mode)
   bool m_isResizing; // true if the resizing was successful
   bool m_initialized; // true if the initialization was successful
+
+  void m_resizeResources ( const bool& displayMode ); // free and resize the resources
 public:
   TheCore ( MainPageTypes* mainPageTypes ); // constructor and initializer
   //~TheCore ( void );
+  void m_registerDeviceNotify ( IDeviceNotify* );
 
   void m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* swapChainPanel ); // set swap chain panel
-  void m_setResolution ( const bool& prm, const int& width = 0, const int& height = 0 ); // resolution changer
-  void m_resizeResources ( const bool& displayMode ); // free and resize the resources
+  void m_updateDisplay ( const bool& prm, const int& width = 0, const int& height = 0 ); // on display properties changed
   void m_frameStatistics ( void ); // frame statistics calculations
-  void m_onSuspending ( void ); // suspension preparations
-  void m_onDeviceLost ( void ); // clean and reallocate
+  void m_release ( void ); // suspension preparations
+  void m_onDeviceLost ( void ); // clean invalid resources and reallocate
   void m_validate ( void ); // validate the correct state of game resources
 
   const bool& m_isInitialized ( void ) { return m_initialized; }; // get the initialized state
   const bool& m_isDebugging ( void ) { return m_debug; }; // get current state of debug flag
+  const bool& m_isDeviceRestored ( void ) { return m_deviceRestored; }; // get current device state
   Timer* m_getTimer ( void ) { return m_timer; }; // get the pointer to application timer
   Direct3D* m_getD3D ( void ) { return m_D3D; }; // get the pointer to application Direct3D
   Direct2D* m_getD2D ( void ) { return m_D2D; }; // get the pointer to application Direct2D

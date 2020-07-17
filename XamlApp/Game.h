@@ -17,7 +17,7 @@
 #include "objects/Polygons.h"
 
 
-class Game
+class Game : public IDeviceNotify
 {
 private:
   TheCore* m_core; // pointer to the application core
@@ -46,12 +46,12 @@ private:
 public:
   Game ( TheCore* coreObj ); // game initialization
   //~Game ( void );
+  void OnDeviceEvents ( void ); // inherited from device notify (pure virtual deleted function)
 
   const bool m_run ( void ); // game engine loop
   void m_render ( void ); // render the scene
   void m_update ( void ); // updating the game world
-  void m_onSuspending ( void ); // suspension preparation
-  void m_validate ( void ); // game's resources/objects validation/reallocation
+  void m_release ( void ); // suspension preparation
 
   const bool& m_isReady ( void ) { return m_initialized; }; // get the initialized state
   bool& m_isPaused ( void ) { return m_paused; }; // get the paused state

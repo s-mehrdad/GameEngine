@@ -42,21 +42,21 @@ private:
   winrt::com_ptr<IDWriteTextLayout> m_textLayoutPointer;
   bool m_textLayoutsDebug; // output prevention while updating
 
-  bool m_allocated; // true if resources allocation was successful
-  bool m_initialized; // true if initialization was successful
+  bool m_allocated; // true if resources are allocated successful
+  bool m_initialized; // true in case of successful initialization
 
-  void m_allocateResources ( void ); // Direct2D resources resize/creation
-  void m_initializeTextFormats ( void ); // different formats initialization
-  void m_onSuspending ( void ); // suspension preparation
-  //void m_validate ( void ); // validate the correct state of Direct2D resources
-  //void m_onDeviceLost ( void ); // clean and reallocate
+  bool m_createResources ( void ); // create Direct2D independent resources
+  bool m_createDeviceResources ( void ); // create Direct2D device dependent resources
+  bool m_createDeviceContextResources ( void ); // create Direct2D device context dependent resources
+  bool m_initializeTextFormats ( void ); // different formats initialization
+  void m_release ( void ); // suspension preparation
 public:
   Direct2D ( TheCore* coreObj );
   //~Direct2D ( void );
 
   void m_debugInfos ( void ); // FPS infos plus logs to screen
 
-  const bool& m_isInitialized () { return m_initialized; }; // get the initialized state
+  const bool& m_isReady () { return m_allocated; }; // get the initialized state
 };
 
 

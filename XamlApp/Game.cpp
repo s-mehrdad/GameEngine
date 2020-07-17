@@ -32,6 +32,8 @@ Game::Game ( TheCore* coreObj ) :
     PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
                                                 "The Game is successfully initialized." );
 
+    m_core->m_registerDeviceNotify ( this );
+
     m_allocateResources ();
 
     if (!m_allocated)
@@ -51,6 +53,34 @@ Game::Game ( TheCore* coreObj ) :
 //{
 //
 //};
+
+
+void Game::OnDeviceEvents ( void )
+{
+  try
+  {
+
+    if (!m_core->m_isDeviceRestored ())
+    {
+      m_paused = true;
+
+      // deallocate invalid resources
+      m_release ();
+    } else
+    {
+      // reallocate resources
+      m_allocateResources ();
+
+      m_paused = false;
+    }
+
+  }
+  catch (const std::exception& ex)
+  {
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "main/gameThread",
+                                                ex.what () );
+  }
+};
 
 
 void Game::m_allocateResources ( void )
@@ -200,7 +230,7 @@ const bool Game::m_run ( void )
   }
   catch (const std::exception& ex)
   {
-    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "gameThread",
                                                 ex.what () );
     return false;
   }
@@ -295,7 +325,7 @@ void Game::m_render ( void )
   }
   catch (const std::exception& ex)
   {
-    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "gameThread",
                                                 ex.what () );
   }
 };
@@ -312,13 +342,13 @@ void Game::m_update ( void )
   }
   catch (const std::exception& ex)
   {
-    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "gameThread",
                                                 ex.what () );
   }
 };
 
 
-void Game::m_onSuspending ( void )
+void Game::m_release ( void )
 {
   try
   {
@@ -409,10 +439,4 @@ void Game::m_onSuspending ( void )
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
   }
-};
-
-
-void Game::m_validate ( void )
-{
-  m_core->m_validate ();
 };

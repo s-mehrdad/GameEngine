@@ -15,7 +15,7 @@ TheCore::TheCore ( MainPageTypes* mainPageTypes ) :
   m_mainPageTypes ( mainPageTypes ),
   m_timer ( nullptr ), m_FPS ( 0 ), m_milliSPF ( 0 ),
   m_D3D ( nullptr ), m_D2D ( nullptr ),
-  m_debug ( false ), m_isResizing ( false ), m_initialized ( false )
+  m_deviceRestored ( true ), m_debug ( false ), m_isResizing ( false ), m_initialized ( false )
 {
   try
   {
@@ -31,19 +31,19 @@ TheCore::TheCore ( MainPageTypes* mainPageTypes ) :
 
     // Direct3D instantiation
     m_D3D = new (std::nothrow) Direct3D ( this );
-    if (!m_D3D->m_isInitialized ())
+    if (!m_D3D->m_isReady ())
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                  "Direct3D initialization failed!" );
+                                                  "A test on Direct3D section failed!" );
       return;
     }
 
     // Direct2D instantiation
     m_D2D = new (std::nothrow) Direct2D ( this );
-    if (!m_D2D->m_isInitialized ())
+    if (!m_D2D->m_isReady ())
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                  "Direct2D initialization failed!" );
+                                                  "A test on Direct2D section failed!" );
       return;
     }
 
@@ -66,6 +66,12 @@ TheCore::TheCore ( MainPageTypes* mainPageTypes ) :
 //{
 //
 //};
+
+
+void TheCore::m_registerDeviceNotify ( IDeviceNotify* deviceNotify )
+{
+  m_deviceNotify = deviceNotify;
+};
 
 
 void TheCore::m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* swapChainPanel )
@@ -98,7 +104,7 @@ void TheCore::m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChai
 }
 
 
-void TheCore::m_setResolution ( const bool& prm, const int& width, const int& height )
+void TheCore::m_updateDisplay ( const bool& prm, const int& width, const int& height )
 {
   try
   {
@@ -151,14 +157,18 @@ void TheCore::m_resizeResources ( const bool& displayMode )
       unsigned long rC { 0 };
       HRESULT hR;
 
+
       // free game resources
       //if ()
       //{
       //}
 
+
       // free Direct2D resources
       if (m_D2D && !rC)
       {
+
+        m_D2D->m_allocated = false;
 
         rC = m_D2D->m_textFormatLogs->Release ();
         rC = m_D2D->m_textFormatFPS->Release ();
@@ -170,6 +180,7 @@ void TheCore::m_resizeResources ( const bool& displayMode )
         m_D2D->m_deviceContext->SetTarget ( nullptr );
         rC = m_D2D->m_dcBitmap->Release ();
         rC = m_D2D->m_dcBuffer->Release ();
+        rC = m_D2D->m_deviceContext->Release ();
 
         m_D2D->m_textLayoutFPS.detach ();
         m_D2D->m_textLayoutLogs.detach ();
@@ -188,14 +199,17 @@ void TheCore::m_resizeResources ( const bool& displayMode )
         {
           rC = 0; // HACK debug
           PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
-                                                      "Problem while releasing one or more resources!" );
+                                                      "Releasing one or more Direct2D resources failed!" );
         }
 
       }
 
+
       // free Direct3D resources
       if (m_D3D->m_depthSview && m_D3D->m_renderTview && !rC)
       {
+
+        m_D3D->m_allocated = false;
 
         m_D3D->m_deviceContext->ClearState ();
         rC = m_D3D->m_rasterizerState->Release ();
@@ -216,36 +230,34 @@ void TheCore::m_resizeResources ( const bool& displayMode )
         {
           rC = 0; // HACK debug
           PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
-                                                      "Problem while releasing one or more resources!" );
+                                                      "Releasing one or more Direct3D resources failed!" );
         }
 
       }
 
       // reallocation procedures
-      if (!rC)
+
+      if (displayMode)
       {
-
-        if (displayMode)
-        {
-          m_D3D->m_setDisplayMode ();
-        }
-
-        m_D3D->m_allocation ();
-
-        if (m_D2D)
-        {
-          m_D2D->m_allocateResources ();
-        }
-
-        //game->allocateResources ();
-
-        m_isResizing = false;
-
-      } else
-      {
-        PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                    "Resources' deallocation failed!" );
+        m_D3D->m_setDisplayMode ();
       }
+
+      if (m_D3D)
+      {
+        if (m_D3D->m_createDeviceResources ())
+        {
+          if (m_D2D)
+          {
+            if (m_D2D->m_createDeviceContextResources ())
+              PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                          "Resources are successfully reallocated!" );
+            //game->allocateResources ();
+
+          }
+        }
+
+      }
+      m_isResizing = false;
 
     }
 
@@ -371,29 +383,39 @@ void TheCore::m_frameStatistics ( void )
 };
 
 
-void TheCore::m_onSuspending ( void )
+void TheCore::m_release ( void )
 {
   try
   {
 
-    m_initialized = false;
-
     if (m_D2D)
     {
-      m_D2D->m_onSuspending ();
+      m_D2D->m_release ();
     }
 
     if (m_D3D)
     {
-      m_D3D->m_onSuspending ();
+      m_D3D->m_release ();
     }
 
-    // timer application destruction
-    if (m_timer)
-      delete m_timer;
+    if (m_deviceRestored)
+    {
+      // timer application destruction
+      if (m_timer)
+      {
+        delete m_timer;
+        m_timer = nullptr;
+      }
 
-    PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "Application Framework is successfully suspended." );
+      m_initialized = false;
+
+      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
+                                                  "Application Framework is successfully suspended." );
+    } else
+    {
+      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "main/gameThread",
+                                                  "Application Framework is successfully released." );
+    }
 
   }
   catch (const std::exception& ex)
@@ -406,6 +428,18 @@ void TheCore::m_onSuspending ( void )
 
 void TheCore::m_onDeviceLost ( void )
 {
+
+  m_deviceRestored = false;
+
+  m_deviceNotify->OnDeviceEvents ();
+
+  m_release ();
+
+  if (m_D3D->m_createResources ())
+    if (m_D2D->m_createResources ())
+      m_deviceRestored = true;
+
+  m_deviceNotify->OnDeviceEvents ();
 
 };
 
