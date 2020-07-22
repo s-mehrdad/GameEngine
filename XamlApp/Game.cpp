@@ -156,6 +156,28 @@ const bool Game::m_run ( void )
 
 
 
+    auto workItemHandler =
+      winrt::Windows::System::Threading::WorkItemHandler
+      ( [this]( winrt::Windows::Foundation::IAsyncAction )
+        {
+          do
+          {
+            m_update ();
+
+            std::this_thread::sleep_for ( std::chrono::milliseconds ( 10 ) );
+
+          } while (PointerProvider::getVariables ()->running == true);
+
+        } );
+    // run the task on a high priority background thread
+    winrt::Windows::Foundation::IAsyncAction loop;
+    loop = winrt::Windows::System::Threading::ThreadPool::RunAsync (
+      workItemHandler,
+      winrt::Windows::System::Threading::WorkItemPriority::High,
+      winrt::Windows::System::Threading::WorkItemOptions::TimeSliced );
+
+
+
     // main part (game engine)
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -179,6 +201,11 @@ const bool Game::m_run ( void )
       // tick the timer to calculate a frame
       m_core->m_getTimer ()->m_tick ();
 
+
+
+
+
+
       if (!m_paused)
       {
 
@@ -201,7 +228,7 @@ const bool Game::m_run ( void )
         // -----------------------------------------------------------------------------------------------------------
         // -- update the game universe/logic
         // Note the needed delta time
-        m_update ();
+        //m_update ();
 
         if (counter == 59)
           PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "gameThread",
@@ -224,7 +251,6 @@ const bool Game::m_run ( void )
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
     return true;
 
   }
@@ -241,6 +267,13 @@ void Game::m_render ( void )
 {
   try
   {
+
+    // engine test
+    //int temp { 0 };
+    //do
+    //{
+    //  temp++;
+    //} while (temp < 10000000);
 
     m_core->m_getD3D ()->m_clearBuffers ();
 
@@ -277,11 +310,13 @@ void Game::m_render ( void )
     m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_triangles->m_getVerticesCount (), 0, 0 );
 
 
-
-    m_core->m_getD3D ()->m_getDevCon ()->IASetVertexBuffers ( 0, 1, _2d_line->m_getVertexBuffer (), &strides, &offset );
-    m_core->m_getD3D ()->m_getDevCon ()->IASetIndexBuffer ( _2d_line->m_getIndexBuffer (), DXGI_FORMAT_R32_UINT, 0 );
-    m_core->m_getD3D ()->m_getDevCon ()->IASetPrimitiveTopology ( D3D10_PRIMITIVE_TOPOLOGY_LINELIST );
-    m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_line->m_getVerticesCount (), 0, 0 );
+    if (!_2d_line->m_getMapped ())
+    {
+      m_core->m_getD3D ()->m_getDevCon ()->IASetVertexBuffers ( 0, 1, _2d_line->m_getVertexBuffer (), &strides, &offset );
+      m_core->m_getD3D ()->m_getDevCon ()->IASetIndexBuffer ( _2d_line->m_getIndexBuffer (), DXGI_FORMAT_R32_UINT, 0 );
+      m_core->m_getD3D ()->m_getDevCon ()->IASetPrimitiveTopology ( D3D10_PRIMITIVE_TOPOLOGY_LINELIST );
+      m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_line->m_getVerticesCount (), 0, 0 );
+    }
 
 
 
@@ -336,7 +371,7 @@ void Game::m_update ( void )
   try
   {
 
-    _2d_line->m_update ();
+    //_2d_line->m_update ();
     m_universe->m_update ();
 
   }

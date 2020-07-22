@@ -51,7 +51,7 @@ bool Direct2D::m_createResources ( void )
 
     // creation of DirectWrite factory
     // properties options: --shared (reuse of cached font data, thus better performance), --isolated
-    hR = DWriteCreateFactory ( DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**> (&m_writeFactory) );
+    hR = DWriteCreateFactory ( DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**> (&m_directWriteFactory) );
     if (FAILED ( hR ))
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -152,7 +152,7 @@ bool Direct2D::m_createDeviceContextResources ( void )
     // setting the render target of Direct2D to the same back buffer as Direct3D
 
     // --retrieving the DXGI version of the Direct3D back buffer (Direct2D needs)
-    hR = m_core->m_getD3D ()->m_getSwapChain ()->GetBuffer ( 0, __uuidof(IDXGISurface1), m_dcBuffer.put_void () );
+    hR = m_core->m_getD3D ()->m_getSwapChain ()->GetBuffer ( 0, __uuidof(IDXGISurface1), m_deviceContextBuffer.put_void () );
     if (FAILED ( hR ))
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -163,16 +163,16 @@ bool Direct2D::m_createDeviceContextResources ( void )
     // --bitmap (the actual rendering surface) properties (Direct2D needs)
     D2D1_BITMAP_PROPERTIES1 bitMap;
     bitMap.pixelFormat.format = m_core->m_getD3D ()->m_getBackBufferFormat (); // the same as Direct3D back buffer
-    bitMap.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
-    bitMap.dpiX = 0.0f; // dots per inch of the bitmap
-    bitMap.dpiY = 0.0f;
+    bitMap.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
+    bitMap.dpiX = m_core->m_mainPageTypes->m_getDisplay ()->effectiveDpi; // dots per inch of the bitmap
+    bitMap.dpiY = m_core->m_mainPageTypes->m_getDisplay ()->effectiveDpi;
     bitMap.bitmapOptions =
       D2D1_BITMAP_OPTIONS_TARGET | // usable for the device context target
       D2D1_BITMAP_OPTIONS_CANNOT_DRAW; // not for use as an input
     bitMap.colorContext = nullptr; // a colour context interface
 
     // --the actual creation of the render target (retrieve the back buffer and set)
-    hR = m_deviceContext->CreateBitmapFromDxgiSurface ( m_dcBuffer.get (), &bitMap, m_dcBitmap.put () );
+    hR = m_deviceContext->CreateBitmapFromDxgiSurface ( m_deviceContextBuffer.get (), &bitMap, m_deviceContextBitmap.put () );
     if (FAILED ( hR ))
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -181,9 +181,12 @@ bool Direct2D::m_createDeviceContextResources ( void )
     }
 
     // --finally set the bitmap as render target (the same back buffer as Direct3D)
-    m_deviceContext->SetTarget ( m_dcBitmap.get () );
+    m_deviceContext->SetTarget ( m_deviceContextBitmap.get () );
 
-    m_deviceContext->SetDpi ( m_core->m_mainPageTypes->m_getDisplay ()->Dpi, m_core->m_mainPageTypes->m_getDisplay ()->Dpi );
+    m_deviceContext->SetDpi ( m_core->m_mainPageTypes->m_getDisplay ()->effectiveDpi, m_core->m_mainPageTypes->m_getDisplay ()->effectiveDpi );
+
+    // grayscale text anti-aliasing is Microsoft recommendations for store apps.
+    m_deviceContext->SetTextAntialiasMode ( D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE );
 
     if (m_initializeTextFormats ())
     {
@@ -208,6 +211,7 @@ bool Direct2D::m_initializeTextFormats ( void )
   {
 
     HRESULT hR;
+    unsigned long rC;
 
     // creation of standard brushes
     hR = m_deviceContext->CreateSolidColorBrush ( D2D1::ColorF ( D2D1::ColorF::Yellow ), m_brushYellow.put () );
@@ -228,21 +232,47 @@ bool Direct2D::m_initializeTextFormats ( void )
       return false;
     }
 
+
+
     // text formats creation
     // second parameter: nullptr: use system font collection
-    hR = m_writeFactory.get ()->CreateTextFormat ( L"Lucida Console", nullptr,
-                                                   DWRITE_FONT_WEIGHT_EXTRA_LIGHT, DWRITE_FONT_STYLE_NORMAL,
-                                                   DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-GB", m_textFormatFPS.put () );
+    winrt::com_ptr<IDWriteTextFormat> m_textFormat;
+    hR = m_directWriteFactory.get ()->CreateTextFormat ( L"Lucida Console", nullptr,
+                                                         DWRITE_FONT_WEIGHT_EXTRA_LIGHT, DWRITE_FONT_STYLE_NORMAL,
+                                                         DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-GB",
+                                                         /*m_textFormatFPS.try_as<IDWriteTextFormat> ().put ()*/
+                                                         reinterpret_cast<IDWriteTextFormat**>(m_textFormatFPS.put ()) );
+    //if (SUCCEEDED ( hR ))
+    //{
+    //  hR = m_textFormat.try_as ( m_textFormatFPS );
+    //  rC = m_textFormat->Release ();
+    //  m_textFormat.detach ();
+    //}
+
 
     if (SUCCEEDED ( hR ))
-      hR = m_writeFactory.get ()->CreateTextFormat ( L"Lucida Console", nullptr,
-                                                     DWRITE_FONT_WEIGHT_EXTRA_LIGHT, DWRITE_FONT_STYLE_NORMAL,
-                                                     DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-GB", m_textFormatLogs.put () );
+      hR = m_directWriteFactory.get ()->CreateTextFormat ( L"Lucida Console", nullptr,
+                                                           DWRITE_FONT_WEIGHT_EXTRA_LIGHT, DWRITE_FONT_STYLE_NORMAL,
+                                                           DWRITE_FONT_STRETCH_NORMAL, 12.0f, L"en-GB", m_textFormat.put () );
+    if (SUCCEEDED ( hR ))
+    {
+      hR = m_textFormat.try_as ( m_textFormatLogs );
+      rC = m_textFormat->Release ();
+      m_textFormat.detach ();
+    }
+
 
     if (SUCCEEDED ( hR ))
-      hR = m_writeFactory.get ()->CreateTextFormat ( L"Lucida Console", nullptr,
-                                                     DWRITE_FONT_WEIGHT_EXTRA_LIGHT, DWRITE_FONT_STYLE_NORMAL,
-                                                     DWRITE_FONT_STRETCH_NORMAL, 13.0f, L"en-GB", m_textFormatPointer.put () );
+      hR = m_directWriteFactory.get ()->CreateTextFormat ( L"Lucida Console", nullptr,
+                                                           DWRITE_FONT_WEIGHT_EXTRA_LIGHT, DWRITE_FONT_STYLE_NORMAL,
+                                                           DWRITE_FONT_STRETCH_NORMAL, 13.0f, L"en-GB", m_textFormat.put () );
+    if (SUCCEEDED ( hR ))
+    {
+      hR = m_textFormat.try_as ( m_textFormatPointer );
+      rC = m_textFormat->Release ();
+      m_textFormat.detach ();
+    }
+
 
     if (FAILED ( hR ))
     {
@@ -250,6 +280,8 @@ bool Direct2D::m_initializeTextFormats ( void )
                                                   "Creation of one or more text formats failed! Error: " + std::to_string ( hR ) );
       return false;
     }
+
+
 
     // text alignment
     hR = m_textFormatFPS->SetTextAlignment ( DWRITE_TEXT_ALIGNMENT_LEADING );
@@ -266,6 +298,8 @@ bool Direct2D::m_initializeTextFormats ( void )
                                                   "Alignment of one or more text formats failed! Error: " + std::to_string ( hR ) );
       return false;
     }
+
+
 
     // paragraph alignment
     hR = m_textFormatFPS->SetParagraphAlignment ( DWRITE_PARAGRAPH_ALIGNMENT_NEAR );
@@ -314,7 +348,7 @@ void Direct2D::m_debugInfos ( void )
 
       if (m_textLayoutLogs)
         m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 3.0f, 67.0f ), m_textLayoutPointer.get (),
-                                          m_brushRed.get (), D2D1_DRAW_TEXT_OPTIONS_NONE );
+                                          m_brushBlack.get (), D2D1_DRAW_TEXT_OPTIONS_NONE );
 
       if (FAILED ( m_deviceContext->EndDraw () ))
       {
@@ -363,20 +397,20 @@ void Direct2D::m_release ( void )
     rC = m_brushYellow->Release ();
     rC = m_brushRed->Release ();
     m_deviceContext->SetTarget ( nullptr );
-    rC = m_dcBitmap->Release ();
-    rC = m_dcBuffer->Release ();
+    rC = m_deviceContextBitmap->Release ();
+    rC = m_deviceContextBuffer->Release ();
 
   }
 
   //rC = m_deviceContext->Release ();
   rC = m_device->Release ();
   rC = m_factory->Release ();
-  rC = m_writeFactory->Release ();
+  rC = m_directWriteFactory->Release ();
 
   m_deviceContext.detach ();
   m_device.detach ();
   m_factory.detach ();
-  m_writeFactory.detach ();
+  m_directWriteFactory.detach ();
 
   if (rC)
     PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",

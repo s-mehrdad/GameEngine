@@ -48,11 +48,12 @@ private:
   unsigned int m_videoCardMemory; // dedicated video card memory (megabytes)
   std::wstring m_videoCardDescription; // string representing the physical adapter name
 
-  winrt::com_ptr<ID3D11RenderTargetView1> m_renderTview; // render target view
+  winrt::com_ptr<ID3D11RenderTargetView1> m_renderTargetView; // render target view
 
-  winrt::com_ptr<ID3D11Texture2D> m_depthSbuffer; // depth-stencil view buffer
-  winrt::com_ptr<ID3D11DepthStencilState> m_depthSstate; // depth-stencil state
-  winrt::com_ptr<ID3D11DepthStencilView> m_depthSview; // depth-stencil view
+  winrt::com_ptr<ID3D11Texture2D> m_depthStencilBuffer; // depth-stencil view buffer
+  winrt::com_ptr<ID3D11DepthStencilState> m_depthStencilState; // depth-stencil state
+  winrt::com_ptr<ID3D11DepthStencilView> m_depthStencilView; // depth-stencil view
+  D3D11_VIEWPORT m_screenViewPort; // screen view port
 
   DXGI_FORMAT m_backBufferFormat; // back buffer colour format
   UINT m_backBufferCount; // back buffers count

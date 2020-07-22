@@ -96,7 +96,7 @@ bool Model<tType>::m_allocate ( tType* data, unsigned long* index, unsigned long
     return true;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () + m_entryPoint );
@@ -125,7 +125,7 @@ void Model<tType>::m_release ( void )
     m_device = nullptr;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -194,7 +194,7 @@ Triangles::Triangles ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
       m_allocated = true;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -210,7 +210,8 @@ Triangles::Triangles ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
 
 Line::Line ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
   Model ( dev, devC, "\tClockwiseLine", true ),
-  m_verticesCount ( 0 ), m_allocated ( false )
+  m_verticesCount ( 0 ), m_mapped ( false ),
+  m_allocated ( false )
 {
   try
   {
@@ -233,7 +234,7 @@ Line::Line ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
       m_allocated = true;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -263,6 +264,7 @@ void Line::m_update ( void )
     // second parameter: what CPU does when GPU is busy
     // note that in Direct3D11 a resource may contain sub-resources (additional parameters of device context method)
     // after the resource is mapped, any change to it is reflected to the vertex buffer.
+    m_mapped = true;
     hR = m_deviceContext->Map ( m_vertexBuffer, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &m_mappedRes );
     if (FAILED ( hR ))
     {
@@ -323,9 +325,10 @@ void Line::m_update ( void )
 
     // validates the pointer of the vertex buffer's resource and enables the GPU's read access upon.
     m_deviceContext->Unmap ( m_vertexBuffer, 0 );
+    m_mapped = false;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -366,7 +369,7 @@ TexturedTriangles::TexturedTriangles ( ID3D11Device* dev, ID3D11DeviceContext* d
       m_allocated = true;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -413,7 +416,7 @@ LightedTriangle::LightedTriangle ( ID3D11Device* dev, ID3D11DeviceContext* devC 
       m_allocated = true;
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );
@@ -457,7 +460,7 @@ Cube::Cube ( ID3D11Device* dev, ID3D11DeviceContext* devC ) :
     }
 
   }
-  catch (const std::exception & ex)
+  catch (const std::exception& ex)
   {
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                 ex.what () );

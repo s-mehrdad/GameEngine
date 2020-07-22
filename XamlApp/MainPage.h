@@ -65,7 +65,7 @@ namespace winrt::GameEngine::implementation
     void m_onDisplayContentInvalidated ( Windows::Graphics::Display::DisplayInformation const& sender,
                                          Windows::Foundation::IInspectable const& args ); // on application window content invalidation
 
-    // other events
+    // swap chain events
     void m_onCompositionScaleChanged ( Windows::UI::Xaml::Controls::SwapChainPanel const& sender,
                                        Windows::Foundation::IInspectable const& args ); // on composition scale resize
     void m_onSwapChainPanelSizeChanged ( Windows::Foundation::IInspectable const& sender,

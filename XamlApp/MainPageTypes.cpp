@@ -13,35 +13,6 @@
 MainPageTypes::MainPageTypes ()
 {
 
-  m_display.windowWidthDips = .0f;
-  m_display.windowHeightDips = .0f;
-  m_display.windowWidthPixels = 0;
-  m_display.windowHeightPixels = 0;
-
-  m_display.panelWidthDips = .0f;
-  m_display.panelHeightDips = .0f;
-  m_display.panelWidthPixels = 0;
-  m_display.panelHeightPixels = 0;
-
-  m_display.fullscreen = false;
-
-  m_display.Dpi = 96.f;
-  m_display.compositionScaleX = .0f;
-  m_display.compositionScaleY = .0f;
-
-  m_display.effectiveDpi = -1.0f;
-  m_display.effectiveCompositionScaleX = .0f;
-  m_display.effectiveCompositionScaleY = .0f;
-
-  m_display.orientationNative = winrt::Windows::Graphics::Display::DisplayOrientations::None; // native orientation
-  m_display.orientationCurrent = winrt::Windows::Graphics::Display::DisplayOrientations::None; // current orientation
-
-  m_display.orientationTransform2D = D2D1::Matrix3x2F::Identity (); // orientation 2D transform
-  m_display.orientationTransform3D = DirectX::XMFLOAT4X4 (); // orientation 3D transform
-
-  m_display.displayRotation = DXGI_MODE_ROTATION_UNSPECIFIED;
-  m_display.swapedDimensions = false;
-
   m_pointer = L"";
 
 };
@@ -53,26 +24,42 @@ MainPageTypes::MainPageTypes ()
 //};
 
 
-//static struct MainPageTypes::ScreenRotation::Rotation0
-//{ 1.0f, 0.0f, 0.0f, 0.0f,
-//  0.0f, 1.0f, 0.0f, 0.0f,
-//  0.0f, 0.0f, 1.0f, 0.0f,
-//  0.0f, 0.0f, 0.0f, 1.0f, };
-//static const DirectX::XMFLOAT4X4 Rotation90
-//{ 0.0f, 1.0f, 0.0f, 0.0f,
-//  -1.0f, 0.0f, 0.0f, 0.0f,
-//  0.0f, 0.0f, 1.0f, 0.0f,
-//  0.0f, 0.0f, 0.0f, 1.0f, };
-//static const DirectX::XMFLOAT4X4 Rotation180
-//{ -1.0f, 0.0f, 0.0f, 0.0f,
-//  0.0f, -1.0f, 0.0f, 0.0f,
-//  0.0f, 0.0f, 1.0f, 0.0f,
-//  0.0f, 0.0f, 0.0f, 1.0f, };
-//static const DirectX::XMFLOAT4X4 Rotation270
-//{ 0.0f, -1.0f, 0.0f, 0.0f,
-//  1.0f, 0.0f, 0.0f, 0.0f,
-//  0.0f, 0.0f, 1.0f, 0.0f,
-//  0.0f, 0.0f, 0.0f, 1.0f, };
+MainPageTypes::Display::Display ()
+{
+
+  windowWidthDips = .0f;
+  windowHeightDips = .0f;
+  windowWidthPixels = 0;
+  windowHeightPixels = 0;
+
+  panelWidthDips = .0f;
+  panelHeightDips = .0f;
+  panelWidthPixels = 0;
+  panelHeightPixels = 0;
+
+  outputWidthDips = .0f;
+  outputHeightDips = .0f;
+
+  fullscreen = false;
+
+  Dpi = 96.f;
+  compositionScaleX = .0f;
+  compositionScaleY = .0f;
+
+  effectiveDpi = -1.0f;
+  effectiveCompositionScaleX = .0f;
+  effectiveCompositionScaleY = .0f;
+
+  orientationNative = winrt::Windows::Graphics::Display::DisplayOrientations::None; // native orientation
+  orientationCurrent = winrt::Windows::Graphics::Display::DisplayOrientations::None; // current orientation
+
+  orientationTransform2D = D2D1::Matrix3x2F::Identity (); // orientation 2D transform
+  orientationTransform3D = DirectX::XMFLOAT4X4 (); // orientation 3D transform
+
+  displayRotation = DXGI_MODE_ROTATION_UNSPECIFIED;
+  swapedDimensions = false;
+
+};
 
 
 void MainPageTypes::Display::updatePixels ()
@@ -82,6 +69,8 @@ void MainPageTypes::Display::updatePixels ()
   windowHeightPixels = static_cast<int>(windowHeightDips * Dpi / 96.f + 0.5f);
   panelWidthPixels = static_cast<int>(panelWidthDips * Dpi / 96.f + 0.5f);
   panelHeightPixels = static_cast<int>(panelHeightDips * Dpi / 96.f + 0.5f);
+
+  computeEffectiveDimensions ();
 };
 
 
@@ -92,6 +81,36 @@ void MainPageTypes::Display::updateDips ()
   windowHeightDips = (static_cast<float> (windowHeightPixels) * 96.f / Dpi);
   panelWidthDips = (static_cast<float> (panelWidthPixels) * 96.f / Dpi);
   panelHeightDips = (static_cast<float> (panelHeightPixels) * 96.f / Dpi);
+
+  computeEffectiveDimensions ();
+};
+
+
+void MainPageTypes::Display::computeEffectiveDimensions ( void )
+{
+
+  if (!supportHighResolution && Dpi > DpiThreshold)
+  {
+    if (max ( panelWidthDips, panelHeightDips ) > widthThreshold &&
+         min ( panelWidthDips, panelHeightDips ) > heightThreshold)
+    {
+      // to scale the app, effective Dpi needs to be changed
+      effectiveDpi = Dpi / 2.0f;
+      effectiveCompositionScaleX = compositionScaleX / 2.0f;
+      effectiveCompositionScaleY = compositionScaleY / 2.0f;
+
+      outputWidthDips = (static_cast<float> (panelWidthPixels) * 96.f / effectiveDpi);
+      outputHeightDips = (static_cast<float> (panelHeightPixels) * 96.f / effectiveDpi);
+    }
+  } else
+  {
+    effectiveDpi = Dpi;
+    effectiveCompositionScaleX = compositionScaleX;
+    effectiveCompositionScaleY = compositionScaleY;
+    outputWidthDips = panelWidthDips;
+    outputHeightDips = panelHeightDips;
+  }
+
 };
 
 

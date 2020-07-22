@@ -74,6 +74,7 @@ private:
   D3D11_MAPPED_SUBRESOURCE m_mappedRes; // updating the resource
   // note DirectX 11: D3D11_MAPPED_SUBRESOURCE
 
+  bool m_mapped;
   bool m_allocated; // true after successful resource allocation
 public:
   Line ( ID3D11Device* dev, ID3D11DeviceContext* devC );
@@ -82,6 +83,7 @@ public:
   void m_update ( void );
 
   const unsigned long& m_getVerticesCount ( void ) { return m_verticesCount; }; // get vertices count
+  bool& const m_getMapped ( void ) { return m_mapped; }; // get mapped state
 };
 
 

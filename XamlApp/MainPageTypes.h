@@ -17,13 +17,16 @@ private:
   {
     float windowWidthDips; // current window width (Dips)
     float windowHeightDips; // current window height (Dips)
-    uint32_t windowWidthPixels; // current window width (Pixels) (feed from configuration)
-    uint32_t windowHeightPixels; // current window height (Pixels) (feed from configuration)
+    float windowWidthPixels; // current window width (Pixels)
+    float windowHeightPixels; // current window height (Pixels)
 
     float panelWidthDips; // current swap chain panel width (Dips)
     float panelHeightDips; // current swap chain panel height (Dips)
-    uint32_t panelWidthPixels; // current swap chain panel width (Pixels)
-    uint32_t panelHeightPixels; // current swap chain panel height (Pixels)
+    float panelWidthPixels; // current swap chain panel width (Pixels)
+    float panelHeightPixels; // current swap chain panel height (Pixels)
+
+    float outputWidthDips; // calculated effective output width (Dips)
+    float outputHeightDips; // calculated effective output height (Dips)
 
     bool fullscreen; // current full screen state (feed from configuration)
 
@@ -31,13 +34,15 @@ private:
     float compositionScaleX; // current composition scale
     float compositionScaleY; // current composition scale
 
-    // high resolution considerations:
+    // high resolutions (4K, 8K...) considerations:
     // considering battery life on phones and having high resolutions supported
     float effectiveDpi; // effective DPI
     float effectiveCompositionScaleX; // effective composition scale
     float effectiveCompositionScaleY; // effective composition scale
     const bool supportHighResolution { false }; // a deliberate decision thus false
     const float DpiThreshold { 192.0f }; // 200% of standard thus 192.0f (phone considerations)
+    const float widthThreshold { 1920.0f }; // highest width
+    const float heightThreshold { 1080.0f }; // highest height
 
     winrt::Windows::Graphics::Display::DisplayOrientations orientationNative; // native orientation
     winrt::Windows::Graphics::Display::DisplayOrientations orientationCurrent; // current orientation
@@ -48,8 +53,11 @@ private:
     DXGI_MODE_ROTATION displayRotation; // calculated screen rotation to be set
     bool swapedDimensions; // true if dimensions are swapped.
 
-    void updatePixels ( void ); // called after each input to Dips based dimensions
-    void updateDips ( void ); // called after each input to Pixels based dimensions
+    Display ();
+
+    void updatePixels ( void ); // calculate input Dips to physical pixels
+    void updateDips ( void ); // calculate input pixels to device independent pixels know as Dips
+    void computeEffectiveDimensions ( void ); // if needed scale down since high resolution is a deliberate decision
     void computeRotation ( void ); // computation of rotation based on native and current orientation
   } m_display;
 

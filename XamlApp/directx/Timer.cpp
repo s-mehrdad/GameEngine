@@ -12,10 +12,35 @@
 
 
 Timer::Timer ( void ) :
-  m_frameIt ( true ), m_initialized ( false )
+  m_screenIt ( false ), m_initialized ( false )
 {
   try
   {
+
+    // timing of the following is measured in QPC units
+    m_timeStart = 0;
+    m_timeLastIdle = 0;
+    m_deltaTime = 0;
+    m_deltaTimeMax = m_frequency / 10;
+
+    // timing of the following is measured in canonical tick format
+    m_timeTotalIdle = 0;
+    m_elapsedTicks = 0;
+    m_totalTicks = 0;
+    m_leftOver = 0;
+
+    // frame rate tracking
+    m_currentFrame = 0;
+    m_previousFrame = 0;
+    m_framesCounter = 60;
+    m_FPS = 0;
+    m_framesThisSecond = 0;
+    m_secondsCounter = 0;
+
+    m_milliSPF = 0.0;
+    m_secondsPerCount = 0.0;
+
+
 
     if (QueryPerformanceFrequency ( (LARGE_INTEGER*) &m_frequency ))
     {
@@ -24,36 +49,6 @@ Timer::Timer ( void ) :
       // TimeValueInSeconds = ActualTimeValue / Frequency
       m_secondsPerCount = double ( 1 ) / m_frequency;
 
-
-      // timing of the following is measured in QPC units
-      m_startTime = 0;
-      m_lastStop = 0;
-      m_lastTime = 0;
-      m_deltaTime = 0;
-      m_maxDeltaTime = m_frequency / 10;
-
-      // timing of the following is measured in canonical tick format
-      m_totalTimeIdle = 0;
-      m_elapsedTicks = 0;
-      m_totalTicks = 0;
-      m_leftOver = 0;
-
-      //static_cast<uint64_t> ((double ( 1 ) / 60) * m_frequency);
-
-      // frame rate tracking
-      m_currentFrameTime = 0;
-      m_previousFrameTime = 0;
-      m_frameCounter = 60;
-      m_FPS = 0;
-      m_framesThisSecond = 0;
-      m_secondsCounter = 0;
-
-      m_milliSPF = 0.0;
-      m_secondsPerCount = 0.0;
-
-
-
-      long long frequency { 0 };
       // Windows high performance timer: 'QueryPerformanceFrequency' 'QueryPerformanceCounter':
       // note that, if the system doesn't support it, C++ 11 standard chrono is the replacement.
       // -- QueryPerformanceFrequency:
@@ -64,23 +59,16 @@ Timer::Timer ( void ) :
       // usable in time-interval measurements.
       // note that the function returns zero if an error is occurred.
       // Todo implement C++ standard chrono
-      if (QueryPerformanceFrequency ( (LARGE_INTEGER*) &frequency ))
-      {
-        // once calculated seconds per count (reciprocal of the number of counts per seconds)
-        // TimeValueInSeconds = ActualTimeValue / Frequency
-        m_secondsPerCount = double ( 1 ) / frequency;
 
-        m_initialized = true;
-        PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                    "High-precision timer is successfully instantiated." );
+      m_initialized = true;
+      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
+                                                  "High-precision timer is successfully instantiated." );
 
-      } else
-      {
-        m_initialized = false;
-        PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                    "High-precision timer instantiation failed!" );
-      }
-
+    } else
+    {
+      m_initialized = false;
+      PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
+                                                  "High-precision timer instantiation failed!" );
     }
 
   }
@@ -104,81 +92,147 @@ void Timer::m_tick ( void )
   {
 
     // tick and calculate the time between two frames
-    uint64_t current;
-    if (QueryPerformanceCounter ( (LARGE_INTEGER*) &current ))
+    //uint64_t current;
+    if (QueryPerformanceCounter ( (LARGE_INTEGER*) &m_currentFrame ))
     {
 
       // update the timer
-      m_deltaTime = current - m_lastTime;
-      m_lastTime = current;
-      //m_secondsCounter += m_deltaTime;
+      m_deltaTime = m_currentFrame - m_previousFrame; // the elapsed time of one frame
+      m_previousFrame = m_currentFrame; // preparation for the next tick
+
 
       // clamp large deltas from paused states
-      if (m_deltaTime > m_maxDeltaTime)
-        m_deltaTime = m_maxDeltaTime;
+      if (m_deltaTime > m_deltaTimeMax)
+        m_deltaTime = m_deltaTimeMax;
+      // in case, a negative delta means that the processor goes idle. the cause can be an overflow,
+      // a power save mode or the movement of the process to another processor.
+      //if (m_deltaTime < 0)
+      //  m_deltaTime = 0;
 
-      // small deltas
-      //if ((m_deltaTime - m_elapsedTicks) < m_frequency / 4000)
-      //{
-      //  m_deltaTime = m_elapsedTicks;
-      //}
 
-      // keep delta time of current frame untouched
+    // small deltas
+    //if ((m_deltaTime - m_elapsedTicks) < m_frequency / 4000)
+    //{
+    //  m_deltaTime = m_elapsedTicks;
+    //}
+
+    // keep delta time of current frame untouched
       m_leftOver = m_frequency - m_deltaTime;
 
-      uint64_t temp { m_lastTime };
-      uint64_t tempCurrent { m_lastTime };
-      uint16_t sleepFactor { 0 };
 
-      // ToDo: implement the timer at extend and clean its class from unneeded stuff
+      //m_sleepFactor = m_leftOver * m_secondsPerCount * 10000000; // 10, 10000, 10000000
+      // note that each second is 1000 milliseconds, 1000000 microseconds and 1000000000 nanoseconds
+      //std::this_thread::sleep_for ( std::chrono::nanoseconds ( long ( m_sleepFactor ) ) );
+
+
+      // calculate a split of sleep factor
+      uint64_t tempOne;
+      uint64_t tempTwo;
+      QueryPerformanceCounter ( (LARGE_INTEGER*) &tempOne );
+
+      std::this_thread::sleep_for ( std::chrono::microseconds ( 1 ) );
+
+      QueryPerformanceCounter ( (LARGE_INTEGER*) &tempTwo );
+
+      m_split = tempTwo - tempOne;
+      m_sleepFactor = 0;
+      m_sleepFactor = (m_leftOver - m_split) / m_split;
+      m_sleepFactor = m_sleepFactor * m_secondsPerCount * 10000;
+
+      // ToDo: implement timer class at extend (the factors must be implemented at updating time)
       // for the time being, the algorithm is written dirty, with the purpose of consuming less energy... :)
       // yep, the sake of environment is still streaming in my blood! :)
 
-      if (m_leftOver > 10000000)
-        sleepFactor = 8000;
-      else
-        if (m_leftOver > 8000000)
-          sleepFactor = 6000;
-        else
-          if (m_leftOver > 6000000)
-            sleepFactor = 4000;
-          else
-            if (m_leftOver > 4000000)
-              sleepFactor = 2000;
-            else
-              if (m_leftOver > 2000000)
-                sleepFactor = 1000;
+      // update: suspension of engine thread
+      // at first this algorithm was thought to use less CPU, now at extend,
+      // it may come to updating the game on other threads and implementing timer there.
 
+      LARGE_INTEGER tempCurrent { 0 };
+      uint64_t passedTicks { 0 };
+      uint64_t sumOfPassed { 0 };
+      int t { 0 };
       while (m_leftOver >= 0)
       {
 
-        QueryPerformanceCounter ( (LARGE_INTEGER*) &tempCurrent );
-        temp = tempCurrent - temp;
+        QueryPerformanceCounter ( &tempCurrent );
+        passedTicks = tempCurrent.QuadPart - (m_previousFrame - sumOfPassed);
+
+        sumOfPassed += passedTicks;
 
         m_totalTicks += m_elapsedTicks;
-        m_leftOver -= temp;
 
-        std::this_thread::sleep_for ( std::chrono::microseconds ( sleepFactor ) );
+        m_leftOver -= passedTicks * 3;
+
+        //if (m_FPS > 0)
+        //{
+
+        //  int t { 0 };
+        //  if (m_FPS >= 60)
+        //  {
+
+        //    t = ((m_FPS % 60) / 3);
+        //    if (t == 0)
+        //      t = 1;
+        //    m_leftOver -= passedTicks * t;
+
+        //  } else
+        //    if (m_FPS < 60)
+        //    {
+
+        //      t = ((60 % m_FPS) / 2);
+        //      if (t == 0)
+        //        t = 1;
+        //      m_leftOver -= passedTicks * t;
+
+        //    }
+
+          //std::this_thread::sleep_for ( std::chrono::microseconds ( m_sleepFactor - (m_sleepFactor / (60 - m_FPS)) ) );
+        std::this_thread::sleep_for ( std::chrono::microseconds ( m_sleepFactor ) );
+
+
+        //} else
+        //{
+        //  m_leftOver -= passedTicks;
+        //  std::this_thread::sleep_for ( std::chrono::microseconds ( m_sleepFactor ) );
+        //}
+
       }
 
-      m_frameCounter++;
+      m_framesCounter++;
+      m_framesThisSecond++;
 
-    }
+      m_secondsCounter += m_deltaTime;
+
+      if (m_secondsCounter >= m_frequency)
+      {
+        m_FPS = m_framesThisSecond;
+        m_milliSPF = 1e3 / m_FPS;
+        m_screenIt = true;
+        m_framesThisSecond = 0;
+        m_secondsCounter %= m_frequency;
 
 
 
-    //if (m_paused)
-    //  m_deltaTime = 0; // the elapsed time in a stopped state (for calculations in an idle time)
-    //else
-    if (QueryPerformanceCounter ( (LARGE_INTEGER*) &m_currentFrameTime ))
-    {
-      m_deltaTime = (m_currentFrameTime - m_previousFrameTime) * m_secondsPerCount; // the elapsed time of one frame
-      m_previousFrameTime = m_currentFrameTime; // preparation for the next tick
 
-      // in case, a negative delta means that the processor goes idle. the cause can be an overflow,
-      // a power save mode or the movement of the process to another processor.
-      if (m_deltaTime < 0)
-        m_deltaTime = 0;
+        //// a static local variable retains its state between the calls:
+        //static int frameCounter; // frame counter (a frame is a full cycle of the game loop)
+        //static double elapsed; // the elapsed time since the last call
+        //frameCounter++;
+
+        //if ((m_timer->m_getTotalTime () - elapsed) >= 1e0)
+        //{
+
+        //  // frame calculations:
+        //  m_FPS = frameCounter; // the number of counted frames in one second
+        //  m_milliSPF = 1e3 / m_FPS; // average taken time by a frame in milliseconds
+
+        //  // reset
+        //  frameCounter = 0;
+        //  elapsed += 1.0;
+        //}
+
+      }
+
     } else
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -227,13 +281,9 @@ void Timer::m_event ( const std::string& type )
       if (type == "reset")
       {
         // prepare the timer:
-        m_startTime = current;
-        m_previousFrameTime = current;
-        m_lastStop = 0;
-        //m_paused = false;
-
-
-        m_lastTime = current;
+        m_timeStart = current;
+        m_previousFrame = current;
+        m_timeLastIdle = 0;
       }
 
     } else
@@ -260,7 +310,7 @@ const double Timer::m_getTotalTime ( void )
   //if (m_paused)
   //  temp = (m_lastStop - m_startTime - m_totalTimeIdle) * m_secondsPerCount;
   //else
-  temp = (m_currentFrameTime - m_startTime - m_totalTimeIdle) * m_secondsPerCount;
+  temp = (m_currentFrame - m_timeStart - m_timeTotalIdle) * m_secondsPerCount;
   return temp;
 
 };

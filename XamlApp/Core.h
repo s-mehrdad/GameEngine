@@ -32,8 +32,6 @@ private:
   MainPageTypes* m_mainPageTypes; // pointer to main page's entities
 
   Timer* m_timer; // pointer to DirectX high-precision timer application
-  int m_FPS; // frames per second
-  double m_milliSPF; // render time of a frame in milliseconds
 
   Direct3D* m_D3D; // pointer to Direct3D application
   Direct2D* m_D2D; // pointer to Direct2D application
@@ -52,7 +50,7 @@ public:
   void m_registerDeviceNotify ( IDeviceNotify* );
 
   void m_setSwapChainPanel ( winrt::Windows::UI::Xaml::Controls::SwapChainPanel* swapChainPanel ); // set swap chain panel
-  void m_updateDisplay ( const bool& prm, const int& width = 0, const int& height = 0 ); // on display properties changed
+  void m_updateDisplay ( const bool& setResolution = false ); // on display properties changed
   void m_frameStatistics ( void ); // frame statistics calculations
   void m_release ( void ); // suspension preparations
   void m_onDeviceLost ( void ); // clean invalid resources and reallocate
@@ -64,7 +62,6 @@ public:
   Timer* m_getTimer ( void ) { return m_timer; }; // get the pointer to application timer
   Direct3D* m_getD3D ( void ) { return m_D3D; }; // get the pointer to application Direct3D
   Direct2D* m_getD2D ( void ) { return m_D2D; }; // get the pointer to application Direct2D
-  const int& m_getFPS ( void ) { return m_FPS; }; // get the FPS
 };
 
 

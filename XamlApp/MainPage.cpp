@@ -34,7 +34,7 @@ namespace winrt::GameEngine::implementation
                                        { winrt::Windows::UI::Core::CoreCursorType::Arrow, 0 } );
 
     // response to window size events
-    //m_appWindow.get ().SizeChanged ( { this, &MainPage::m_onWindowResized } );
+    m_appWindow.get ().SizeChanged ( { this, &MainPage::m_onWindowResized } );
 
 #if defined (NTDDI_WIN10_RS2) && (NTDDI_VERSION >= NTDDI_WIN10_RS2)
     try
@@ -79,8 +79,8 @@ namespace winrt::GameEngine::implementation
     // Todo 
     // user settings (load state)
     // resize the window to user settings
-    m_types.m_getDisplay ()->windowWidthPixels= static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Width);
-    m_types.m_getDisplay ()->windowHeightPixels= static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Height);
+    m_types.m_getDisplay ()->windowWidthPixels = static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Width);
+    m_types.m_getDisplay ()->windowHeightPixels = static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Height);
     m_types.m_getDisplay ()->updateDips ();
     auto size = winrt::Windows::Foundation::Size ( m_types.m_getDisplay ()->windowWidthDips, m_types.m_getDisplay ()->windowHeightDips );
 
@@ -275,25 +275,29 @@ namespace winrt::GameEngine::implementation
     if (!m_allocated)
       allocateResources ();
 
-    if (m_core != nullptr) ///
-    {
-      if (sender.ActivationMode () == Windows::UI::Core::CoreWindowActivationMode::ActivatedInForeground)
-      {
-        m_game->m_isPaused () = false;
-        m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
-      } else
-      {
-        m_game->m_isPaused () = true;
-        m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
-      }
-    }
+    //if (m_core != nullptr) ///
+    //{
+    //  if (sender.ActivationMode () == Windows::UI::Core::CoreWindowActivationMode::ActivatedInForeground)
+    //  {
+    //    m_game->m_isPaused () = false;
+    //    m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+    //  } else
+    //  {
+    //    m_game->m_isPaused () = true;
+    //    m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+    //  }
+    //}
   };
 
 
   void MainPage::m_onWindowResized ( Windows::Foundation::IInspectable const& sender,
                                      Windows::UI::Core::WindowSizeChangedEventArgs const& args )
   {
-    //
+
+    m_types.m_getDisplay ()->windowWidthDips = args.Size ().Width;
+    m_types.m_getDisplay ()->windowHeightDips = args.Size ().Height;
+    m_types.m_getDisplay ()->updatePixels ();
+
   };
 
 
@@ -334,10 +338,21 @@ namespace winrt::GameEngine::implementation
     // therefore the effective one is retrievable upon logical one being set on device resources
 
     m_types.m_getDisplay ()->Dpi = sender.LogicalDpi ();
+    m_types.m_getDisplay ()->updateDips ();
 
-    m_game->m_getCore ()->m_updateDisplay ( false );
 
-    //m_core->createWindowSizeDependentResources (); // matrices
+    if (m_initialized && m_game != nullptr)
+    {
+      m_game->m_isPaused () = true;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
+
+      m_game->m_getCore ()->m_updateDisplay ();
+
+      m_game->m_isPaused () = false;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+    }
+
   };
 
 
@@ -349,7 +364,17 @@ namespace winrt::GameEngine::implementation
     m_types.m_getDisplay ()->orientationCurrent = sender.CurrentOrientation ();
     m_types.m_getDisplay ()->computeRotation ();
 
-    m_game->m_getCore ()->m_updateDisplay ( false );
+    if (m_initialized && m_game != nullptr)
+    {
+      m_game->m_isPaused () = true;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
+
+      m_game->m_getCore ()->m_updateDisplay ();
+
+      m_game->m_isPaused () = false;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+    }
 
   };
 
@@ -359,27 +384,41 @@ namespace winrt::GameEngine::implementation
   {
     //concurrency::critical_section::scoped_lock lock ( m_core->getCriticalSection () );
 
-    m_game->m_isPaused () = true;
-    m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
-    std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
+    if (m_initialized && m_game != nullptr)
+    {
+      m_game->m_isPaused () = true;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-    m_core->m_validate ();
+      m_core->m_validate ();
 
-    m_game->m_isPaused () = false;
-    m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+      m_game->m_isPaused () = false;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+
+    }
   };
 
 
   void MainPage::m_onCompositionScaleChanged ( Windows::UI::Xaml::Controls::SwapChainPanel const& sender,
                                                Windows::Foundation::IInspectable const& args )
   {
-    //concurrency::critical_section::scoped_lock lock ( m_core->getCriticalSection () );
-    //m_core->m_getD3D ()->setCompositionScale ( sender.CompositionScaleX, sender.CompositionScaleY );
-    //m_core->createWindowSizeDependentResources (); // matrices
-    if (true)
+
+    m_types.m_getDisplay ()->compositionScaleX = sender.CompositionScaleX ();
+    m_types.m_getDisplay ()->compositionScaleY = sender.CompositionScaleY ();
+
+    if (m_initialized && m_game != nullptr)
     {
+      m_game->m_isPaused () = true;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
+
+      m_game->m_getCore ()->m_updateDisplay ();
+
+      m_game->m_isPaused () = false;
+      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
 
     }
+
   };
 
 
@@ -387,23 +426,19 @@ namespace winrt::GameEngine::implementation
                                                  Windows::UI::Xaml::SizeChangedEventArgs const& e )
   {
     //concurrency::critical_section::scoped_lock lock ( m_core->getCriticalSection () );
-    //m_core->m_getD3D ()->setCompositionScale ( e.NewSize() );
-    //m_core->createWindowSizeDependentResources (); // matrices
 
     m_types.m_getDisplay ()->panelWidthDips = e.NewSize ().Width;
     m_types.m_getDisplay ()->panelHeightDips = e.NewSize ().Height;
     m_types.m_getDisplay ()->updatePixels ();
 
     // Todo: drag and drop resizing (resolution needs to be sent)
-    if (m_initialized && m_game)
+    if (m_initialized && m_game != nullptr)
     {
       m_game->m_isPaused () = true;
       m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-      m_game->m_getCore ()->m_updateDisplay ( false,
-                                              m_types.m_getDisplay ()->windowWidthPixels,
-                                              m_types.m_getDisplay ()->windowHeightPixels );
+      m_game->m_getCore ()->m_updateDisplay ();
 
       PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
                                                   "Main page got resized. Current resolution: " +
@@ -436,13 +471,35 @@ namespace winrt::GameEngine::implementation
         height.GridUnitType = winrt::Windows::UI::Xaml::GridUnitType::Auto;
         bottomAppBar ().Visibility ( winrt::Windows::UI::Xaml::Visibility::Visible );
         view.ExitFullScreenMode ();
-        m_game->m_getCore ()->m_updateDisplay ( false );
+
+        if (m_initialized && m_game != nullptr)
+        {
+          m_game->m_isPaused () = true;
+          m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+          std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
+
+          m_game->m_getCore ()->m_updateDisplay ();
+
+          m_game->m_isPaused () = false;
+          m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+        }
       } else
       {
         height.GridUnitType = winrt::Windows::UI::Xaml::GridUnitType::Pixel;
         bottomAppBar ().Visibility ( winrt::Windows::UI::Xaml::Visibility::Collapsed );
         view.TryEnterFullScreenMode ();
-        m_game->m_getCore ()->m_updateDisplay ( true );
+
+        if (m_initialized && m_game != nullptr)
+        {
+          m_game->m_isPaused () = true;
+          m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+          std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
+
+          m_game->m_getCore ()->m_updateDisplay ();
+
+          m_game->m_isPaused () = false;
+          m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+        }
       }
       gridLayout ().Padding ( padding );
       gridRowOne ().Height ( height );
