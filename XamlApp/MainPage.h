@@ -30,6 +30,8 @@ namespace winrt::GameEngine::implementation
     bool m_inResizeMove; // true if client window is set to resize and/or move
 
     MainPageTypes m_types;
+    hstring m_test;
+    winrt::event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
 
     TheCore* m_core; // pointer to the application core
     //std::unique_ptr <TheCore>
@@ -81,14 +83,17 @@ namespace winrt::GameEngine::implementation
     void m_onPointerReleased ( Windows::Foundation::IInspectable const& sender,
                                winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer released
 
-    void m_onPointerMoved2 ( Windows::Foundation::IInspectable const& sender,
-                             winrt::Windows::UI::Core::PointerEventArgs const& e ); // on pointer moved
   public:
     MainPage ();
     //~MainPage ();
 
     int32_t MyProperty ();
     void MyProperty ( int32_t value );
+
+    hstring Test ();
+    void Test ( hstring const& value );
+    winrt::event_token PropertyChanged ( Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler );
+    void PropertyChanged ( winrt::event_token const& token );
 
     // save/load internal state on app resume (exposed as public)
     void SaveInternalState ( winrt::Windows::Foundation::Collections::IPropertySet& state );

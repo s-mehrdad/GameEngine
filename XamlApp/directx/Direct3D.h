@@ -81,7 +81,7 @@ public:
   void m_present ( void ); // swapping: present the buffer chain by flipping the buffers
 
   const bool& Direct3D::m_isReady ( void ) { return m_allocated; }; // true if fully initialized
-  const winrt::com_ptr<ID3D11Device> m_getDevice ( void ) { return m_device; }; // get the pointer to D3D device
+  const winrt::com_ptr<ID3D11Device3> m_getDevice ( void ) { return m_device; }; // get the pointer to D3D device
   const winrt::com_ptr<ID3D11DeviceContext3> m_getDevCon ( void ) { return m_deviceContext; }; // get the pointer to D3D device context
   const winrt::com_ptr<IDXGISwapChain3> m_getSwapChain ( void ) { return m_swapChain; }; // get the pointer to D3D swap chain
   const DXGI_FORMAT& m_getBackBufferFormat () { return m_backBufferFormat; }; // get current format of back/depth buffers

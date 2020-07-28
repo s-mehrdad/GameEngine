@@ -27,6 +27,8 @@ namespace winrt::GameEngine::implementation
 
     InitializeComponent ();
 
+    //m_test = L"Test"; // at initialization process, UI thread gets and sets this value on button
+
     // Register event handlers for page life cycle and keep a pointer to it.
     m_appWindow = Window::Current ().CoreWindow ();
 
@@ -65,7 +67,8 @@ namespace winrt::GameEngine::implementation
 
     Windows::Graphics::Display::DisplayInformation::DisplayContentsInvalidated ( { this, &MainPage::m_onDisplayContentInvalidated } );
 
-    m_appWindow.get ().PointerMoved ( { this, &MainPage::m_onPointerMoved2 } );
+    //// pointer movement on entire window (swap chain panel has independent input)
+    //m_appWindow.get ().PointerMoved ( { this, &MainPage::m_onPointerMoved } );
 
     // current display properties
     m_types.m_getDisplay ()->Dpi = currentDisplayInfos.LogicalDpi ();
@@ -138,6 +141,31 @@ namespace winrt::GameEngine::implementation
     throw hresult_not_implemented ();
   };
 
+  hstring MainPage::Test ()
+  {
+    return m_test;
+  };
+  void MainPage::Test ( hstring const& value )
+  {
+    if (m_test != value)
+    {
+      m_test = value;
+      m_propertyChanged ( *this, Windows::UI::Xaml::Data::PropertyChangedEventArgs { L"Test" } );
+    }
+  };
+
+
+  winrt::event_token MainPage::PropertyChanged ( Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler )
+  {
+    return m_propertyChanged.add ( handler );
+  };
+
+
+  void MainPage::PropertyChanged ( winrt::event_token const& token )
+  {
+    m_propertyChanged.remove ( token );
+  };
+
 
   void MainPage::allocateResources ( void )
   {
@@ -204,7 +232,7 @@ namespace winrt::GameEngine::implementation
                                          ( this, &MainPage::m_onPointerPressed ) );
             m_inputCore.PointerMoved ( winrt::Windows::Foundation::TypedEventHandler
                                        <Windows::Foundation::IInspectable, winrt::Windows::UI::Core::PointerEventArgs>
-                                       ( this, &MainPage::m_onPointerMoved ) );
+                                       ( this, &MainPage::m_onPointerMoved ) ); // pointer movement on swap chain panel
             m_inputCore.PointerReleased ( winrt::Windows::Foundation::TypedEventHandler
                                           <Windows::Foundation::IInspectable, winrt::Windows::UI::Core::PointerEventArgs>
                                           ( this, &MainPage::m_onPointerReleased ) );
@@ -275,18 +303,18 @@ namespace winrt::GameEngine::implementation
     if (!m_allocated)
       allocateResources ();
 
-    //if (m_core != nullptr) ///
-    //{
-    //  if (sender.ActivationMode () == Windows::UI::Core::CoreWindowActivationMode::ActivatedInForeground)
-    //  {
-    //    m_game->m_isPaused () = false;
-    //    m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
-    //  } else
-    //  {
-    //    m_game->m_isPaused () = true;
-    //    m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
-    //  }
-    //}
+    if (m_core != nullptr) ///
+    {
+      if (sender.ActivationMode () == Windows::UI::Core::CoreWindowActivationMode::ActivatedInForeground)
+      {
+        m_game->m_isPaused () = false;
+        m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
+      } else
+      {
+        m_game->m_isPaused () = true;
+        m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
+      }
+    }
   };
 
 
@@ -312,7 +340,7 @@ namespace winrt::GameEngine::implementation
       if (m_allocated)
       {
         m_game->m_isPaused () = false;
-        m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+        m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
       }
 
 
@@ -322,7 +350,7 @@ namespace winrt::GameEngine::implementation
       if (m_allocated)
       {
         m_game->m_isPaused () = true;
-        m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+        m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
       }
 
 
@@ -344,13 +372,14 @@ namespace winrt::GameEngine::implementation
     if (m_initialized && m_game != nullptr)
     {
       m_game->m_isPaused () = true;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-      m_game->m_getCore ()->m_updateDisplay ();
+      m_core->m_updateDisplay ();
+      m_game->m_updateDisplay ();
 
       m_game->m_isPaused () = false;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
     }
 
   };
@@ -367,13 +396,14 @@ namespace winrt::GameEngine::implementation
     if (m_initialized && m_game != nullptr)
     {
       m_game->m_isPaused () = true;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-      m_game->m_getCore ()->m_updateDisplay ();
+      m_core->m_updateDisplay ();
+      m_game->m_updateDisplay ();
 
       m_game->m_isPaused () = false;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
     }
 
   };
@@ -387,13 +417,13 @@ namespace winrt::GameEngine::implementation
     if (m_initialized && m_game != nullptr)
     {
       m_game->m_isPaused () = true;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
       m_core->m_validate ();
 
       m_game->m_isPaused () = false;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
 
     }
   };
@@ -409,13 +439,14 @@ namespace winrt::GameEngine::implementation
     if (m_initialized && m_game != nullptr)
     {
       m_game->m_isPaused () = true;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-      m_game->m_getCore ()->m_updateDisplay ();
+      m_core->m_updateDisplay ();
+      m_game->m_updateDisplay ();
 
       m_game->m_isPaused () = false;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
 
     }
 
@@ -435,10 +466,11 @@ namespace winrt::GameEngine::implementation
     if (m_initialized && m_game != nullptr)
     {
       m_game->m_isPaused () = true;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
       std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-      m_game->m_getCore ()->m_updateDisplay ();
+      m_core->m_updateDisplay ();
+      m_game->m_updateDisplay ();
 
       PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
                                                   "Main page got resized. Current resolution: " +
@@ -446,7 +478,7 @@ namespace winrt::GameEngine::implementation
                                                   std::to_string ( m_types.m_getDisplay ()->panelHeightPixels ) );
 
       m_game->m_isPaused () = false;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+      m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
     }
   };
 
@@ -475,13 +507,14 @@ namespace winrt::GameEngine::implementation
         if (m_initialized && m_game != nullptr)
         {
           m_game->m_isPaused () = true;
-          m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+          m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
           std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-          m_game->m_getCore ()->m_updateDisplay ();
+          m_core->m_updateDisplay ();
+          m_game->m_updateDisplay ();
 
           m_game->m_isPaused () = false;
-          m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+          m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
         }
       } else
       {
@@ -492,13 +525,14 @@ namespace winrt::GameEngine::implementation
         if (m_initialized && m_game != nullptr)
         {
           m_game->m_isPaused () = true;
-          m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+          m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
           std::this_thread::sleep_for ( std::chrono::milliseconds ( 40 ) );
 
-          m_game->m_getCore ()->m_updateDisplay ();
+          m_core->m_updateDisplay ();
+          m_game->m_updateDisplay ();
 
           m_game->m_isPaused () = false;
-          m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+          m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
         }
       }
       gridLayout ().Padding ( padding );
@@ -528,7 +562,7 @@ namespace winrt::GameEngine::implementation
       if (e.VirtualKey () == winrt::Windows::System::VirtualKey::Escape)
       {
         m_game->m_isPaused () = true;
-        m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
+        m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::pause );
         //if (MessageBoxA ( handle, "Exit the Game?", "Exit", MB_YESNO | MB_ICONQUESTION ) == IDYES)
         //{
         releaseResources ();
@@ -536,7 +570,7 @@ namespace winrt::GameEngine::implementation
         //m_appWindow.get ().Close (); //
         //} else
         //{
-        //  m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+        //  m_game->m_getCore ()->m_getTimer ()->m_event ( typeEvent::start );
         //}
       }
     }
@@ -566,7 +600,12 @@ namespace winrt::GameEngine::implementation
 
     m_types.m_getPointer () = (Converter::strConverter ( a ));
 
-    //textBlock1 ().Text ( test );
+    winrt::Windows::UI::Core::DispatchedHandler task ( [this]()
+                                                       {
+                                                         textBlock1 ().Text ( m_types.m_getPointer () );
+                                                         //Test ( winrt::to_hstring ( m_types.m_getPointer () ) );
+                                                       } );
+    textBlock1 ().Dispatcher ().RunAsync ( winrt::Windows::UI::Core::CoreDispatcherPriority::Normal, task );
 
   };
 
@@ -576,13 +615,6 @@ namespace winrt::GameEngine::implementation
   {
     // Todo 
     // add interactions caused by courser
-  };
-
-
-  void MainPage::m_onPointerMoved2 ( Windows::Foundation::IInspectable const& sender,
-                                     winrt::Windows::UI::Core::PointerEventArgs const& e )
-  {
-    textBlock1 ().Text ( m_types.m_getPointer () );
   };
 
 
@@ -679,7 +711,6 @@ namespace winrt::GameEngine::implementation
     winrt::Windows::UI::Text::FontWeight a;
     a.Weight = 1;
     textBlock2 ().FontWeight ( a );
-    textBlock1 ().Text ( m_types.m_getPointer () );
 
   }
 };

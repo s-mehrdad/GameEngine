@@ -17,33 +17,42 @@ Timer::Timer ( void ) :
   try
   {
 
-    // timing of the following is measured in QPC units
-    m_timeStart = 0;
-    m_timeLastIdle = 0;
+    m_frequency = 0;
     m_deltaTime = 0;
-    m_deltaTimeMax = m_frequency / 10;
+    m_deltaTimeMax = 0;
 
-    // timing of the following is measured in canonical tick format
-    m_timeTotalIdle = 0;
-    m_elapsedTicks = 0;
-    m_totalTicks = 0;
-    m_leftOver = 0;
-
-    // frame rate tracking
-    m_currentFrame = 0;
-    m_previousFrame = 0;
-    m_framesCounter = 60;
-    m_FPS = 0;
-    m_framesThisSecond = 0;
-    m_secondsCounter = 0;
-
-    m_milliSPF = 0.0;
     m_secondsPerCount = 0.0;
 
 
+    m_timeStart = 0;
+    m_ticksElapsed = 0;
+    m_ticksTotal = 0;
+    m_timeLastIdle = 0;
+    m_timeTotalIdle = 0;
 
-    if (QueryPerformanceFrequency ( (LARGE_INTEGER*) &m_frequency ))
+    m_currentFrame = 0;
+    m_previousFrame = 0;
+
+    m_secondsCounter = 0;
+
+    m_ticksLeftOver = 0;
+
+    m_sleepFactor = 0;
+    m_split = 0;
+
+    m_framesCounter = 0;
+    m_framesThisSecond = 0;
+    m_FPS = 0;
+
+    m_milliSPF = 0.0;
+
+
+    LARGE_INTEGER frequency;
+
+    if (QueryPerformanceFrequency ( &frequency ))
     {
+
+      m_frequency = frequency.QuadPart;
 
       // once calculated seconds per count (reciprocal of the number of counts per seconds)
       // TimeValueInSeconds = ActualTimeValue / Frequency
@@ -60,7 +69,24 @@ Timer::Timer ( void ) :
       // note that the function returns zero if an error is occurred.
       // Todo implement C++ standard chrono
 
+
+      m_deltaTimeMax = m_frequency / 10;
+
+
+      // calculate a split of sleep factor
+      LARGE_INTEGER tempOne;
+      LARGE_INTEGER tempTwo;
+      QueryPerformanceCounter ( &tempOne );
+
+      std::this_thread::sleep_for ( std::chrono::microseconds ( 1 ) );
+
+      QueryPerformanceCounter ( &tempTwo );
+
+      m_split = tempTwo.QuadPart - tempOne.QuadPart;
+
+
       m_initialized = true;
+
       PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
                                                   "High-precision timer is successfully instantiated." );
 
@@ -92,51 +118,43 @@ void Timer::m_tick ( void )
   {
 
     // tick and calculate the time between two frames
-    //uint64_t current;
-    if (QueryPerformanceCounter ( (LARGE_INTEGER*) &m_currentFrame ))
+    LARGE_INTEGER current;
+    if (QueryPerformanceCounter ( &current ))
     {
 
-      // update the timer
+      m_currentFrame = current.QuadPart;
+
+      // update timer
       m_deltaTime = m_currentFrame - m_previousFrame; // the elapsed time of one frame
       m_previousFrame = m_currentFrame; // preparation for the next tick
-
 
       // clamp large deltas from paused states
       if (m_deltaTime > m_deltaTimeMax)
         m_deltaTime = m_deltaTimeMax;
-      // in case, a negative delta means that the processor goes idle. the cause can be an overflow,
-      // a power save mode or the movement of the process to another processor.
+
+      //// in case, a negative delta means that the processor goes idle. the cause can be an overflow,
+      //// a power save mode or the movement of the process to another processor.
       //if (m_deltaTime < 0)
       //  m_deltaTime = 0;
 
 
-    // small deltas
-    //if ((m_deltaTime - m_elapsedTicks) < m_frequency / 4000)
-    //{
-    //  m_deltaTime = m_elapsedTicks;
-    //}
+      // small deltas
+      //if ((m_deltaTime - m_elapsedTicks) < m_frequency / 4000)
+      //{
+      //  m_deltaTime = m_elapsedTicks;
+      //}
 
-    // keep delta time of current frame untouched
-      m_leftOver = m_frequency - m_deltaTime;
+      // keep delta time of current frame untouched
+      m_ticksLeftOver = m_frequency - m_deltaTime;
 
 
-      //m_sleepFactor = m_leftOver * m_secondsPerCount * 10000000; // 10, 10000, 10000000
-      // note that each second is 1000 milliseconds, 1000000 microseconds and 1000000000 nanoseconds
+      //m_sleepFactor = m_ticksLeftOver * m_secondsPerCount * 10000000; // 10, 10000, 10000000
+      //// note that each second is 1000 milliseconds, 1000000 microseconds and 1000000000 nanoseconds
       //std::this_thread::sleep_for ( std::chrono::nanoseconds ( long ( m_sleepFactor ) ) );
 
 
-      // calculate a split of sleep factor
-      uint64_t tempOne;
-      uint64_t tempTwo;
-      QueryPerformanceCounter ( (LARGE_INTEGER*) &tempOne );
-
-      std::this_thread::sleep_for ( std::chrono::microseconds ( 1 ) );
-
-      QueryPerformanceCounter ( (LARGE_INTEGER*) &tempTwo );
-
-      m_split = tempTwo - tempOne;
       m_sleepFactor = 0;
-      m_sleepFactor = (m_leftOver - m_split) / m_split;
+      m_sleepFactor = (m_ticksLeftOver - m_split) / m_split;
       m_sleepFactor = m_sleepFactor * m_secondsPerCount * 10000;
 
       // ToDo: implement timer class at extend (the factors must be implemented at updating time)
@@ -151,7 +169,7 @@ void Timer::m_tick ( void )
       uint64_t passedTicks { 0 };
       uint64_t sumOfPassed { 0 };
       int t { 0 };
-      while (m_leftOver >= 0)
+      while (m_ticksLeftOver >= 0)
       {
 
         QueryPerformanceCounter ( &tempCurrent );
@@ -159,9 +177,9 @@ void Timer::m_tick ( void )
 
         sumOfPassed += passedTicks;
 
-        m_totalTicks += m_elapsedTicks;
+        m_ticksTotal += m_ticksElapsed;
 
-        m_leftOver -= passedTicks * 3;
+        m_ticksLeftOver -= passedTicks * 3;
 
         //if (m_FPS > 0)
         //{
@@ -186,7 +204,7 @@ void Timer::m_tick ( void )
 
         //    }
 
-          //std::this_thread::sleep_for ( std::chrono::microseconds ( m_sleepFactor - (m_sleepFactor / (60 - m_FPS)) ) );
+        //std::this_thread::sleep_for ( std::chrono::microseconds ( m_sleepFactor - (m_sleepFactor / (60 - m_FPS)) ) );
         std::this_thread::sleep_for ( std::chrono::microseconds ( m_sleepFactor ) );
 
 
@@ -248,14 +266,14 @@ void Timer::m_tick ( void )
 };
 
 
-void Timer::m_event ( const std::string& type )
+void Timer::m_event ( const typeEvent& type )
 {
   try
   {
 
-    long long current;
+    LARGE_INTEGER current;
 
-    if (QueryPerformanceCounter ( (LARGE_INTEGER*) &current ))
+    if (QueryPerformanceCounter ( &current ))
     {
       // if start is requested as event (invoked at game reactivation)
       //if ((type == "start") && (m_paused))
@@ -278,11 +296,11 @@ void Timer::m_event ( const std::string& type )
       //}
 
       // if reset is requested as event (start of the game loop)
-      if (type == "reset")
+      if (type == typeEvent::reset)
       {
         // prepare the timer:
-        m_timeStart = current;
-        m_previousFrame = current;
+        m_timeStart = current.QuadPart;
+        m_previousFrame = current.QuadPart;
         m_timeLastIdle = 0;
       }
 
@@ -302,7 +320,16 @@ void Timer::m_event ( const std::string& type )
 };
 
 
-const double Timer::m_getTotalTime ( void )
+uint64_t& const Timer::m_getTotalTicks ( const typeTiming& type )
+{
+
+  uint64_t result { 0 };
+  return result;
+
+};
+
+
+double& const Timer::m_getTotalSeconds ( const typeTiming& type )
 {
 
   // total running time from the start of the game

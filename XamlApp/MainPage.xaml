@@ -57,14 +57,14 @@
         HorizontalAlignment="Right"
         VerticalAlignment="Center"
         Click="Button_Click"
-        Content="Click"
+        Content="Button"
         FontSize="15" />
+      <!--  Content="{x:Bind Test, Mode=OneWay}"  -->
     </Grid>
 
 
     <Grid Grid.Row="1" Grid.RowSpan="1">
-      <SwapChainPanel
-        x:Name="swapChainPanel" />
+      <SwapChainPanel x:Name="swapChainPanel" />
     </Grid>
   </Grid>
 

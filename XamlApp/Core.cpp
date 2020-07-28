@@ -158,6 +158,8 @@ void TheCore::m_resizeResources ( const bool& displayMode )
 
         m_D2D->m_allocated = false;
 
+        rC = m_D2D->m_stateBlock->Release ();
+
         rC = m_D2D->m_textFormatLogs->Release ();
         rC = m_D2D->m_textFormatFPS->Release ();
         rC = m_D2D->m_textFormatPointer->Release ();
@@ -169,6 +171,8 @@ void TheCore::m_resizeResources ( const bool& displayMode )
         rC = m_D2D->m_deviceContextBitmap->Release ();
         rC = m_D2D->m_deviceContextBuffer->Release ();
         rC = m_D2D->m_deviceContext->Release ();
+
+        m_D2D->m_stateBlock.detach ();
 
         m_D2D->m_textLayoutFPS.detach ();
         m_D2D->m_textLayoutLogs.detach ();
@@ -293,9 +297,10 @@ void TheCore::m_frameStatistics ( void )
 
         // before rendering a text to a bitmap: the creation of the text layout
         hR = m_D2D->m_directWriteFactory->CreateTextLayout ( outFPS.str ().c_str (), (UINT32) outFPS.str ().size (),
-                                                             m_D2D->m_textFormatFPS.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips,
-                                                             m_mainPageTypes->m_getDisplay ()->panelHeightDips,
+                                                             m_D2D->m_textFormatFPS.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips, 50.f,
                                                              reinterpret_cast<IDWriteTextLayout**>(m_D2D->m_textLayoutFPS.put ()) );
+        if (SUCCEEDED ( hR ))
+          hR = m_D2D->m_textLayoutFPS->GetMetrics ( &m_D2D->m_textMetricsFPS );
         if (FAILED ( hR ))
         {
           PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -321,9 +326,10 @@ void TheCore::m_frameStatistics ( void )
     }
 
     hR = m_D2D->m_directWriteFactory->CreateTextLayout ( outLastlog.str ().c_str (), (UINT32) (UINT32) outLastlog.str ().size (),
-                                                         m_D2D->m_textFormatLogs.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips,
-                                                         m_mainPageTypes->m_getDisplay ()->panelHeightDips,
+                                                         m_D2D->m_textFormatLogs.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips, 50.f,
                                                          reinterpret_cast<IDWriteTextLayout**>(m_D2D->m_textLayoutLogs.put ()) );
+    if (SUCCEEDED ( hR ))
+      hR = m_D2D->m_textLayoutLogs->GetMetrics ( &m_D2D->m_textMetricsLogs );
     if (FAILED ( hR ))
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -343,9 +349,10 @@ void TheCore::m_frameStatistics ( void )
     }
 
     hR = m_D2D->m_directWriteFactory->CreateTextLayout ( outPointer.str ().c_str (), (UINT32) (UINT32) outPointer.str ().size (),
-                                                         m_D2D->m_textFormatPointer.get (), m_mainPageTypes->m_getDisplay ()->panelWidthDips,
-                                                         m_mainPageTypes->m_getDisplay ()->panelHeightDips,
+                                                         m_D2D->m_textFormatPointer.get (), 300.f, 30.f,
                                                          reinterpret_cast<IDWriteTextLayout**>(m_D2D->m_textLayoutPointer.put ()) );
+    if (SUCCEEDED ( hR ))
+      hR = m_D2D->m_textLayoutPointer->GetMetrics ( &m_D2D->m_textMetricsPointer );
     if (FAILED ( hR ))
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",

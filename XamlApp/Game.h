@@ -51,6 +51,7 @@ public:
   const bool m_run ( void ); // game engine loop
   void m_render ( void ); // render the scene
   void m_update ( void ); // updating the game world
+  void m_updateDisplay ( void ); // on display properties changed
   void m_release ( void ); // suspension preparation
 
   const bool& m_isReady ( void ) { return m_initialized; }; // get the initialized state

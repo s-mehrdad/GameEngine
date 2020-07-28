@@ -135,6 +135,12 @@ bool Shader::m_initializeCompiled ( std::string* filePaths, D3D11_INPUT_ELEMENT_
     Buffer pixelBuf; // pixel shader buffer
     m_loadCompiled ( filePaths [1], &pixelBuf );
 
+    //// Microsoft template:
+    //auto loadVSTask = DX::ReadDataAsync ( L".cso" );
+    //auto createVSTask = loadVSTask.then ( [this]( const std::vector<byte>& fileData ) {
+    //                                      //create shader
+    //                                      } )
+
     if (vertexBuf.buffer && pixelBuf.buffer)
     {
 

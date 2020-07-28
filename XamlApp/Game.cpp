@@ -91,7 +91,7 @@ void Game::m_allocateResources ( void )
     m_allocated = false;
 
     // the game framework instantiation
-    m_universe = new (std::nothrow) Universe ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get () );
+    m_universe = new (std::nothrow) Universe ( m_core );
 
     if (!m_universe->m_isInitialized ())
     {
@@ -144,9 +144,9 @@ const bool Game::m_run ( void )
     unsigned short counter { 1 };
 
     // setting the needed starting points
-    m_core->m_getTimer ()->m_event ( "reset" ); // reset (start)
+    m_core->m_getTimer ()->m_event ( typeEvent::reset ); // reset (start)
 
-    m_universe->m_getCamera ()->setPosition ( 0.0f, 0.0f, -2.2f ); // set the start view
+    m_universe->m_getCamera ()->setPosition ( 0.0f, 0.0f, -1.5f ); // set the start view
 
     const float colour [] { 0.2f, 0.6f, 0.6f, 1.0f };
     m_universe->m_getDiffuseLight ()->m_setColour ( colour ); // diffuse light colour
@@ -156,25 +156,29 @@ const bool Game::m_run ( void )
 
 
 
-    auto workItemHandler =
-      winrt::Windows::System::Threading::WorkItemHandler
-      ( [this]( winrt::Windows::Foundation::IAsyncAction )
-        {
-          do
-          {
-            m_update ();
+    //auto workItemHandler =
+    //  winrt::Windows::System::Threading::WorkItemHandler
+    //  ( [this]( winrt::Windows::Foundation::IAsyncAction )
+    //    {
+    //      do
+    //      {
 
-            std::this_thread::sleep_for ( std::chrono::milliseconds ( 10 ) );
+    //        if (!m_paused)
+    //        {
+    //          m_update ();
+    //        }
 
-          } while (PointerProvider::getVariables ()->running == true);
+    //        std::this_thread::sleep_for ( std::chrono::milliseconds ( 10 ) );
 
-        } );
-    // run the task on a high priority background thread
-    winrt::Windows::Foundation::IAsyncAction loop;
-    loop = winrt::Windows::System::Threading::ThreadPool::RunAsync (
-      workItemHandler,
-      winrt::Windows::System::Threading::WorkItemPriority::High,
-      winrt::Windows::System::Threading::WorkItemOptions::TimeSliced );
+    //      } while (PointerProvider::getVariables ()->running == true);
+
+    //    } );
+    //// run the task on a high priority background thread
+    //winrt::Windows::Foundation::IAsyncAction loop;
+    //loop = winrt::Windows::System::Threading::ThreadPool::RunAsync (
+    //  workItemHandler,
+    //  winrt::Windows::System::Threading::WorkItemPriority::High,
+    //  winrt::Windows::System::Threading::WorkItemOptions::TimeSliced );
 
 
 
@@ -228,7 +232,7 @@ const bool Game::m_run ( void )
         // -----------------------------------------------------------------------------------------------------------
         // -- update the game universe/logic
         // Note the needed delta time
-        //m_update ();
+        m_update ();
 
         if (counter == 59)
           PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "gameThread",
@@ -310,13 +314,13 @@ void Game::m_render ( void )
     m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_triangles->m_getVerticesCount (), 0, 0 );
 
 
-    if (!_2d_line->m_getMapped ())
-    {
+    //if (!_2d_line->m_getMapped ())
+    //{
       m_core->m_getD3D ()->m_getDevCon ()->IASetVertexBuffers ( 0, 1, _2d_line->m_getVertexBuffer (), &strides, &offset );
       m_core->m_getD3D ()->m_getDevCon ()->IASetIndexBuffer ( _2d_line->m_getIndexBuffer (), DXGI_FORMAT_R32_UINT, 0 );
       m_core->m_getD3D ()->m_getDevCon ()->IASetPrimitiveTopology ( D3D10_PRIMITIVE_TOPOLOGY_LINELIST );
       m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_line->m_getVerticesCount (), 0, 0 );
-    }
+    //}
 
 
 
@@ -371,7 +375,7 @@ void Game::m_update ( void )
   try
   {
 
-    //_2d_line->m_update ();
+    _2d_line->m_update ();
     m_universe->m_update ();
 
   }
@@ -380,6 +384,12 @@ void Game::m_update ( void )
     PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "gameThread",
                                                 ex.what () );
   }
+};
+
+
+void Game::m_updateDisplay ( void )
+{
+  m_universe->m_createResources ();
 };
 
 

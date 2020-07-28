@@ -303,6 +303,7 @@ bool Direct2D::m_initializeTextFormats ( void )
 
     // paragraph alignment
     hR = m_textFormatFPS->SetParagraphAlignment ( DWRITE_PARAGRAPH_ALIGNMENT_NEAR );
+    hR = m_factory->CreateDrawingStateBlock ( m_stateBlock.put () );
 
     if (SUCCEEDED ( hR ))
       hR = m_textFormatLogs->SetParagraphAlignment ( DWRITE_PARAGRAPH_ALIGNMENT_NEAR );
@@ -336,24 +337,54 @@ void Direct2D::m_debugInfos ( void )
 
     if (m_core->m_debug && (!m_core->m_isResizing) && m_textLayoutsDebug)
     {
+
+      HRESULT hR;
+      float screenWidth { m_core->m_mainPageTypes->m_getDisplay ()->outputWidthDips };
+      float screenHeight { m_core->m_mainPageTypes->m_getDisplay ()->outputHeightDips };
+
+      m_deviceContext.get ()->SaveDrawingState ( m_stateBlock.get () );
+
       // drawing operations must be issued between a BeginDraw and EndDraw calls
       m_deviceContext->BeginDraw ();
+
+
+      // positioning on top left
+      D2D1::Matrix3x2F screenTranslationFPS =
+        D2D1::Matrix3x2F::Translation ( 3, 3 );
+      m_deviceContext->SetTransform ( screenTranslationFPS * m_core->m_mainPageTypes->m_getDisplay ()->orientationTransform2D );
       // drawing a fully formatted text
       if (m_textLayoutFPS)
-        m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 3.0f, 3.0f ), m_textLayoutFPS.get (),
+        m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 0.0f, 0.0f ), m_textLayoutFPS.get (),
                                           m_brushWhite.get (), D2D1_DRAW_TEXT_OPTIONS_NONE );
+
+      // positioning on bottom left
+      D2D1::Matrix3x2F screenTranslationLogs =
+        D2D1::Matrix3x2F::Translation ( screenWidth - m_textMetricsLogs.layoutWidth + 3,
+                                        screenHeight - m_textMetricsLogs.height + (m_textMetricsLogs.height / m_textMetricsLogs.lineCount) );
+      m_deviceContext->SetTransform ( screenTranslationLogs * m_core->m_mainPageTypes->m_getDisplay ()->orientationTransform2D );
       if (m_textLayoutLogs)
-        m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 3.0f, 41.0f ), m_textLayoutLogs.get (),
+        m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 0.0f, 0.0f ), m_textLayoutLogs.get (),
                                           m_brushYellow.get (), D2D1_DRAW_TEXT_OPTIONS_NONE );
 
+      // positioning on left and somewhat middle
+      D2D1::Matrix3x2F screenTranslationPointer =
+        D2D1::Matrix3x2F::Translation ( 3, screenHeight - 100 );
+      m_deviceContext->SetTransform ( screenTranslationPointer * m_core->m_mainPageTypes->m_getDisplay ()->orientationTransform2D );
       if (m_textLayoutLogs)
-        m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 3.0f, 67.0f ), m_textLayoutPointer.get (),
+        m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 0.0f, 0.0f ), m_textLayoutPointer.get (),
                                           m_brushBlack.get (), D2D1_DRAW_TEXT_OPTIONS_NONE );
 
-      if (FAILED ( m_deviceContext->EndDraw () ))
+      m_deviceContext.get ()->RestoreDrawingState ( m_stateBlock.get () );
+
+      if (FAILED ( hR = m_deviceContext->EndDraw () ))
       {
         PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
                                                     "Drawing the FPS information on screen failed!" );
+
+        if (hR == D2DERR_RECREATE_TARGET)
+        {
+          // this error indicates that the device is lost, which will be handled during the next call to Present.
+        }
       }
     }
 

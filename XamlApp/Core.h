@@ -62,6 +62,7 @@ public:
   Timer* m_getTimer ( void ) { return m_timer; }; // get the pointer to application timer
   Direct3D* m_getD3D ( void ) { return m_D3D; }; // get the pointer to application Direct3D
   Direct2D* m_getD2D ( void ) { return m_D2D; }; // get the pointer to application Direct2D
+  MainPageTypes* m_getMainPageTypes ( void ) { return m_mainPageTypes; }; // get the pointer to main page types
 };
 
 

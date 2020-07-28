@@ -44,6 +44,10 @@ private:
   winrt::com_ptr<IDWriteTextFormat2> m_textFormatFPS; // text formats
   winrt::com_ptr<IDWriteTextFormat2> m_textFormatLogs;
   winrt::com_ptr<IDWriteTextFormat2> m_textFormatPointer;
+  DWRITE_TEXT_METRICS1 m_textMetricsFPS; // text metrics
+  DWRITE_TEXT_METRICS1 m_textMetricsLogs;
+  DWRITE_TEXT_METRICS1 m_textMetricsPointer;
+
   bool m_textLayoutsDebug; // output prevention while updating
 
   bool m_allocated; // true if resources are allocated successful
