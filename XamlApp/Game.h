@@ -15,6 +15,7 @@
 #include "resources/Shader.h"
 #include "resources/Texture.h"
 #include "objects/Polygons.h"
+#include "objects/Mesh.h"
 
 
 class Game : public IDeviceNotify
@@ -26,8 +27,8 @@ private:
 
   ShaderColour* m_shaderColour;
   ShaderTexture* m_shaderTexture;
-  Texture<TargaHeader>* m_texture; // texture resource
-  ShaderDiffuseLight* m_shaderDiffuseLight;
+  Texture* m_texture; // texture resource
+  ShaderTexDiffLight* m_shaderDiffuseLight;
 
   // 2D models:
   Triangles* _2d_triangles; // three triangles
@@ -37,6 +38,9 @@ private:
 
   // 3D models
   Cube* _3d_cube;
+
+  // 3D mesh models
+  MeshCube* _3d_meshCube;
 
   bool m_allocated; // true if resources allocation was successful
   bool m_paused; // true if the game is paused

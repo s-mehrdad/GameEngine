@@ -29,6 +29,8 @@
 
 #include <future> // C++ future header
 
+#include <math.h> // C standard math header
+
 
 // Windows dependencies
 #include <windows.h>

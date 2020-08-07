@@ -368,7 +368,7 @@ void Direct2D::m_debugInfos ( void )
 
       // positioning on left and somewhat middle
       D2D1::Matrix3x2F screenTranslationPointer =
-        D2D1::Matrix3x2F::Translation ( 3, screenHeight - 100 );
+        D2D1::Matrix3x2F::Translation ( 3, 40 );
       m_deviceContext->SetTransform ( screenTranslationPointer * m_core->m_mainPageTypes->m_getDisplay ()->orientationTransform2D );
       if (m_textLayoutLogs)
         m_deviceContext->DrawTextLayout ( D2D1::Point2F ( 0.0f, 0.0f ), m_textLayoutPointer.get (),

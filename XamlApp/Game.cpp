@@ -99,16 +99,15 @@ void Game::m_allocateResources ( void )
                                                   "Initialization of game universe failed!" );
     }
 
-    m_shaderColour = new (std::nothrow) ShaderColour ( m_core->m_getD3D ()->m_getDevice ().get () );
+    m_shaderColour = new (std::nothrow) ShaderColour ( m_core );
 
-    m_shaderTexture = new (std::nothrow) ShaderTexture ( m_core->m_getD3D ()->m_getDevice ().get () );
+    m_shaderTexture = new (std::nothrow) ShaderTexture ( m_core );
 
     _2d_triangles = new (std::nothrow) Triangles ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get () );
 
     _2d_line = new (std::nothrow) Line ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get () );
 
-    m_texture = new (std::nothrow) Texture<TargaHeader>
-      ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get (), "./textures/clouds.tga" ); // a texture file
+    m_texture = new (std::nothrow) Texture ( m_core, "./textures/clouds.tga" ); // a texture file
     if (!m_texture)
     {
       PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
@@ -117,11 +116,13 @@ void Game::m_allocateResources ( void )
     }
     _2d_texturedTriangles = new (std::nothrow) TexturedTriangles ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get () );
 
-    m_shaderDiffuseLight = new (std::nothrow) ShaderDiffuseLight ( m_core->m_getD3D ()->m_getDevice ().get () );
+    m_shaderDiffuseLight = new (std::nothrow) ShaderTexDiffLight ( m_core );
 
     _2d_lightedTriangle = new (std::nothrow) LightedTriangle ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get () );
 
     _3d_cube = new (std::nothrow) Cube ( m_core->m_getD3D ()->m_getDevice ().get (), m_core->m_getD3D ()->m_getDevCon ().get () );
+
+    _3d_meshCube = new (std::nothrow) MeshCube ( m_core, dynamic_cast<Shader*>(m_shaderColour), m_texture );
 
     m_allocated = true;
 
@@ -146,7 +147,7 @@ const bool Game::m_run ( void )
     // setting the needed starting points
     m_core->m_getTimer ()->m_event ( typeEvent::reset ); // reset (start)
 
-    m_universe->m_getCamera ()->setPosition ( 0.0f, 0.0f, -1.5f ); // set the start view
+    m_universe->m_getCamera ()->setPosition ( 0.0f, 0.0f, -2.5f ); // set the start view
 
     const float colour [] { 0.2f, 0.6f, 0.6f, 1.0f };
     m_universe->m_getDiffuseLight ()->m_setColour ( colour ); // diffuse light colour
@@ -316,10 +317,10 @@ void Game::m_render ( void )
 
     //if (!_2d_line->m_getMapped ())
     //{
-      m_core->m_getD3D ()->m_getDevCon ()->IASetVertexBuffers ( 0, 1, _2d_line->m_getVertexBuffer (), &strides, &offset );
-      m_core->m_getD3D ()->m_getDevCon ()->IASetIndexBuffer ( _2d_line->m_getIndexBuffer (), DXGI_FORMAT_R32_UINT, 0 );
-      m_core->m_getD3D ()->m_getDevCon ()->IASetPrimitiveTopology ( D3D10_PRIMITIVE_TOPOLOGY_LINELIST );
-      m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_line->m_getVerticesCount (), 0, 0 );
+    m_core->m_getD3D ()->m_getDevCon ()->IASetVertexBuffers ( 0, 1, _2d_line->m_getVertexBuffer (), &strides, &offset );
+    m_core->m_getD3D ()->m_getDevCon ()->IASetIndexBuffer ( _2d_line->m_getIndexBuffer (), DXGI_FORMAT_R32_UINT, 0 );
+    m_core->m_getD3D ()->m_getDevCon ()->IASetPrimitiveTopology ( D3D10_PRIMITIVE_TOPOLOGY_LINELIST );
+    m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _2d_line->m_getVerticesCount (), 0, 0 );
     //}
 
 
@@ -361,6 +362,9 @@ void Game::m_render ( void )
     m_core->m_getD3D ()->m_getDevCon ()->IASetPrimitiveTopology ( D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
     m_core->m_getD3D ()->m_getDevCon ()->DrawIndexed ( _3d_cube->m_getVerticesCount (), 0, 0 );
 
+
+    _3d_meshCube->m_render ();
+
   }
   catch (const std::exception& ex)
   {
@@ -376,6 +380,8 @@ void Game::m_update ( void )
   {
 
     _2d_line->m_update ();
+    _3d_meshCube->m_update ();
+
     m_universe->m_update ();
 
   }
@@ -411,6 +417,12 @@ void Game::m_release ( void )
 
 
     // object models
+    if (_3d_meshCube)
+    {
+      _3d_meshCube->m_releaseData ();
+      delete _3d_cube;
+      _3d_cube = nullptr;
+    }
     if (_3d_cube)
     {
       _3d_cube->m_release ();

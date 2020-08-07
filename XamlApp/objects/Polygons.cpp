@@ -165,25 +165,25 @@ Triangles::Triangles ( ID3D11Device3* dev, ID3D11DeviceContext3* devC ) :
     m_verticesCount = 9;
 
     // three triangles vertices data
-    m_verticesData [0].position = DirectX::XMFLOAT3 { -0.95f, 0.0f, 0.0f }; // bottom left
+    m_verticesData [0].position = DirectX::XMFLOAT3 { -1.4f, -0.9f, 0.0f }; // bottom left
     m_verticesData [0].color = DirectX::XMFLOAT4 { 0.13f, 0.13f, 0.13f, 1.0f };
-    m_verticesData [1].position = DirectX::XMFLOAT3 { -0.9f, -0.12f, 0.0f }; // top middle
+    m_verticesData [1].position = DirectX::XMFLOAT3 { -1.2f, -0.7f, 0.0f }; // top middle
     m_verticesData [1].color = DirectX::XMFLOAT4 { 0.53f, 0.53f, 0.53f, 1.0f };
-    m_verticesData [2].position = DirectX::XMFLOAT3 { -1.0f, -0.12f, 0.0f }; // bottom right
+    m_verticesData [2].position = DirectX::XMFLOAT3 { -1.0f, -0.9f, 0.0f }; // bottom right
     m_verticesData [2].color = DirectX::XMFLOAT4 { 0.93f, 0.93f, 0.93f, 1.0f };
 
-    m_verticesData [3].position = DirectX::XMFLOAT3 { -0.75f, 0.0f, 0.0f };
+    m_verticesData [3].position = DirectX::XMFLOAT3 { -1.4f, -0.6f, 0.0f };
     m_verticesData [3].color = DirectX::XMFLOAT4 { 0.13f, 0.80f, 0.13f, 1.0f };
-    m_verticesData [4].position = DirectX::XMFLOAT3 { -0.7f, -0.12f, 0.0f };
+    m_verticesData [4].position = DirectX::XMFLOAT3 { -1.2f, -0.5f, 0.0f };
     m_verticesData [4].color = DirectX::XMFLOAT4 { 0.13f, 0.80f, 0.13f, 1.0f };
-    m_verticesData [5].position = DirectX::XMFLOAT3 { -0.8f, -0.12f, 0.0f };
+    m_verticesData [5].position = DirectX::XMFLOAT3 { -1.0f, -0.6f, 0.0f };
     m_verticesData [5].color = DirectX::XMFLOAT4 { 0.13f, 0.80f, 0.13f, 1.0f };
 
-    m_verticesData [6].position = DirectX::XMFLOAT3 { -0.55f, 0.2f, 0.0f };
+    m_verticesData [6].position = DirectX::XMFLOAT3 { -1.45f, -0.4f, 0.0f };
     m_verticesData [6].color = DirectX::XMFLOAT4 { 0.13f, 0.13f, 0.13f, 1.0f };
-    m_verticesData [7].position = DirectX::XMFLOAT3 { -0.5f, -0.12f, 0.0f };
+    m_verticesData [7].position = DirectX::XMFLOAT3 { -1.3f, 0.1f, 0.0f };
     m_verticesData [7].color = DirectX::XMFLOAT4 { 0.53f, 0.53f, 0.53f, 1.0f };
-    m_verticesData [8].position = DirectX::XMFLOAT3 { -0.6f, -0.12f, 0.0f };
+    m_verticesData [8].position = DirectX::XMFLOAT3 { -1.15f, -0.4f, 0.0f };
     m_verticesData [8].color = DirectX::XMFLOAT4 { 0.93f, 0.93f, 0.93f, 1.0f };
 
     // triangles' vertices indices
@@ -409,17 +409,17 @@ LightedTriangle::LightedTriangle ( ID3D11Device3* dev, ID3D11DeviceContext3* dev
     m_verticesCount = 3;
 
     // the lighted triangle
-    m_verticesData [0].position = DirectX::XMFLOAT3 { 0.0f, -0.8f, 0.0f };
+    m_verticesData [0].position = DirectX::XMFLOAT3 { -0.4f, -0.9f, 0.0f };
     m_verticesData [0].texture = DirectX::XMFLOAT2 { 0.0f, 1.0f };
     m_verticesData [0].normal = DirectX::XMFLOAT3 { 0.0f, 0.0f, -1.0f };
     // normal vector: perpendicular to the polygon's face,
     // thus the exact direction the face is pointing is calculable.
     // note: set along the Z axis (-1) so the normal point toward the viewer.
 
-    m_verticesData [1].position = DirectX::XMFLOAT3 { 0.4f, 0.0f, 0.0f };
+    m_verticesData [1].position = DirectX::XMFLOAT3 { -0.2f, -0.5f, 0.0f };
     m_verticesData [1].texture = DirectX::XMFLOAT2 { 0.5f, 0.0f };
     m_verticesData [1].normal = DirectX::XMFLOAT3 { 0.0f, 0.0f, -1.0f };
-    m_verticesData [2].position = DirectX::XMFLOAT3 { 0.8f, -0.8f, 0.0f };
+    m_verticesData [2].position = DirectX::XMFLOAT3 { 0.0f, -0.9f, 0.0f };
     m_verticesData [2].texture = DirectX::XMFLOAT2 { 1.0f, 1.0f };
     m_verticesData [2].normal = DirectX::XMFLOAT3 { 0.0f, 0.0f, -1.0f };
 

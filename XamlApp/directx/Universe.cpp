@@ -13,7 +13,7 @@
 
 Universe::Universe ( TheCore* coreObj ) :
   m_core ( coreObj ), m_camera ( nullptr ),
-  m_worldRotationMatrix ( 0.0f ), m_matrixBuffer ( nullptr ),
+  m_matrixBuffer ( nullptr ), m_worldRotationFactor ( .0f ),
   m_diffuseLight ( nullptr ), m_diffuseLightBuffer ( nullptr ),
   m_initialized ( false )
 {
@@ -75,36 +75,41 @@ void Universe::m_createResources ()
     const float m_screenDepth { 100.0f }; // depth settings
     const float m_screenNear { 0.1f }; // depth settings
 
-    m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH ( fovAngleY, aspectRatio, m_screenNear, m_screenDepth );
+    //m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH ( fovAngleY, aspectRatio, m_screenNear, m_screenDepth );
 
     // right-handed coordinate system using row-major matrices
     DirectX::XMMATRIX perspectiveMatrix = DirectX::XMMatrixPerspectiveFovLH ( fovAngleY, aspectRatio, m_screenNear, m_screenDepth );
 
+    // note that based on Microsoft template, orientation transform 3D is post-multiplied here,
+    // so that correctly orient the scene to match display orientation, which is required
+    // for any draw call to swap chain render target and for draws to other targets,
+    // this transform should not be applied.
     DirectX::XMFLOAT4X4 orientation = m_core->m_getMainPageTypes ()->m_getDisplay ()->orientationTransform3D;
 
     DirectX::XMMATRIX orientationMatrix = DirectX::XMLoadFloat4x4 ( &orientation );
 
-    DirectX::XMStoreFloat4x4 ( &test.projection, DirectX::XMMatrixTranspose ( perspectiveMatrix * orientationMatrix ) );
+    DirectX::XMStoreFloat4x4 ( &m_worldViewProjectionDate.projection, DirectX::XMMatrixTranspose ( perspectiveMatrix * orientationMatrix ) );
 
     // word matrix initialization using identity matrix (usable for shaders)
     // purpose: converts objects' vertices into vertices in the 3D scene,
     // additionally to rotate, translate and scale our objects in 3D space
-    m_worldMatrix = DirectX::XMMatrixIdentity ();
+    //m_worldMatrix = DirectX::XMMatrixIdentity ();
 
+    DirectX::XMStoreFloat4x4 ( &m_worldViewProjectionDate.world, DirectX::XMMatrixIdentity () );
 
     // generally a view matrix representing the camera is initialized in this section (camera class)
 
 
     // orthographic projection matrix creation
     // purpose: to render 2D elements like user interface directly and skipping 3D rendering
-    m_orthographicMatrix = DirectX::XMMatrixOrthographicLH ( width, height, m_screenNear, m_screenDepth );
+    //m_orthographicMatrix = DirectX::XMMatrixOrthographicLH ( width, height, m_screenNear, m_screenDepth );
 
 
     // dynamic matrix constant buffer description
     // purpose: to access internal variables introduced in vertex shader
-    CD3D11_BUFFER_DESC matrixBufferDesc ( sizeof ( MatrixBuffer ), D3D11_BIND_CONSTANT_BUFFER );
+    CD3D11_BUFFER_DESC matrixBufferDesc ( sizeof ( worldViewProjectionMatrices ), D3D11_BIND_CONSTANT_BUFFER );
     matrixBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    matrixBufferDesc.ByteWidth = sizeof ( MatrixBuffer );
+    matrixBufferDesc.ByteWidth = sizeof ( worldViewProjectionMatrices );
     matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     //matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     matrixBufferDesc.MiscFlags = 0;
@@ -188,7 +193,7 @@ void Universe::m_renderResources ( void )
 
     //D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-    MatrixBuffer* dataPtrMatrix;
+    worldViewProjectionMatrices* dataPtrMatrix;
 
 
     // matrices setup + updating the view matrix each frame:
@@ -199,10 +204,10 @@ void Universe::m_renderResources ( void )
     //DirectX::XMStoreFloat4x4 ( &view, DirectX::XMMatrixTranspose ( m_camera->getView () ) );
     //DirectX::XMStoreFloat4x4 ( &projection, DirectX::XMMatrixTranspose ( m_projectionMatrix ) );
 
-    DirectX::XMStoreFloat4x4 ( &test.world, DirectX::XMMatrixTranspose ( m_worldMatrix ) );
-    DirectX::XMStoreFloat4x4 ( &test.view, DirectX::XMMatrixTranspose ( m_camera->getView () ) );
+    //DirectX::XMStoreFloat4x4 ( &m_worldViewProjectionDate.world, DirectX::XMMatrixTranspose ( m_worldMatrix ) );
+    DirectX::XMStoreFloat4x4 ( &m_worldViewProjectionDate.view, DirectX::XMMatrixTranspose ( m_camera->getView () ) );
 
-    m_core->m_getD3D ()->m_getDevCon ()->UpdateSubresource1 ( m_matrixBuffer, 0, NULL, &test, 0, 0, 0 );
+    m_core->m_getD3D ()->m_getDevCon ()->UpdateSubresource1 ( m_matrixBuffer, 0, NULL, &m_worldViewProjectionDate, 0, 0, 0 );
 
 
     //// prepare for write (lock the constant buffer)
@@ -280,14 +285,15 @@ void Universe::m_update ( void )
   try
   {
 
-    m_worldRotationMatrix += 0.01f;
-    if (m_worldRotationMatrix > 360.0f)
-      m_worldRotationMatrix -= 360.0f;
+
+    m_worldRotationFactor -= .005f;
+    if (m_worldRotationFactor < -360.0f)
+      m_worldRotationFactor = .0f;
 
     // spin the game world using the updated rotation factor
     // the only parameter is angle of rotation.
     // note that looking along the rotation axis toward the origin, angles are measured clockwise.
-    m_worldMatrix = DirectX::XMMatrixRotationY ( m_worldRotationMatrix );
+    DirectX::XMStoreFloat4x4 ( &m_worldViewProjectionDate.world, DirectX::XMMatrixRotationY ( m_worldRotationFactor ) );
 
   }
   catch (const std::exception& ex)
