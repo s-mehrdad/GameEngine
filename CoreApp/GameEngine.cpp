@@ -3,7 +3,7 @@
 /// 
 /// </summary>
 /// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,30.06.2020</changed>
+/// <changed>ʆϒʅ,07.11.2021</changed>
 // ********************************************************************************
 
 #include "pch.h"
@@ -220,9 +220,9 @@ int WINAPI wWinMain ( _In_ HINSTANCE /*hInstance*/,
     }
 
 
-    //auto view = winrt::make<View> ();
-    //CoreApplication::Run ( view );
-    CoreApplication::Run ( View () );
+    auto view = winrt::make<View> ();
+    CoreApplication::Run ( view );
+    //CoreApplication::Run ( View () );
 
     if (View::exitedWith ())
     {

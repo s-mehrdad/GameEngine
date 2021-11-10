@@ -11,11 +11,11 @@
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.18362.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0</WindowsTargetPlatformVersion>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
+    <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -106,8 +106,8 @@
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgRoot)\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /y /d "$(VcpkgRoot)installed\x64-windows\tools\lua\lua.dll" "$(OutDir)"
-xcopy /y /d "$(VcpkgRoot)installed\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy /y /d "$(VcpkgRoot)\installed\x64-windows\bin\lua.dll" "$(OutDir)"
+xcopy /y /d "$(VcpkgRoot)\installed\x64-windows\bin\lua.dll" "$(LayoutDir)"</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -127,8 +127,8 @@ xcopy /y /d "$(VcpkgRoot)installed\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /y /d "$(VcpkgRoot)installed\x64-windows\tools\lua\lua.dll" "$(OutDir)"
-xcopy /y /d "$(VcpkgRoot)installed\x64-windows\tools\lua\lua.dll" "$(LayoutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /y /d "$(VcpkgRoot)\installed\x64-windows\bin\lua.dll" "$(OutDir)"
+xcopy /y /d "$(VcpkgRoot)\installed\x64-windows\bin\lua.dll" "$(LayoutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

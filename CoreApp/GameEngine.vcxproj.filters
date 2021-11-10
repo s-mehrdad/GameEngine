@@ -18,6 +18,7 @@
     <None Include="graphics\pixelT.hlsl" />
     <None Include="graphics\vertexL.hlsl" />
     <None Include="graphics\vertexT.hlsl" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="models\cube.txt" />
