@@ -1,29 +1,31 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Logger.cpp
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 27.06.2020
 /// </summary>
-/// <created>ʆϒʅ,27.06.2020</created>
-/// <state></state>
-// ********************************************************************************
+/// <created>ʆϒʅ, 27.06.2020</created>
+/// <changed>ʆϒʅ, 06.07.2023</changed>
+// ===========================================================================
 
 #include "pch.h"
 #include "Input.h"
 #include "Shared.h"
 
 
-Input::Input ( void )
+Input::Input (void)
 {
-  try
-  {
+    try
+    {
 
 
 
-  }
-  catch (const std::exception& ex)
-  {
-    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                ex.what () );
-  }
+    } catch (const std::exception& ex)
+    {
+        PointerProvider::getFileLogger ()->m_push (logType::error, std::this_thread::get_id (), "mainThread",
+                                                   ex.what ());
+    }
 };
 
 

@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Settings.h
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 06.11.2019
 /// </summary>
-/// <created>ʆϒʅ,06.11.2019</created>
-/// <changed>ʆϒʅ,09.11.2019</changed>
-// ********************************************************************************
+/// <created>ʆϒʅ, 06.11.2019</created>
+/// <changed>ʆϒʅ, 04.07.2023</changed>
+// ===========================================================================
 
 #ifndef SETTINGS_H
 #define SETTINGS_H
@@ -13,9 +16,9 @@
 // configurations container
 struct Configs
 {
-  unsigned int Width;
-  unsigned int Height;
-  bool fullscreen;
+    unsigned int Width;
+    unsigned int Height;
+    bool fullscreen;
 };
 
 
@@ -23,19 +26,19 @@ struct Configs
 class Configurations
 {
 private:
-  std::wstring m_path;
-  Configs m_defaults;
-  Configs m_currents;
+    std::wstring m_path;
+    Configs m_defaults;
+    Configs m_currents;
 
-  bool m_valid;
+    bool m_valid;
 public:
-  Configurations ( void );
-  //~Configurations ( void );
-  const bool& isValid ( void );
+    Configurations (void);
+    //~Configurations ( void );
+    const bool& isValid (void);
 
-  const Configs& m_getDefaults ( void );
-  const Configs& m_getSettings ( void );
-  const bool m_apply ( const Configs& ); // apply method
+    const Configs& m_getDefaults (void);
+    const Configs& m_getSettings (void);
+    const bool m_apply (const Configs&); // apply method
 };
 
 

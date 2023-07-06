@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Settings.h
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 27.06.2020
 /// </summary>
-/// <created>ʆϒʅ,27.06.2020</created>
-/// <state></state>
-// ********************************************************************************
+/// <created>ʆϒʅ, 27.06.2020</created>
+/// <changed>ʆϒʅ, 06.07.2023</changed>
+// ===========================================================================
 
 #ifndef SETTINGS_H
 #define SETTINGS_H
@@ -13,9 +16,9 @@
 // configurations container
 struct Configs
 {
-  unsigned int Width;
-  unsigned int Height;
-  bool fullscreen;
+    unsigned int Width;
+    unsigned int Height;
+    bool fullscreen;
 };
 
 
@@ -23,20 +26,20 @@ struct Configs
 class Configurations
 {
 private:
-  std::wstring m_path;
-  Configs m_defaults; // application defaults
-  Configs m_currents; // user settings
+    std::wstring m_path;
+    Configs m_defaults; // application defaults
+    Configs m_currents; // user settings
 
-  bool m_valid; // true if settings file is not corrupt
+    bool m_valid; // true if settings file is not corrupt
 public:
-  Configurations ( void );
-  //~Configurations ( void );
+    Configurations (void);
+    //~Configurations ( void );
 
-  const bool m_apply ( const Configs& object ); // apply method
+    const bool m_apply (const Configs& object); // apply method
 
-  const bool& isValid ( void ) { return m_valid; }; // get the state of settings file
-  const Configs& m_getDefaults ( void ) { return m_defaults; }; // get application defaults
-  const Configs& m_getSettings ( void ) { return m_currents; }; // get current/user settings
+    const bool& isValid (void) { return m_valid; }; // get the state of settings file
+    const Configs& m_getDefaults (void) { return m_defaults; }; // get application defaults
+    const Configs& m_getSettings (void) { return m_currents; }; // get current/user settings
 };
 
 

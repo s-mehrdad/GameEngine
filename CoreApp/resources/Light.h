@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Light.h
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 01.11.2019
 /// </summary>
-/// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,09.11.2019</changed>
-// ********************************************************************************
+/// <created>ʆϒʅ, 01.11.2019</created>
+/// <changed>ʆϒʅ, 05.07.2023</changed>
+// ===========================================================================
 
 #ifndef LIGHT_H
 #define LIGHT_H
@@ -19,18 +22,18 @@
 class DiffuseLight
 {
 private:
-  DirectX::XMFLOAT4 m_diffuseColour;
-  DirectX::XMFLOAT3 m_diffuseDirection;
-  bool m_initialized; // true if initialization was successful
+    DirectX::XMFLOAT4 m_diffuseColour;
+    DirectX::XMFLOAT3 m_diffuseDirection;
+    bool m_initialized; // true if initialization was successful
 public:
-  DiffuseLight ( void );
-  //~DiffuseLight ( void );
-  const bool& m_isInitialized ( void ); // get the initialized state
+    DiffuseLight (void);
+    //~DiffuseLight ( void );
+    const bool& m_isInitialized (void); // get the initialized state
 
-  void m_setColour ( const float* ); // set diffuse light colour
-  void m_setDirection ( const float* ); // set diffuse light direction
-  DirectX::XMFLOAT4 m_getColour ( void ); // get diffuse light colour
-  DirectX::XMFLOAT3 m_getDirection ( void ); // get diffuse light direction
+    void m_setColour (const float*); // set diffuse light colour
+    void m_setDirection (const float*); // set diffuse light direction
+    DirectX::XMFLOAT4 m_getColour (void); // get diffuse light colour
+    DirectX::XMFLOAT3 m_getDirection (void); // get diffuse light direction
 };
 
 

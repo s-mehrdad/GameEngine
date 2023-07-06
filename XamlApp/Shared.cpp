@@ -1,19 +1,22 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Shared.cpp
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 27.06.2020
 /// </summary>
-/// <created>ʆϒʅ,27.06.2020</created>
-/// <state></state>
-// ********************************************************************************
+/// <created>ʆϒʅ, 27.06.2020</created>
+/// <changed>ʆϒʅ, 06.07.2023</changed>
+// ===========================================================================
 
 #include "pch.h"
 #include "Shared.h"
 
 
-Variables::Variables ( void )
+Variables::Variables (void)
 {
-  running = false;
-  currentState = "";
+    running = false;
+    currentState = "";
 };
 //Variables::~Variables ( void )
 //{
@@ -43,31 +46,31 @@ std::shared_ptr<Logger<ToFile>> PointerProvider::fileLogger = nullptr;
 //std::exception_ptr PointerProvider::sample = nullptr;
 
 
-void PointerProvider::providerVariables ( std::shared_ptr<Variables> object )
+void PointerProvider::providerVariables (std::shared_ptr<Variables> object)
 {
-  variables = object;
+    variables = object;
 };
 
 
-void PointerProvider::providerException ( std::shared_ptr<TheException> object )
+void PointerProvider::providerException (std::shared_ptr<TheException> object)
 {
-  exception = object;
+    exception = object;
 };
 
 
-void PointerProvider::providerConfiguration ( std::shared_ptr<Configurations> object )
+void PointerProvider::providerConfiguration (std::shared_ptr<Configurations> object)
 {
-  configuration = object;
+    configuration = object;
 };
 
 
-void PointerProvider::providerFileLogger ( std::shared_ptr<Logger<ToFile>> object )
+void PointerProvider::providerFileLogger (std::shared_ptr<Logger<ToFile>> object)
 {
-  fileLogger = object;
+    fileLogger = object;
 };
 
 
-Variables* PointerProvider::getVariables ( void ) { return variables.get (); };
-TheException* PointerProvider::getException ( void ) { return exception.get (); };
-Configurations* PointerProvider::getConfiguration ( void ) { return configuration.get (); };
-Logger<ToFile>* PointerProvider::getFileLogger ( void ) { return fileLogger.get (); };
+Variables* PointerProvider::getVariables (void) { return variables.get (); };
+TheException* PointerProvider::getException (void) { return exception.get (); };
+Configurations* PointerProvider::getConfiguration (void) { return configuration.get (); };
+Logger<ToFile>* PointerProvider::getFileLogger (void) { return fileLogger.get (); };

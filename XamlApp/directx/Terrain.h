@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Terrain.h
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 27.06.2020
 /// </summary>
-/// <created>ʆϒʅ,27.06.2020</created>
-/// <state></state>
-// ********************************************************************************
+/// <created>ʆϒʅ, 27.06.2020</created>
+/// <changed>ʆϒʅ, 06.07.2023</changed>
+// ===========================================================================
 
 #ifndef TERRAIN_H
 #define TERRAIN_H
@@ -17,8 +20,8 @@
 
 struct TerrainMap
 {
-  float x, y, z;
-  float nX, nY, nZ;
+    float x, y, z;
+    float nX, nY, nZ;
 };
 
 
@@ -26,32 +29,32 @@ struct TerrainMap
 class Terrain
 {
 private:
-  TheCore* m_core; // pointer to application core
-  Shader* m_shader; // pointer to shader base class
+    TheCore* m_core; // pointer to application core
+    Shader* m_shader; // pointer to shader base class
 
-  bool m_dynamic; // true: dynamic usage + write access for CPU
-  unsigned short m_density; // how many lines within one tenth space
-  DirectX::XMFLOAT3 m_startPosition; // drawing starts from this position
-  //unsigned short m_id; // when more than one terrain, index them in an imaginary matrix
+    bool m_dynamic; // true: dynamic usage + write access for CPU
+    unsigned short m_density; // how many lines within one tenth space
+    DirectX::XMFLOAT3 m_startPosition; // drawing starts from this position
+    //unsigned short m_id; // when more than one terrain, index them in an imaginary matrix
 
-  ID3D11Buffer* m_vertexBuffer; // models' vertex buffer
-  ID3D11Buffer* m_indexBuffer; // models' index buffer
-  unsigned long m_entitiesCount; // vertices/indices count
+    ID3D11Buffer* m_vertexBuffer; // models' vertex buffer
+    ID3D11Buffer* m_indexBuffer; // models' index buffer
+    unsigned long m_entitiesCount; // vertices/indices count
 
-  bool m_initialized; // true if initialization was successful
+    bool m_initialized; // true if initialization was successful
 
-  bool m_allocate ( void ); // resource allocation process
-  bool m_allocate2 ( void ); // resource allocation process
+    bool m_allocate (void); // resource allocation process
+    bool m_allocate2 (void); // resource allocation process
 public:
-  Terrain ( TheCore* coreObj, Shader* shadObj );
-  //~Terrain ( void );
+    Terrain (TheCore* coreObj, Shader* shadObj);
+    //~Terrain ( void );
 
-  void m_render ( void ); // resource render process
-  void m_release ( void ); // release allocated resources
+    void m_render (void); // resource render process
+    void m_release (void); // release allocated resources
 
-  bool& const m_isInitialized ( void ) { return m_initialized; }; // get the initialized state
-  ID3D11Buffer** const m_getVertexBuffer ( void ) { return &m_vertexBuffer; }; // get pointer to vertex buffer
-  ID3D11Buffer* const m_getIndexBuffer ( void ) { return m_indexBuffer; }; // get pointer to index buffer
+    bool& const m_isInitialized (void) { return m_initialized; }; // get the initialized state
+    ID3D11Buffer** const m_getVertexBuffer (void) { return &m_vertexBuffer; }; // get pointer to vertex buffer
+    ID3D11Buffer* const m_getIndexBuffer (void) { return m_indexBuffer; }; // get pointer to index buffer
 };
 
 

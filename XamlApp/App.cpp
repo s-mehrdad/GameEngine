@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// App.cpp
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 27.06.2020
 /// </summary>
-/// <created>ʆϒʅ,27.06.2020</created>
-/// <state></state>
-// ********************************************************************************
+/// <created>ʆϒʅ, 27.06.2020</created>
+/// <changed>ʆϒʅ, 06.07.2023</changed>
+// ===========================================================================
 
 #include "pch.h"
 
@@ -28,128 +31,126 @@ using namespace GameEngine::implementation;
 /// executed, and as such is the logical equivalent of main() or WinMain().
 /// </summary>
 App::App () :
-  m_mainPage ( nullptr )
+    m_mainPage (nullptr)
 {
-  try
-  {
+    try
+    {
 
-    InitializeComponent ();
-    Suspending ( { this, &App::OnSuspending } );
-    Resuming ( { this, &App::OnResuming } );
+        InitializeComponent ();
+        Suspending ({this, &App::OnSuspending});
+        Resuming ({this, &App::OnResuming});
 
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
-    UnhandledException ( [this]( IInspectable const&, UnhandledExceptionEventArgs const& e )
-                         {
-                           if (IsDebuggerPresent ())
-                           {
-                             auto errorMessage = e.Message ();
-                             __debugbreak ();
-                           }
-                         } );
+        UnhandledException ([this](IInspectable const&, UnhandledExceptionEventArgs const& e) {
+            if (IsDebuggerPresent ())
+            {
+                auto errorMessage = e.Message ();
+                __debugbreak ();
+            }
+                            });
 #endif
 
-    std::shared_ptr<Variables> areGlobal { new (std::nothrow) Variables () };
-    PointerProvider::providerVariables ( areGlobal );
+        std::shared_ptr<Variables> areGlobal {new (std::nothrow) Variables ()};
+        PointerProvider::providerVariables (areGlobal);
 
-    std::shared_ptr<TheException> anException { new (std::nothrow) TheException () };
-    PointerProvider::providerException ( anException );
+        std::shared_ptr<TheException> anException {new (std::nothrow) TheException ()};
+        PointerProvider::providerException (anException);
 
-    std::shared_ptr<Logger<ToFile>> fileLoggerEngine ( new (std::nothrow) Logger<ToFile> () );
-    PointerProvider::providerFileLogger ( fileLoggerEngine );
+        std::shared_ptr<Logger<ToFile>> fileLoggerEngine (new (std::nothrow) Logger<ToFile> ());
+        PointerProvider::providerFileLogger (fileLoggerEngine);
 
-    std::shared_ptr<Configurations> settings ( new (std::nothrow) Configurations () );
-    PointerProvider::providerConfiguration ( settings );
+        std::shared_ptr<Configurations> settings (new (std::nothrow) Configurations ());
+        PointerProvider::providerConfiguration (settings);
 
-    if ((!anException) && (!settings))
-    {
-      // failure, shut down the game properly
-      if (anException)
-      {
-        PointerProvider::providerException ( nullptr );
-        anException.reset ();
-      }
-      if (settings)
-      {
-        PointerProvider::providerConfiguration ( nullptr );
-        settings.reset ();
-      }
-
-      PointerProvider::getVariables ()->currentState = "services";
-      throw;
-    }
-
-    if (fileLoggerEngine)
-    {
-      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                  "Exception, file logger and configuration providers are successfully initialized." );
-    } else
-    {
-      // failure, shut down the game properly
-      if (anException)
-      {
-        PointerProvider::providerException ( nullptr );
-        anException.reset ();
-      }
-      if (settings)
-      {
-        PointerProvider::providerConfiguration ( nullptr );
-        settings.reset ();
-      }
-
-      PointerProvider::getVariables ()->currentState = "appDebug";
-      throw;
-    }
-
-
-    if (!DirectX::XMVerifyCPUSupport ())
-    {
-      PointerProvider::getVariables ()->currentState = "CPU";
-      throw;
-    }
-
-
-    //auto view = winrt::make<View> ();
-    //CoreApplication::Run ( view );
-    //CoreApplication::Run ( View () );
-
-    //if (App::exitedWith ())
-    //{
-    //  return EXIT_FAILURE;
-    //} else
-    //{
-    //  return EXIT_SUCCESS;
-    //}
-
-  }
-  catch (const std::exception& ex)
-  {
-
-    if (PointerProvider::getVariables ()->currentState == "CPU")
-    {
-      //MessageBoxA ( NULL, "Your CPU isn't supported.", "Error", MB_OK | MB_ICONERROR );
-    } else
-      if (PointerProvider::getVariables ()->currentState == "services")
-      {
-        //MessageBoxA ( NULL, "The Game could not be started...", "Error", MB_OK | MB_ICONERROR );
-      } else
-        if (PointerProvider::getVariables ()->currentState == "appDebug")
+        if ((!anException) && (!settings))
         {
-          //MessageBoxA ( NULL, "Debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
+            // failure, shut down the game properly
+            if (anException)
+            {
+                PointerProvider::providerException (nullptr);
+                anException.reset ();
+            }
+            if (settings)
+            {
+                PointerProvider::providerConfiguration (nullptr);
+                settings.reset ();
+            }
+
+            PointerProvider::getVariables ()->currentState = "services";
+            throw;
+        }
+
+        if (fileLoggerEngine)
+        {
+            PointerProvider::getFileLogger ()->m_push (logType::info, std::this_thread::get_id (), "mainThread",
+                                                       "Exception, file logger and configuration providers are successfully initialized.");
         } else
         {
-          //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
-          if (PointerProvider::getFileLogger ())
-          {
-            PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                        ex.what () );
+            // failure, shut down the game properly
+            if (anException)
+            {
+                PointerProvider::providerException (nullptr);
+                anException.reset ();
+            }
+            if (settings)
+            {
+                PointerProvider::providerConfiguration (nullptr);
+                settings.reset ();
+            }
 
-            // failure or success, the logs are somehow to be saved, so give its thread some time
-            std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
-          }
+            PointerProvider::getVariables ()->currentState = "appDebug";
+            throw;
         }
-        //return EXIT_FAILURE;
 
-  }
+
+        if (!DirectX::XMVerifyCPUSupport ())
+        {
+            PointerProvider::getVariables ()->currentState = "CPU";
+            throw;
+        }
+
+
+        //auto view = winrt::make<View> ();
+        //CoreApplication::Run ( view );
+        //CoreApplication::Run ( View () );
+
+        //if (App::exitedWith ())
+        //{
+        //  return EXIT_FAILURE;
+        //} else
+        //{
+        //  return EXIT_SUCCESS;
+        //}
+
+    } catch (const std::exception& ex)
+    {
+
+        if (PointerProvider::getVariables ()->currentState == "CPU")
+        {
+            //MessageBoxA ( NULL, "Your CPU isn't supported.", "Error", MB_OK | MB_ICONERROR );
+        } else
+            if (PointerProvider::getVariables ()->currentState == "services")
+            {
+                //MessageBoxA ( NULL, "The Game could not be started...", "Error", MB_OK | MB_ICONERROR );
+            } else
+                if (PointerProvider::getVariables ()->currentState == "appDebug")
+                {
+                    //MessageBoxA ( NULL, "Debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
+                } else
+                {
+                    //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
+                    if (PointerProvider::getFileLogger ())
+                    {
+                        PointerProvider::getFileLogger ()->m_push (logType::error, std::this_thread::get_id (), "mainThread",
+                                                                   ex.what ());
+
+                        // failure or success, the logs are somehow to be saved, so give its thread some time
+                        std::this_thread::sleep_for (std::chrono::milliseconds {100});
+                    }
+                }
+                //return EXIT_FAILURE;
+
+    }
 }
 
 
@@ -166,57 +167,57 @@ App::App () :
 /// </summary>
 /// <param name="sender">The source of the suspend request.</param>
 /// <param name="e">Details about the suspend request.</param>
-void App::OnSuspending ( [[maybe_unused]] IInspectable const& sender, [[maybe_unused]] SuspendingEventArgs const& e )
+void App::OnSuspending ([[maybe_unused]] IInspectable const& sender, [[maybe_unused]] SuspendingEventArgs const& e)
 {
 
-  m_mainPage->releaseResources ();
+    m_mainPage->releaseResources ();
 
-  //auto deferral = e.SuspendingOperation ().GetDeferral ();
-  //auto task = std::async (
-  //  std::launch::async, [this, deferral]()
-  //  {
-  //    PointerProvider::getVariables ()->currentState = "suspending";
+    //auto deferral = e.SuspendingOperation ().GetDeferral ();
+    //auto task = std::async (
+    //  std::launch::async, [this, deferral]()
+    //  {
+    //    PointerProvider::getVariables ()->currentState = "suspending";
 
-  //    PointerProvider::getVariables ()->running = false;
+    //    PointerProvider::getVariables ()->running = false;
 
-  //    std::this_thread::sleep_for ( std::chrono::milliseconds { 1000 } );
+    //    std::this_thread::sleep_for ( std::chrono::milliseconds { 1000 } );
 
-  //    // Save application state and stop any background activity
-  //    m_mainPage->SaveInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
+    //    // Save application state and stop any background activity
+    //    m_mainPage->SaveInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
 
-  //    PointerProvider::getVariables ()->currentState = "uninitialized";
+    //    PointerProvider::getVariables ()->currentState = "uninitialized";
 
-  //    if (PointerProvider::getException ())
-  //      PointerProvider::providerException ( nullptr );
+    //    if (PointerProvider::getException ())
+    //      PointerProvider::providerException ( nullptr );
 
-  //    if (PointerProvider::getConfiguration ())
-  //      PointerProvider::providerConfiguration ( nullptr );
+    //    if (PointerProvider::getConfiguration ())
+    //      PointerProvider::providerConfiguration ( nullptr );
 
-  //    if (PointerProvider::getFileLogger ())
-  //    {
-  //      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-  //                                                  "Logger engine is set to shut down..." );
+    //    if (PointerProvider::getFileLogger ())
+    //    {
+    //      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
+    //                                                  "Logger engine is set to shut down..." );
 
-  //      // failure or success, the logs are somehow to be saved, so give its thread some time
-  //      std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
+    //      // failure or success, the logs are somehow to be saved, so give its thread some time
+    //      std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
 
-  //      PointerProvider::getFileLogger ()->m_shutdown ();
-  //      PointerProvider::providerFileLogger ( nullptr );
-  //    }
+    //      PointerProvider::getFileLogger ()->m_shutdown ();
+    //      PointerProvider::providerFileLogger ( nullptr );
+    //    }
 
-  //    if (PointerProvider::getVariables ())
-  //      PointerProvider::providerVariables ( nullptr );
+    //    if (PointerProvider::getVariables ())
+    //      PointerProvider::providerVariables ( nullptr );
 
-  //    deferral.Complete ();
-  //  }
-  //);
+    //    deferral.Complete ();
+    //  }
+    //);
 }
 
 
-void App::OnResuming ( [[maybe_unused]] IInspectable const& sender, [[maybe_unused]] IInspectable const& args )
+void App::OnResuming ([[maybe_unused]] IInspectable const& sender, [[maybe_unused]] IInspectable const& args)
 {
-  // Resume application state and return to background activity
-  m_mainPage->LoadInternalState ( winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values () );
+    // Resume application state and return to background activity
+    m_mainPage->LoadInternalState (winrt::Windows::Storage::ApplicationData::Current ().LocalSettings ().Values ());
 }
 
 
@@ -225,9 +226,9 @@ void App::OnResuming ( [[maybe_unused]] IInspectable const& sender, [[maybe_unus
 /// </summary>
 /// <param name="sender">The Frame which failed navigation</param>
 /// <param name="e">Details about the navigation failure</param>
-void App::OnNavigationFailed ( [[maybe_unused]] IInspectable const& sender, NavigationFailedEventArgs const& e )
+void App::OnNavigationFailed ([[maybe_unused]] IInspectable const& sender, NavigationFailedEventArgs const& e)
 {
-  throw hresult_error ( E_FAIL, hstring ( L"Failed to load Page " ) + e.SourcePageType ().Name );
+    throw hresult_error (E_FAIL, hstring (L"Failed to load Page ") + e.SourcePageType ().Name);
 }
 
 
@@ -236,73 +237,73 @@ void App::OnNavigationFailed ( [[maybe_unused]] IInspectable const& sender, Navi
 /// will be used such as when the application is launched to open a specific file.
 /// </summary>
 /// <param name="e">Details about the launch request and process.</param>
-void App::OnLaunched ( LaunchActivatedEventArgs const& e )
+void App::OnLaunched (LaunchActivatedEventArgs const& e)
 {
 #if _DEBUG
-  if (IsDebuggerPresent ())
-  {
+    if (IsDebuggerPresent ())
+    {
 
-    DebugSettings ().EnableFrameRateCounter ( true );
-  }
+        DebugSettings ().EnableFrameRateCounter (true);
+    }
 #endif // _DEBUG
 
-  Frame rootFrame { nullptr };
-  auto content = Window::Current ().Content ();
-  if (content)
-  {
-    rootFrame = content.try_as<Frame> ();
-  }
-
-  // Do not repeat app initialization when the Window already has content,
-  // just ensure that the window is active
-  if (rootFrame == nullptr)
-  {
-    // Create a Frame to act as the navigation context and associate it with
-    // a SuspensionManager key
-    rootFrame = Frame ();
-
-    rootFrame.NavigationFailed ( { this, &App::OnNavigationFailed } );
-
-    if (e.PreviousExecutionState () == ApplicationExecutionState::Terminated)
+    Frame rootFrame {nullptr};
+    auto content = Window::Current ().Content ();
+    if (content)
     {
-      // Restore the saved session state only when appropriate, scheduling the
-      // final launch steps after the restore is complete
+        rootFrame = content.try_as<Frame> ();
     }
 
-    if (e.PrelaunchActivated () == false)
+    // Do not repeat app initialization when the Window already has content,
+    // just ensure that the window is active
+    if (rootFrame == nullptr)
     {
-      if (rootFrame.Content () == nullptr)
-      {
-        // When the navigation stack isn't restored navigate to the first page,
-        // configuring the new page by passing required information as a navigation
-        // parameter
-        rootFrame.Navigate ( xaml_typename<GameEngine::MainPage> (), box_value ( e.Arguments () ) );
-      }
-      // Place the frame in the current Window
-      Window::Current ().Content ( rootFrame );
-      // Ensure the current window is active
-      Window::Current ().Activate ();
-    }
-  } else
-  {
-    if (e.PrelaunchActivated () == false)
+        // Create a Frame to act as the navigation context and associate it with
+        // a SuspensionManager key
+        rootFrame = Frame ();
+
+        rootFrame.NavigationFailed ({this, &App::OnNavigationFailed});
+
+        if (e.PreviousExecutionState () == ApplicationExecutionState::Terminated)
+        {
+            // Restore the saved session state only when appropriate, scheduling the
+            // final launch steps after the restore is complete
+        }
+
+        if (e.PrelaunchActivated () == false)
+        {
+            if (rootFrame.Content () == nullptr)
+            {
+                // When the navigation stack isn't restored navigate to the first page,
+                // configuring the new page by passing required information as a navigation
+                // parameter
+                rootFrame.Navigate (xaml_typename<GameEngine::MainPage> (), box_value (e.Arguments ()));
+            }
+            // Place the frame in the current Window
+            Window::Current ().Content (rootFrame);
+            // Ensure the current window is active
+            Window::Current ().Activate ();
+        }
+    } else
     {
-      if (rootFrame.Content () == nullptr)
-      {
-        // When the navigation stack isn't restored navigate to the first page,
-        // configuring the new page by passing required information as a navigation
-        // parameter
-        rootFrame.Navigate ( xaml_typename<GameEngine::MainPage> (), box_value ( e.Arguments () ) );
-      }
-      // Ensure the current window is active
-      Window::Current ().Activate ();
+        if (e.PrelaunchActivated () == false)
+        {
+            if (rootFrame.Content () == nullptr)
+            {
+                // When the navigation stack isn't restored navigate to the first page,
+                // configuring the new page by passing required information as a navigation
+                // parameter
+                rootFrame.Navigate (xaml_typename<GameEngine::MainPage> (), box_value (e.Arguments ()));
+            }
+            // Ensure the current window is active
+            Window::Current ().Activate ();
+        }
     }
-  }
 
 
-  if (m_mainPage == nullptr)
-  {
-    m_mainPage = dynamic_cast<GameEngine::implementation::MainPage*>(rootFrame.Content ().as<GameEngine::implementation::MainPage> ().get ());
-  }
+    if (m_mainPage == nullptr)
+    {
+        m_mainPage = dynamic_cast<GameEngine::implementation::MainPage*>(rootFrame.Content ().as<GameEngine::implementation::MainPage> ().get ());
+    }
 
 }

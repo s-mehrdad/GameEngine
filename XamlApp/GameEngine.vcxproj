@@ -249,11 +249,13 @@ xcopy /y /d "$(VcpkgRoot)\installed\x64-windows\bin\lua.dll" "$(LayoutDir)"</Com
     </Midl>
   </ItemGroup>
   <ItemGroup>
+    <None Include="GameEngine.aps" />
+    <None Include="GameEngine.rc.in" />
     <None Include="GameEngine_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
     <None Include="README.md" />
-    <Text Include="CMakeLists_.txt" />
+    <Text Include="CMakeLists.txt" />
     <Text Include="models\cube.txt" />
     <Text Include="readme.txt">
       <DeploymentContent>false</DeploymentContent>
@@ -302,6 +304,9 @@ xcopy /y /d "$(VcpkgRoot)\installed\x64-windows\bin\lua.dll" "$(LayoutDir)"</Com
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameEngine.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

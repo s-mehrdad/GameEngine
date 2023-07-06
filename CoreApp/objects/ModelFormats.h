@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// ModelFormats.h
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 01.11.2019
 /// </summary>
-/// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,03.11.2019</changed>
-// ********************************************************************************
+/// <created>ʆϒʅ, 01.11.2019</created>
+/// <changed>ʆϒʅ, 05.07.2023</changed>
+// ===========================================================================
 
 #ifndef MODELFORMATS_H
 #define MODELFORMATS_H
@@ -12,23 +15,23 @@
 
 struct Vertex
 {
-  DirectX::XMFLOAT3 position;
-  DirectX::XMFLOAT4 color;
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT4 color;
 };
 
 
 struct VertexT
 {
-  DirectX::XMFLOAT3 position;
-  DirectX::XMFLOAT2 texture;
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT2 texture;
 };
 
 
 struct VertexL
 {
-  DirectX::XMFLOAT3 position;
-  DirectX::XMFLOAT2 texture;
-  DirectX::XMFLOAT3 normal; // normal light
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT2 texture;
+    DirectX::XMFLOAT3 normal; // normal light
 };
 
 
@@ -37,8 +40,8 @@ struct VertexL
 class VertexTexDiffuseL
 {
 public:
-  static unsigned int read ( const char*, VertexL** ); // 
-  static void write ( VertexL*, unsigned int& );
+    static unsigned int read (const char*, VertexL**); // 
+    static void write (VertexL*, unsigned int&);
 };
 
 

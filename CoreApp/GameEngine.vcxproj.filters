@@ -22,7 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="models\cube.txt" />
-    <Text Include="CMakeLists_.txt" />
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="graphics\pixel.hlsl" />
@@ -69,5 +69,9 @@
     <ClInclude Include="resources\Shader.h" />
     <ClInclude Include="resources\Texture.h" />
     <ClInclude Include="directx\Input.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameEngine.rc" />
   </ItemGroup>
 </Project>

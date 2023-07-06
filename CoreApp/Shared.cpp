@@ -1,19 +1,22 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Shared.cpp
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 01.11.2019
 /// </summary>
-/// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,09.11.2019</changed>
-// ********************************************************************************
+/// <created>ʆϒʅ, 01.11.2019</created>
+/// <changed>ʆϒʅ, 05.07.2023</changed>
+// ===========================================================================
 
 #include "pch.h"
 #include "Shared.h"
 
 
-Variables::Variables ( void )
+Variables::Variables (void)
 {
-  running = false;
-  currentState = "";
+    running = false;
+    currentState = "";
 };
 
 
@@ -43,49 +46,49 @@ std::shared_ptr<Logger<ToFile>> PointerProvider::fileLogger = nullptr;
 //std::exception_ptr PointerProvider::exceptionPointer = nullptr;
 
 
-Variables* PointerProvider::getVariables ( void )
+Variables* PointerProvider::getVariables (void)
 {
-  return variables.get ();
+    return variables.get ();
 };
 
 
-TheException* PointerProvider::getException ( void )
+TheException* PointerProvider::getException (void)
 {
-  return exception.get ();
+    return exception.get ();
 };
 
 
-Configurations* PointerProvider::getConfiguration ( void )
+Configurations* PointerProvider::getConfiguration (void)
 {
-  return configuration.get ();
+    return configuration.get ();
 };
 
 
-Logger<ToFile>* PointerProvider::getFileLogger ( void )
+Logger<ToFile>* PointerProvider::getFileLogger (void)
 {
-  return fileLogger.get ();
+    return fileLogger.get ();
 };
 
 
-void PointerProvider::providerVariables ( std::shared_ptr<Variables> object )
+void PointerProvider::providerVariables (std::shared_ptr<Variables> object)
 {
-  variables = object;
+    variables = object;
 };
 
 
-void PointerProvider::providerException ( std::shared_ptr<TheException> object )
+void PointerProvider::providerException (std::shared_ptr<TheException> object)
 {
-  exception = object;
+    exception = object;
 };
 
 
-void PointerProvider::providerConfiguration ( std::shared_ptr<Configurations> object )
+void PointerProvider::providerConfiguration (std::shared_ptr<Configurations> object)
 {
-  configuration = object;
+    configuration = object;
 };
 
 
-void PointerProvider::providerFileLogger ( std::shared_ptr<Logger<ToFile>> object )
+void PointerProvider::providerFileLogger (std::shared_ptr<Logger<ToFile>> object)
 {
-  fileLogger = object;
+    fileLogger = object;
 };

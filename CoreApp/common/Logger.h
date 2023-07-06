@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// Logger.h
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 06.11.2019
 /// </summary>
-/// <created>ʆϒʅ,06.11.2019</created>
-/// <changed>ʆϒʅ,09.11.2019</changed>
-// ********************************************************************************
+/// <created>ʆϒʅ, 06.11.2019</created>
+/// <changed>ʆϒʅ, 04.07.2023</changed>
+// ===========================================================================
 
 #ifndef LOGGER_H
 #define LOGGER_H
@@ -17,16 +20,16 @@ enum logType { info = 0, debug, warning, error };
 // log container structure
 struct LogEntity
 {
-  unsigned int m_id;
-  std::string m_arrivedAt;
-  logType m_type;
-  std::thread::id m_threadId;
-  std::string m_threadName;
-  std::string m_message;
+    unsigned int m_id;
+    std::string m_arrivedAt;
+    logType m_type;
+    std::thread::id m_threadId;
+    std::string m_threadName;
+    std::string m_message;
 
-  LogEntity ( void );
-  //~LogEntity ( void );
-  LogEntity operator=( LogEntity& );
+    LogEntity (void);
+    //~LogEntity ( void );
+    LogEntity operator=(LogEntity&);
 };
 
 
@@ -34,17 +37,17 @@ struct LogEntity
 class ToFile
 {
 private:
-  std::ofstream m_fileStream;
-  std::wstring m_path;
+    std::ofstream m_fileStream;
+    std::wstring m_path;
 
-  bool m_ready;
+    bool m_ready;
 public:
-  ToFile ( void );
-  //~ToFile ( void );
-  const bool& m_isReady ( void );
+    ToFile (void);
+    //~ToFile ( void );
+    const bool& m_isReady (void);
 
-  void m_close ( void );
-  bool m_write ( const std::string& );
+    void m_close (void);
+    bool m_write (const std::string&);
 };
 
 
@@ -57,32 +60,32 @@ template<class tType>
 class Logger
 {
 private:
-  LogEntity m_theLog;
-  std::string m_theLogRawStr;
-  std::list<std::string> m_buffer; // buffer list container
-  tType m_filePolicy; // output stream policy
-  std::timed_mutex m_writeGuard; // write guard
-  std::thread m_commit; // write engine thread
-  // lock-free atomic flag (checking the running state) (standard initialization):
-  std::atomic_flag m_operating { ATOMIC_FLAG_INIT };
+    LogEntity m_theLog;
+    std::string m_theLogRawStr;
+    std::list<std::string> m_buffer; // buffer list container
+    tType m_filePolicy; // output stream policy
+    std::timed_mutex m_writeGuard; // write guard
+    std::thread m_commit; // write engine thread
+    // lock-free atomic flag (checking the running state) (standard initialization):
+    std::atomic_flag m_operating {ATOMIC_FLAG_INIT};
 
-  int m_state;
+    int m_state;
 
-  static unsigned int m_counter;
+    static unsigned int m_counter;
 public:
-  Logger ( void );
-  //~Logger ( void );
+    Logger (void);
+    //~Logger ( void );
 
-  void m_push ( const logType&, const std::thread::id&,
-                const std::string&, const std::string& );
-  const LogEntity& m_getLog ( void );
-  const std::string& m_getLogRawStr ( void );
-  void m_shutdown ( void );
+    void m_push (const logType&, const std::thread::id&,
+                 const std::string&, const std::string&);
+    const LogEntity& m_getLog (void);
+    const std::string& m_getLogRawStr (void);
+    void m_shutdown (void);
 
-  template<class tType>
-  friend void loggerEngine ( Logger<tType>* ); // write engine
+    template<class tType>
+    friend void loggerEngine (Logger<tType>*); // write engine
 };
-void LoggerClassLinker ( void ); // don't call this function: solution for linker error, when using templates.
+void LoggerClassLinker (void); // don't call this function: solution for linker error, when using templates.
 
 
 #endif // !LOGGER_H

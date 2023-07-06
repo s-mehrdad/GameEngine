@@ -1,10 +1,13 @@
-﻿// ********************************************************************************
+﻿
+// ===========================================================================
 /// <summary>
-/// 
+/// GameEngine.cpp
+/// GameEngine
+/// created by Mehrdad Soleimanimajd on 01.11.2019
 /// </summary>
-/// <created>ʆϒʅ,01.11.2019</created>
-/// <changed>ʆϒʅ,07.11.2021</changed>
-// ********************************************************************************
+/// <created>ʆϒʅ, 01.11.2019</created>
+/// <changed>ʆϒʅ, 05.07.2023</changed>
+// ===========================================================================
 
 #include "pch.h"
 //#include "GameEngine.h"
@@ -27,95 +30,95 @@ using namespace winrt::Windows::Graphics::Display;
 class View : public winrt::implements<View, IFrameworkViewSource, IFrameworkView>
 {
 private:
-  static bool failure; // true if exiting with failure
+    static bool failure; // true if exiting with failure
 
-  winrt::agile_ref<CoreWindow> m_appWindow; // reference to application window
-  bool m_visible; // application window visibility state
-  bool m_inResizeMove; // true if client window is set to resize and/or move
-  bool m_fullscreen; // current full screen state (additionally fed from configuration)
-  //float m_DPI; // current client window DPI
-  //float m_clientWidth; // current client window width
-  //float m_clientHeight; // current client window height
-  struct Display // resolution wrapper
-  {
-    float m_DPI; // current client window DPI
-    float m_clientWidth; // current client window width
-    float m_clientHeight; // current client window height
-    int m_currentWidth; // current client window width
-    int m_currentHeight; // current client window height
-    Display ();
-    void update ( bool );
-  } m_resolution;
-  // Orientation
+    winrt::agile_ref<CoreWindow> m_appWindow; // reference to application window
+    bool m_visible; // application window visibility state
+    bool m_inResizeMove; // true if client window is set to resize and/or move
+    bool m_fullscreen; // current full screen state (additionally fed from configuration)
+    //float m_DPI; // current client window DPI
+    //float m_clientWidth; // current client window width
+    //float m_clientHeight; // current client window height
+    struct Display // resolution wrapper
+    {
+        float m_DPI; // current client window DPI
+        float m_clientWidth; // current client window width
+        float m_clientHeight; // current client window height
+        int m_currentWidth; // current client window width
+        int m_currentHeight; // current client window height
+        Display ();
+        void update (bool);
+    } m_resolution;
+    // Orientation
 
-  std::unique_ptr <Game> m_game; // unique pointer to game wrapper
-  //Game* m_game; // pointer to game wrapper
+    std::unique_ptr <Game> m_game; // unique pointer to game wrapper
+    //Game* m_game; // pointer to game wrapper
 
-  bool m_initialized; // true in case of successful initialization
+    bool m_initialized; // true in case of successful initialization
 
-  //int m_DipsPixels ( float );
-  //float m_DipsPixels ( int );
+    //int m_DipsPixels ( float );
+    //float m_DipsPixels ( int );
 protected:
-  void m_onActivated ( CoreApplicationView const& /*applicationView*/,
-                       IActivatedEventArgs const& /*args*/ ); // on application window activation
+    void m_onActivated (CoreApplicationView const& /*applicationView*/,
+                        IActivatedEventArgs const& /*args*/); // on application window activation
 
-  void m_onFocused ( CoreWindow const& /*sender*/,
-                     WindowActivatedEventArgs const& /*args*/ ); // on application window focused/unfocused
+    void m_onFocused (CoreWindow const& /*sender*/,
+                      WindowActivatedEventArgs const& /*args*/); // on application window focused/unfocused
 
-  void m_onVisibilityChanged ( CoreWindow const& /*sender*/,
-                               VisibilityChangedEventArgs const& /*args*/ ); // on application window resize
+    void m_onVisibilityChanged (CoreWindow const& /*sender*/,
+                                VisibilityChangedEventArgs const& /*args*/); // on application window resize
 
-  void m_onWindowResized ( CoreWindow const& /*sender*/,
-                           WindowSizeChangedEventArgs const& /*args*/ ); // on application window resize
+    void m_onWindowResized (CoreWindow const& /*sender*/,
+                            WindowSizeChangedEventArgs const& /*args*/); // on application window resize
 
-  void m_onDisplayContentInvalidated ( DisplayInformation const& /*sender*/,
-                                       IInspectable const& /*args*/ ); // on application window content invalidation
+    void m_onDisplayContentInvalidated (DisplayInformation const& /*sender*/,
+                                        IInspectable const& /*args*/); // on application window content invalidation
 
-  void m_onDpiChanged ( DisplayInformation const& /*sender*/,
-                        IInspectable const& /*args*/ ); // on client display DPI changed
+    void m_onDpiChanged (DisplayInformation const& /*sender*/,
+                         IInspectable const& /*args*/); // on client display DPI changed
 
-  void m_onSuspension ( IInspectable const& /*sender*/,
-                        SuspendingEventArgs const& /*args*/ ); // on application window entering the suspended state
+    void m_onSuspension (IInspectable const& /*sender*/,
+                         SuspendingEventArgs const& /*args*/); // on application window entering the suspended state
 
-  void m_onResuming ( IInspectable const& /*sender*/,
-                      IInspectable const& /*args*/ ); // on application window resuming from suspended state
+    void m_onResuming (IInspectable const& /*sender*/,
+                       IInspectable const& /*args*/); // on application window resuming from suspended state
 
-  void m_onAcceleratorKeyActivated ( CoreDispatcher const& /*sender*/,
-                                     AcceleratorKeyEventArgs const& /*args*/ ); // on accelerator key pressed
+    void m_onAcceleratorKeyActivated (CoreDispatcher const& /*sender*/,
+                                      AcceleratorKeyEventArgs const& /*args*/); // on accelerator key pressed
 
-  void m_onSuspend (); // release the application resources
+    void m_onSuspend (); // release the application resources
 
-  //void m_on Orientation Changed
-  //void m_on Display Content Invalidated
-  //
+    //void m_on Orientation Changed
+    //void m_on Display Content Invalidated
+    //
 public:
-  View ( void );
-  //~View ( void );
+    View (void);
+    //~View ( void );
 
-  // implementation documentation:
-  // for being able to implement the object which implements IFrameworkView interface,
-  // it should made ready by the IFrameworkViewSource factory interface
-  // the order in which these methods are called (after defined by a CoreApplication singleton instance):
-  // CreateView, Initialize, SetWindow, Load, Run
+    // implementation documentation:
+    // for being able to implement the object which implements IFrameworkView interface,
+    // it should made ready by the IFrameworkViewSource factory interface
+    // the order in which these methods are called (after defined by a CoreApplication singleton instance):
+    // CreateView, Initialize, SetWindow, Load, Run
 
-  // IFrameworkViewSource methods:
-  IFrameworkView CreateView ( void ); // creation method overload
+    // IFrameworkViewSource methods:
+    IFrameworkView CreateView (void); // creation method overload
 
-  // IFrameworkView methods:
-  void Initialize ( CoreApplicationView const& ); // initialization method overload (called on app launch)
-  void Load ( winrt::hstring const& /*entryPoint*/ ); // load method overload
-  void Run ( void ); // execution method overload (called after load method)
-  void SetWindow ( CoreWindow const& ); // window set method overload (after initialization)
-  void Uninitialize ( void ); // un-initialization method overload
+    // IFrameworkView methods:
+    void Initialize (CoreApplicationView const&); // initialization method overload (called on app launch)
+    void Load (winrt::hstring const& /*entryPoint*/); // load method overload
+    void Run (void); // execution method overload (called after load method)
+    void SetWindow (CoreWindow const&); // window set method overload (after initialization)
+    void Uninitialize (void); // un-initialization method overload
 
-  static bool exitedWith ( void ); // application exit state provider
+    static bool exitedWith (void); // application exit state provider
 };
 
 
-View::View ( void ) :
-  m_appWindow ( nullptr ), m_visible ( false ),
-  m_inResizeMove ( false ), m_fullscreen ( false ),
-  m_game ( nullptr ), m_initialized ( false )
+View::View (void) :
+    m_appWindow (nullptr), m_visible (false),
+    m_inResizeMove (false), m_fullscreen (false),
+    m_game (nullptr), m_initialized (false)
 {
 
 };
@@ -129,139 +132,138 @@ View::View ( void ) :
 
 View::Display::Display ()
 {
-  m_DPI = 96.f;
-  m_clientWidth = 0.0f;
-  m_clientHeight = 0.0f;
-  m_currentWidth = 0;
-  m_currentHeight = 0;
+    m_DPI = 96.f;
+    m_clientWidth = 0.0f;
+    m_clientHeight = 0.0f;
+    m_currentWidth = 0;
+    m_currentHeight = 0;
 };
-void View::Display::update ( bool prm = false )
+void View::Display::update (bool prm = false)
 {
-  if (!prm)
-  {
-    // to pixels ( dips * c_DPI / 96.f + 0.5f )
-    m_currentWidth = static_cast<int>(m_clientWidth * m_DPI / 96.f + 0.5f);
-    m_currentHeight = static_cast<int>(m_clientHeight * m_DPI / 96.f + 0.5f);
-  } else
-  {
-    // to dips ( float (pixels) * 96.f / c_DPI )
-    m_clientHeight = (static_cast<float> (m_currentHeight) * 96.f / m_DPI);
-    m_clientWidth = (static_cast<float> (m_currentWidth) * 96.f / m_DPI);
-  }
+    if (!prm)
+    {
+        // to pixels ( dips * c_DPI / 96.f + 0.5f )
+        m_currentWidth = static_cast<int>(m_clientWidth * m_DPI / 96.f + 0.5f);
+        m_currentHeight = static_cast<int>(m_clientHeight * m_DPI / 96.f + 0.5f);
+    } else
+    {
+        // to dips ( float (pixels) * 96.f / c_DPI )
+        m_clientHeight = (static_cast<float> (m_currentHeight) * 96.f / m_DPI);
+        m_clientWidth = (static_cast<float> (m_currentWidth) * 96.f / m_DPI);
+    }
 };
 
 
-int WINAPI wWinMain ( _In_ HINSTANCE /*hInstance*/,
-                      _In_ HINSTANCE /*hPrevInstance*/,
-                      _In_ LPWSTR /*LpCmdLine*/,
-                      _In_ int /*nCmdShow*/ )
+int WINAPI wWinMain (_In_ HINSTANCE /*hInstance*/,
+                     _In_ HINSTANCE /*hPrevInstance*/,
+                     _In_ LPWSTR /*LpCmdLine*/,
+                     _In_ int /*nCmdShow*/)
 {
 
-  try
-  {
-
-    std::shared_ptr<Variables> areGlobal { new (std::nothrow) Variables () };
-    PointerProvider::providerVariables ( areGlobal );
-
-    std::shared_ptr<TheException> anException { new (std::nothrow) TheException () };
-    PointerProvider::providerException ( anException );
-
-    std::shared_ptr<Logger<ToFile>> fileLoggerEngine ( new (std::nothrow) Logger<ToFile> () );
-    PointerProvider::providerFileLogger ( fileLoggerEngine );
-
-    std::shared_ptr<Configurations> settings ( new (std::nothrow) Configurations () );
-    PointerProvider::providerConfiguration ( settings );
-
-    if ((!anException) && (!settings))
+    try
     {
-      // failure, shut down the game properly
-      if (anException)
-      {
-        PointerProvider::providerException ( nullptr );
-        anException.reset ();
-      }
-      if (settings)
-      {
-        PointerProvider::providerConfiguration ( nullptr );
-        settings.reset ();
-      }
 
-      PointerProvider::getVariables ()->currentState = "services";
-      throw;
-    }
+        std::shared_ptr<Variables> areGlobal {new (std::nothrow) Variables ()};
+        PointerProvider::providerVariables (areGlobal);
 
-    if (fileLoggerEngine)
-    {
-      PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                  "Exception, file logger and configuration providers are successfully initialized." );
-    } else
-    {
-      // failure, shut down the game properly
-      if (anException)
-      {
-        PointerProvider::providerException ( nullptr );
-        anException.reset ();
-      }
-      if (settings)
-      {
-        PointerProvider::providerConfiguration ( nullptr );
-        settings.reset ();
-      }
+        std::shared_ptr<TheException> anException {new (std::nothrow) TheException ()};
+        PointerProvider::providerException (anException);
 
-      PointerProvider::getVariables ()->currentState = "appDebug";
-      throw;
-    }
+        std::shared_ptr<Logger<ToFile>> fileLoggerEngine (new (std::nothrow) Logger<ToFile> ());
+        PointerProvider::providerFileLogger (fileLoggerEngine);
 
+        std::shared_ptr<Configurations> settings (new (std::nothrow) Configurations ());
+        PointerProvider::providerConfiguration (settings);
 
-    if (!DirectX::XMVerifyCPUSupport ())
-    {
-      PointerProvider::getVariables ()->currentState = "CPU";
-      throw;
-    }
-
-
-    auto view = winrt::make<View> ();
-    CoreApplication::Run ( view );
-    //CoreApplication::Run ( View () );
-
-    if (View::exitedWith ())
-    {
-      return EXIT_FAILURE;
-    } else
-    {
-      return EXIT_SUCCESS;
-    }
-
-  }
-  catch (const std::exception& ex)
-  {
-
-    if (PointerProvider::getVariables ()->currentState == "CPU")
-    {
-      //MessageBoxA ( NULL, "Your CPU isn't supported.", "Error", MB_OK | MB_ICONERROR );
-    } else
-      if (PointerProvider::getVariables ()->currentState == "services")
-      {
-        //MessageBoxA ( NULL, "The Game could not be started...", "Error", MB_OK | MB_ICONERROR );
-      } else
-        if (PointerProvider::getVariables ()->currentState == "appDebug")
+        if ((!anException) && (!settings))
         {
-          //MessageBoxA ( NULL, "The debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
+            // failure, shut down the game properly
+            if (anException)
+            {
+                PointerProvider::providerException (nullptr);
+                anException.reset ();
+            }
+            if (settings)
+            {
+                PointerProvider::providerConfiguration (nullptr);
+                settings.reset ();
+            }
+
+            PointerProvider::getVariables ()->currentState = "services";
+            throw;
+        }
+
+        if (fileLoggerEngine)
+        {
+            PointerProvider::getFileLogger ()->m_push (logType::info, std::this_thread::get_id (), "mainThread",
+                                                       "Exception, file logger and configuration providers are successfully initialized.");
         } else
         {
-          //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
-          if (PointerProvider::getFileLogger ())
-          {
-            PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                        ex.what () );
+            // failure, shut down the game properly
+            if (anException)
+            {
+                PointerProvider::providerException (nullptr);
+                anException.reset ();
+            }
+            if (settings)
+            {
+                PointerProvider::providerConfiguration (nullptr);
+                settings.reset ();
+            }
 
-            // failure or success, the logs are somehow to be saved, so give its thread some time
-            std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
-          }
+            PointerProvider::getVariables ()->currentState = "appDebug";
+            throw;
         }
-        return EXIT_FAILURE;
 
-  }
+
+        if (!DirectX::XMVerifyCPUSupport ())
+        {
+            PointerProvider::getVariables ()->currentState = "CPU";
+            throw;
+        }
+
+
+        auto view = winrt::make<View> ();
+        CoreApplication::Run (view);
+        //CoreApplication::Run ( View () );
+
+        if (View::exitedWith ())
+        {
+            return EXIT_FAILURE;
+        } else
+        {
+            return EXIT_SUCCESS;
+        }
+
+    } catch (const std::exception& ex)
+    {
+
+        if (PointerProvider::getVariables ()->currentState == "CPU")
+        {
+            //MessageBoxA ( NULL, "Your CPU isn't supported.", "Error", MB_OK | MB_ICONERROR );
+        } else
+            if (PointerProvider::getVariables ()->currentState == "services")
+            {
+                //MessageBoxA ( NULL, "The Game could not be started...", "Error", MB_OK | MB_ICONERROR );
+            } else
+                if (PointerProvider::getVariables ()->currentState == "appDebug")
+                {
+                    //MessageBoxA ( NULL, "The debug service failed to start.", "Error", MB_OK | MB_ICONERROR );
+                } else
+                {
+                    //MessageBoxA ( NULL, ex.what (), "Error", MB_OK | MB_ICONERROR );
+                    if (PointerProvider::getFileLogger ())
+                    {
+                        PointerProvider::getFileLogger ()->m_push (logType::error, std::this_thread::get_id (), "mainThread",
+                                                                   ex.what ());
+
+                        // failure or success, the logs are somehow to be saved, so give its thread some time
+                        std::this_thread::sleep_for (std::chrono::milliseconds {100});
+                    }
+                }
+                return EXIT_FAILURE;
+
+    }
 
 }
 
@@ -280,339 +282,337 @@ int WINAPI wWinMain ( _In_ HINSTANCE /*hInstance*/,
 //};
 
 
-void View::m_onActivated ( CoreApplicationView const& /*applicationView*/, IActivatedEventArgs const& /*args*/ )
+void View::m_onActivated (CoreApplicationView const& /*applicationView*/, IActivatedEventArgs const& /*args*/)
 {
-  // visible the activated application window and enables it to receive events
-  CoreWindow::GetForCurrentThread ().Activate ();
+    // visible the activated application window and enables it to receive events
+    CoreWindow::GetForCurrentThread ().Activate ();
 };
 
 
-void View::m_onFocused ( CoreWindow const& /*sender*/, WindowActivatedEventArgs const& /*args*/ )
+void View::m_onFocused (CoreWindow const& /*sender*/, WindowActivatedEventArgs const& /*args*/)
 {
 
-  if (m_appWindow.get ().ActivationMode () == CoreWindowActivationMode::ActivatedInForeground)
-  {
-    m_game->m_isPaused () = false;
-    m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
-  } else
-  {
-    m_game->m_isPaused () = true;
-    m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
-  }
-
-};
-
-
-void View::m_onVisibilityChanged ( CoreWindow const& /*sender*/, VisibilityChangedEventArgs const& args )
-{
-  m_visible = args.Visible (); ///
-  m_game->m_isPaused () = !args.Visible ();
-};
-
-
-void View::m_onWindowResized ( CoreWindow const& /*sender*/, WindowSizeChangedEventArgs const& args )
-{
-
-  m_resolution.m_clientWidth = m_appWindow.get ().Bounds ().Width;
-  m_resolution.m_clientHeight = m_appWindow.get ().Bounds ().Height;
-  m_resolution.update ();
-
-  // Todo: drag and drop resizing (resolution needs to be sent)
-  if (args.Handled () && m_initialized)
-  {
-    m_game->m_getCore ()->m_setResolution ( false,
-                                            m_resolution.m_currentWidth,
-                                            m_resolution.m_currentHeight );
-  }
-
-};
-
-
-void View::m_onDisplayContentInvalidated ( DisplayInformation const& /*sender*/, IInspectable const& /*args*/ )
-{
-  m_game->m_validate ();
-};
-
-
-void View::m_onDpiChanged ( DisplayInformation const& sender, IInspectable const& /*args*/ )
-{
-  m_resolution.m_DPI = sender.LogicalDpi ();
-};
-
-
-void View::m_onSuspension ( IInspectable const& /*sender*/, SuspendingEventArgs const& args )
-{
-
-  auto deferral = args.SuspendingOperation ().GetDeferral ();
-  auto task = std::async (
-    std::launch::async, [this, deferral]()
+    if (m_appWindow.get ().ActivationMode () == CoreWindowActivationMode::ActivatedInForeground)
     {
-      m_onSuspend ();
-      deferral.Complete ();
-    }
-  );
-
-};
-
-
-void View::m_onResuming ( IInspectable const& /*sender*/, IInspectable const& /*args*/ )
-{
-  //
-};
-
-
-void View::m_onAcceleratorKeyActivated ( CoreDispatcher const& /*sender*/, AcceleratorKeyEventArgs const& args )
-{
-
-  // ALT+Enter: fullscreen + highest/lowest resolution switch
-  if (args.EventType () == CoreAcceleratorKeyEventType::SystemKeyDown
-       && args.VirtualKey () == VirtualKey::Enter
-       && args.KeyStatus ().IsMenuKeyDown)
-  {
-    auto view = ApplicationView::GetForCurrentView ();
-
-    if (view.IsFullScreen ())
-    {
-      m_game->m_getCore ()->m_setResolution ( false );
-      view.ExitFullScreenMode ();
+        m_game->m_isPaused () = false;
+        m_game->m_getCore ()->m_getTimer ()->m_event ("start");
     } else
     {
-      m_game->m_getCore ()->m_setResolution ( true );
-      view.TryEnterFullScreenMode ();
+        m_game->m_isPaused () = true;
+        m_game->m_getCore ()->m_getTimer ()->m_event ("pause");
     }
 
-    args.Handled ( true );
-  }
+};
 
 
-  // Todo: DirectInput
-  if (args.EventType () == CoreAcceleratorKeyEventType::KeyDown)
-  {
+void View::m_onVisibilityChanged (CoreWindow const& /*sender*/, VisibilityChangedEventArgs const& args)
+{
+    m_visible = args.Visible (); ///
+    m_game->m_isPaused () = !args.Visible ();
+};
 
-    // Escape: up
-    if (args.VirtualKey () == VirtualKey::Up)
+
+void View::m_onWindowResized (CoreWindow const& /*sender*/, WindowSizeChangedEventArgs const& args)
+{
+
+    m_resolution.m_clientWidth = m_appWindow.get ().Bounds ().Width;
+    m_resolution.m_clientHeight = m_appWindow.get ().Bounds ().Height;
+    m_resolution.update ();
+
+    // Todo: drag and drop resizing (resolution needs to be sent)
+    if (args.Handled () && m_initialized)
     {
-      m_game->m_getUniverse ()->m_getCamera ()->forwardBackward ( 0.05f );
+        m_game->m_getCore ()->m_setResolution (false,
+                                               m_resolution.m_currentWidth,
+                                               m_resolution.m_currentHeight);
     }
 
-    // Escape: down
-    if (args.VirtualKey () == VirtualKey::Down)
+};
+
+
+void View::m_onDisplayContentInvalidated (DisplayInformation const& /*sender*/, IInspectable const& /*args*/)
+{
+    m_game->m_validate ();
+};
+
+
+void View::m_onDpiChanged (DisplayInformation const& sender, IInspectable const& /*args*/)
+{
+    m_resolution.m_DPI = sender.LogicalDpi ();
+};
+
+
+void View::m_onSuspension (IInspectable const& /*sender*/, SuspendingEventArgs const& args)
+{
+
+    auto deferral = args.SuspendingOperation ().GetDeferral ();
+    auto task = std::async (
+        std::launch::async, [this, deferral]() {
+            m_onSuspend ();
+            deferral.Complete ();
+        }
+    );
+
+};
+
+
+void View::m_onResuming (IInspectable const& /*sender*/, IInspectable const& /*args*/)
+{
+    //
+};
+
+
+void View::m_onAcceleratorKeyActivated (CoreDispatcher const& /*sender*/, AcceleratorKeyEventArgs const& args)
+{
+
+    // ALT+Enter: fullscreen + highest/lowest resolution switch
+    if (args.EventType () == CoreAcceleratorKeyEventType::SystemKeyDown
+        && args.VirtualKey () == VirtualKey::Enter
+        && args.KeyStatus ().IsMenuKeyDown)
     {
-      m_game->m_getUniverse ()->m_getCamera ()->forwardBackward ( -0.05f );
+        auto view = ApplicationView::GetForCurrentView ();
+
+        if (view.IsFullScreen ())
+        {
+            m_game->m_getCore ()->m_setResolution (false);
+            view.ExitFullScreenMode ();
+        } else
+        {
+            m_game->m_getCore ()->m_setResolution (true);
+            view.TryEnterFullScreenMode ();
+        }
+
+        args.Handled (true);
     }
 
-    // Escape: exit
-    if (args.VirtualKey () == VirtualKey::Escape)
+
+    // Todo: DirectInput
+    if (args.EventType () == CoreAcceleratorKeyEventType::KeyDown)
     {
-      m_game->m_isPaused () = true;
-      m_game->m_getCore ()->m_getTimer ()->m_event ( "pause" );
-      //if (MessageBoxA ( handle, "Exit the Game?", "Exit", MB_YESNO | MB_ICONQUESTION ) == IDYES)
-      //{
-      CoreApplication::Exit (); ///
-      //} else
-      //{
-      //  m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
-      //}
+
+        // Escape: up
+        if (args.VirtualKey () == VirtualKey::Up)
+        {
+            m_game->m_getUniverse ()->m_getCamera ()->forwardBackward (0.05f);
+        }
+
+        // Escape: down
+        if (args.VirtualKey () == VirtualKey::Down)
+        {
+            m_game->m_getUniverse ()->m_getCamera ()->forwardBackward (-0.05f);
+        }
+
+        // Escape: exit
+        if (args.VirtualKey () == VirtualKey::Escape)
+        {
+            m_game->m_isPaused () = true;
+            m_game->m_getCore ()->m_getTimer ()->m_event ("pause");
+            //if (MessageBoxA ( handle, "Exit the Game?", "Exit", MB_YESNO | MB_ICONQUESTION ) == IDYES)
+            //{
+            CoreApplication::Exit (); ///
+            //} else
+            //{
+            //  m_game->m_getCore ()->m_getTimer ()->m_event ( "start" );
+            //}
+        }
     }
-  }
 
 };
 
 
-void View::m_onSuspend ( void )
+void View::m_onSuspend (void)
 {
 
-  PointerProvider::getVariables ()->currentState = "suspending";
+    PointerProvider::getVariables ()->currentState = "suspending";
 
-  PointerProvider::getVariables ()->running = false;
+    PointerProvider::getVariables ()->running = false;
 
-  std::this_thread::sleep_for ( std::chrono::milliseconds { 1000 } );
+    std::this_thread::sleep_for (std::chrono::milliseconds {1000});
 
-  m_game->m_onSuspending ();
+    m_game->m_onSuspending ();
 
-  PointerProvider::getVariables ()->currentState = "uninitialized";
+    PointerProvider::getVariables ()->currentState = "uninitialized";
 
-  if (PointerProvider::getException ())
-    PointerProvider::providerException ( nullptr );
+    if (PointerProvider::getException ())
+        PointerProvider::providerException (nullptr);
 
-  if (PointerProvider::getConfiguration ())
-    PointerProvider::providerConfiguration ( nullptr );
+    if (PointerProvider::getConfiguration ())
+        PointerProvider::providerConfiguration (nullptr);
 
-  if (PointerProvider::getFileLogger ())
-  {
-    PointerProvider::getFileLogger ()->m_push ( logType::info, std::this_thread::get_id (), "mainThread",
-                                                "The logging engine is set to shut down..." );
-
-    // failure or success, the logs are somehow to be saved, so give its thread some time
-    std::this_thread::sleep_for ( std::chrono::milliseconds { 100 } );
-
-    PointerProvider::getFileLogger ()->m_shutdown ();
-    PointerProvider::providerFileLogger ( nullptr );
-  }
-
-  if (PointerProvider::getVariables ())
-    PointerProvider::providerVariables ( nullptr );
-
-};
-
-
-IFrameworkView View::CreateView ( void )
-{
-  return *this;
-};
-
-
-void View::Initialize ( CoreApplicationView const& applicationView )
-{
-
-  // response to application window activation
-  applicationView.Activated ( { this, &View::m_onActivated } );
-
-  // response to application window suspension
-  CoreApplication::Suspending ( { this, &View::m_onSuspension } );
-
-  // response to application window resuming from suspension
-  CoreApplication::Resuming ( { this, &View::m_onResuming } );
-
-};
-
-
-void View::Load ( winrt::hstring const& /*entryPoint*/ )
-{
-  //
-};
-
-
-void View::Run ( void )
-{
-
-  m_initialized = true;
-
-  PointerProvider::getVariables ()->running = true;
-
-  // game instantiation
-  auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi ( m_appWindow.get () ));
-  //m_game = new (std::nothrow) Game ( windowPtr,
-  //                                   m_resolution.m_currentWidth,
-  //                                   m_resolution.m_currentHeight );
-  m_game = std::make_unique<Game> ( windowPtr,
-                                    m_resolution.m_currentWidth,
-                                    m_resolution.m_currentHeight );
-
-  if (!m_game->m_isReady ())
-  {
-    m_game->m_onSuspending (); // failure, shut the application down properly.
-
-    PointerProvider::getFileLogger ()->m_push ( logType::error, std::this_thread::get_id (), "mainThread",
-                                                "The game initialization failed!" );
-
-    //MessageBoxA ( NULL, "The Game functionality failed to start...", "Critical-Error", MB_OK | MB_ICONERROR );
-
-    failure = true;
-  } else
-  {
-    PointerProvider::getVariables ()->currentState = "initialized";
-
-    PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
-                                                "Entering the game loop..." );
-
-    if (!m_game->m_run ())
+    if (PointerProvider::getFileLogger ())
     {
-      failure = true;
-      PointerProvider::getFileLogger ()->m_push ( logType::warning, std::this_thread::get_id (), "mainThread",
-                                                  "One or more errors occurred while running the game!" );
+        PointerProvider::getFileLogger ()->m_push (logType::info, std::this_thread::get_id (), "mainThread",
+                                                   "The logging engine is set to shut down...");
+
+        // failure or success, the logs are somehow to be saved, so give its thread some time
+        std::this_thread::sleep_for (std::chrono::milliseconds {100});
+
+        PointerProvider::getFileLogger ()->m_shutdown ();
+        PointerProvider::providerFileLogger (nullptr);
     }
-  }
+
+    if (PointerProvider::getVariables ())
+        PointerProvider::providerVariables (nullptr);
 
 };
 
 
-void View::SetWindow ( CoreWindow const& window )
+IFrameworkView View::CreateView (void)
+{
+    return *this;
+};
+
+
+void View::Initialize (CoreApplicationView const& applicationView)
 {
 
-  m_appWindow = window;
+    // response to application window activation
+    applicationView.Activated ({this, &View::m_onActivated});
 
-  // cursor type: standard arrow cursor resource
-  window.PointerCursor ( CoreCursor { CoreCursorType::Arrow, 0 } );
+    // response to application window suspension
+    CoreApplication::Suspending ({this, &View::m_onSuspension});
 
-  // response to window size events
-  window.SizeChanged ( { this, &View::m_onWindowResized } );
+    // response to application window resuming from suspension
+    CoreApplication::Resuming ({this, &View::m_onResuming});
+
+};
+
+
+void View::Load (winrt::hstring const& /*entryPoint*/)
+{
+    //
+};
+
+
+void View::Run (void)
+{
+
+    m_initialized = true;
+
+    PointerProvider::getVariables ()->running = true;
+
+    // game instantiation
+    auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi (m_appWindow.get ()));
+    //m_game = new (std::nothrow) Game ( windowPtr,
+    //                                   m_resolution.m_currentWidth,
+    //                                   m_resolution.m_currentHeight );
+    m_game = std::make_unique<Game> (windowPtr,
+                                     m_resolution.m_currentWidth,
+                                     m_resolution.m_currentHeight);
+
+    if (!m_game->m_isReady ())
+    {
+        m_game->m_onSuspending (); // failure, shut the application down properly.
+
+        PointerProvider::getFileLogger ()->m_push (logType::error, std::this_thread::get_id (), "mainThread",
+                                                   "The game initialization failed!");
+
+        //MessageBoxA ( NULL, "The Game functionality failed to start...", "Critical-Error", MB_OK | MB_ICONERROR );
+
+        failure = true;
+    } else
+    {
+        PointerProvider::getVariables ()->currentState = "initialized";
+
+        PointerProvider::getFileLogger ()->m_push (logType::warning, std::this_thread::get_id (), "mainThread",
+                                                   "Entering the game loop...");
+
+        if (!m_game->m_run ())
+        {
+            failure = true;
+            PointerProvider::getFileLogger ()->m_push (logType::warning, std::this_thread::get_id (), "mainThread",
+                                                       "One or more errors occurred while running the game!");
+        }
+    }
+
+};
+
+
+void View::SetWindow (CoreWindow const& window)
+{
+
+    m_appWindow = window;
+
+    // cursor type: standard arrow cursor resource
+    window.PointerCursor (CoreCursor {CoreCursorType::Arrow, 0});
+
+    // response to window size events
+    window.SizeChanged ({this, &View::m_onWindowResized});
 
 #if defined (NTDDI_WIN10_RS2) && (NTDDI_VERSION >= NTDDI_WIN10_RS2)
-  try
-  {
-    window.ResizeStarted ( [this]( auto&&, auto&& ) { m_inResizeMove = true; } );
-    window.ResizeCompleted ( [this]( auto&&, auto&& ) { m_inResizeMove = false; } );
-  }
-  catch (...) {}
+    try
+    {
+        window.ResizeStarted ([this](auto&&, auto&&) { m_inResizeMove = true; });
+        window.ResizeCompleted ([this](auto&&, auto&&) { m_inResizeMove = false; });
+    } catch (...) {}
 #endif // requires Windows 10 Creators Update (10.0.15063) or later
 
-  // response to window focus events
-  window.Activated ( { this, &View::m_onFocused } );
+    // response to window focus events
+    window.Activated ({this, &View::m_onFocused});
 
-  // response to window close events
-  window.VisibilityChanged ( { this, &View::m_onVisibilityChanged } );
+    // response to window close events
+    window.VisibilityChanged ({this, &View::m_onVisibilityChanged});
 
-  //auto dispatcher = CoreWindow
-  window.Dispatcher ().AcceleratorKeyActivated ( { this, &View::m_onAcceleratorKeyActivated } );
+    //auto dispatcher = CoreWindow
+    window.Dispatcher ().AcceleratorKeyActivated ({this, &View::m_onAcceleratorKeyActivated});
 
-  // response to window close events // because of suspension procedure, following event rarely occurs.
-  //window.Closed ( [this]( auto&&, auto&& ) { PointerProvider::getVariables ()->running = false; } );
+    // response to window close events // because of suspension procedure, following event rarely occurs.
+    //window.Closed ( [this]( auto&&, auto&& ) { PointerProvider::getVariables ()->running = false; } );
 
-  // response to client display DPI events
-  auto currentDisplayInfos = DisplayInformation::GetForCurrentView ();
-  currentDisplayInfos.DpiChanged ( { this, &View::m_onDpiChanged } );
+    // response to client display DPI events
+    auto currentDisplayInfos = DisplayInformation::GetForCurrentView ();
+    currentDisplayInfos.DpiChanged ({this, &View::m_onDpiChanged});
 
-  DisplayInformation::DisplayContentsInvalidated ( { this, &View::m_onDisplayContentInvalidated } );
+    DisplayInformation::DisplayContentsInvalidated ({this, &View::m_onDisplayContentInvalidated});
 
-  // DPI of initialized client window area
-  m_resolution.m_DPI = DisplayInformation::GetForCurrentView ().LogicalDpi ();
-
-
-  // size of initialized client window area (save in case of procedure failure)
-  m_resolution.m_clientWidth = static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Width);
-  m_resolution.m_clientHeight = static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Height);
-  m_resolution.update ();
+    // DPI of initialized client window area
+    m_resolution.m_DPI = DisplayInformation::GetForCurrentView ().LogicalDpi ();
 
 
-  // preferred (current configuration) client window size
-  auto size = Size ( m_resolution.m_clientWidth, m_resolution.m_clientHeight );
-  m_fullscreen = PointerProvider::getConfiguration ()->m_getSettings ().fullscreen;
+    // size of initialized client window area (save in case of procedure failure)
+    m_resolution.m_clientWidth = static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Width);
+    m_resolution.m_clientHeight = static_cast<float> (PointerProvider::getConfiguration ()->m_getSettings ().Height);
+    m_resolution.update ();
 
-  if (m_fullscreen)
-  {
+
+    // preferred (current configuration) client window size
+    auto size = Size (m_resolution.m_clientWidth, m_resolution.m_clientHeight);
+    m_fullscreen = PointerProvider::getConfiguration ()->m_getSettings ().fullscreen;
+
+    if (m_fullscreen)
+    {
+        auto view = ApplicationView::GetForCurrentView ();
+
+        if (view.IsFullScreen ())
+            view.ExitFullScreenMode ();
+        else
+            view.TryEnterFullScreenMode ();
+    }
+
+    //ApplicationView::PreferredLaunchWindowingMode ( ApplicationViewWindowingMode::PreferredLaunchViewSize );
+
+    ApplicationView::PreferredLaunchViewSize (size);
     auto view = ApplicationView::GetForCurrentView ();
 
-    if (view.IsFullScreen ())
-      view.ExitFullScreenMode ();
-    else
-      view.TryEnterFullScreenMode ();
-  }
+    // minimum client window size
+    size.Width = 640.0f; size.Height = 480.0f;
+    view.SetPreferredMinSize (size);
 
-  //ApplicationView::PreferredLaunchWindowingMode ( ApplicationViewWindowingMode::PreferredLaunchViewSize );
-
-  ApplicationView::PreferredLaunchViewSize ( size );
-  auto view = ApplicationView::GetForCurrentView ();
-
-  // minimum client window size
-  size.Width = 640.0f; size.Height = 480.0f;
-  view.SetPreferredMinSize ( size );
-
-  // set and save
-  view.FullScreenSystemOverlayMode ( FullScreenSystemOverlayMode::Minimal );
-  view.TryResizeView ( view.PreferredLaunchViewSize () );
+    // set and save
+    view.FullScreenSystemOverlayMode (FullScreenSystemOverlayMode::Minimal);
+    view.TryResizeView (view.PreferredLaunchViewSize ());
 
 };
 
 
-void View::Uninitialize ( void )
+void View::Uninitialize (void)
 {
-  m_onSuspend ();
+    m_onSuspend ();
 };
 
 
 bool View::failure = false;
-bool View::exitedWith ( void )
+bool View::exitedWith (void)
 {
-  return failure;
+    return failure;
 };
