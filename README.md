@@ -1,5 +1,5 @@
 # Introduction 
-A private Game Engine.
+A simple Game Engine introducing basic 3d graphic features.
 
 <img href="https://github.com/s-mehrdad" src="https://github.com/s-mehrdad/GameEngine/blob/master/XamlApp/screenshots/ScreenShot_05.jpg" width="1000" height="500" alt="ScreenShot">
 
@@ -65,4 +65,4 @@ I appreciate any contribution from anyone, who sees that the project deserves hi
 </table>
 
 # Copyright
-This is not a freeware and the idea itself, source code and literature within is copyrighted. The Source code only can just be used for teaching purposes and in limited ways. For any other uses the creator's written permission and acknowledgment is obligatory.
+Refer to license file provided within SOFTWARE itself.

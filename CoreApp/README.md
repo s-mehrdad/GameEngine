@@ -1,5 +1,5 @@
 # Introduction 
-A private Game Engine.
+Windows store app of simple 3d graphic features.
 
 <img href="https://github.com/s-mehrdad" src="https://github.com/s-mehrdad/GameEngine/blob/master/CoreApp/screenshots/ScreenShot_02.jpg" width="1000" height="600" alt="ScreenShot">
 
@@ -61,4 +61,4 @@ I appreciate any contribution from anyone, who sees that the project deserves hi
 </table>
 
 # Copyright
-This is not a freeware and the idea itself, the source code and the literature within is copyrighted. The Source code only can just be used for teaching purposes and in limited ways. For any other uses the creator's written permission and acknowledgment is needed.
+Refer to license file provided within SOFTWARE itself.

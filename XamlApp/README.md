@@ -1,12 +1,12 @@
 # Introduction 
-A private Game Engine.
+A simple Game Engine app.
 
 <img href="https://github.com/s-mehrdad" src="https://github.com/s-mehrdad/GameEngine/blob/master/XamlApp/screenshots/ScreenShot_05.jpg" width="1000" height="500" alt="ScreenShot">
 
 
 # Getting Started
 1.	Installation process:
-After compiling, as a Windows App Store project installation automatically happening.
+After compiling, as a Windows App Store project installation automatically happens.
 
 2.	Software dependencies:
 <table>
@@ -61,4 +61,4 @@ I appreciate any contribution from anyone, who sees that the project deserves hi
 </table>
 
 # Copyright
-This is not a freeware and the idea itself, the source code and the literature within is copyrighted. The Source code only can just be used for teaching purposes and in limited ways. For any other uses the creator's written permission and acknowledgment is needed.
+Refer to license file provided within SOFTWARE itself.
